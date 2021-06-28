@@ -61,15 +61,17 @@ func main() {
 					},
 				},
 				Action:  func(c *cli.Context) error {
-					tokenId, deploymentType, _, err := frodolibs.Authenticate(tenant, username, password, "/")
+					frt := frodolibs.NewFRToken(tenant, "/")
+					// fmt.Printf("%s, %s, %s, %s, %s, %s\n", frt.tenant, frt.realm, frt.cookieName, frt.tokenId, frt.bearerToken, frt.version)
+					err := frt.Authenticate(username, password)
 					if err == nil {
-						fmt.Printf("AM session token: %s\n", tokenId)
-						if deploymentType == "Cloud" || deploymentType == "ForgeOps" {
-							bearerToken, err := frodolibs.GetAccessToken(tenant, tokenId, "/")
-							if err == nil {
-								fmt.Printf("IDM admin bearer token: %s\n", bearerToken)
+						fmt.Printf("AM session token: %s\n", frt.GetTokenId())
+						if frt.GetDeploymentType() == "Cloud" || frt.GetDeploymentType() == "ForgeOps" {
+							err1 := frt.GetAccessToken()
+							if err1 == nil {
+								fmt.Printf("IDM admin bearer token: %s\n", frt.GetBearerToken())
 							} else {
-								fmt.Println(err)
+								fmt.Println(err1)
 							}
 						}
 					} else {
@@ -125,17 +127,16 @@ func main() {
 					},
 				},
 				Action:  func(c *cli.Context) error {
-					tokenId, deploymentType, _, err := frodolibs.Authenticate(tenant, username, password, "/")
-					bearerToken := ""
+					frt := frodolibs.NewFRToken(tenant, realm)
+					err := frt.Authenticate(username, password)
 					if err == nil {
-						// fmt.Println(tokenId)
-						if deploymentType == "Cloud" || deploymentType == "ForgeOps" {
-							bearerToken, err = frodolibs.GetAccessToken(tenant, tokenId, "/")
+						if frt.GetDeploymentType() == "Cloud" || frt.GetDeploymentType() == "ForgeOps" {
+							err = frt.GetAccessToken()
 							if err != nil {
 								fmt.Println(err)
 							}
 						}
-						journeyData, _ := frodolibs.GetJourneyData(tenant, tokenId, bearerToken, realm, journey, deploymentType)
+						journeyData, _ := frodolibs.GetJourneyData(frt, journey)
 						journeyJSON, err := json.Marshal(journeyData)
 						if err != nil {
 							fmt.Println("JSON parse error: ", err.Error())
@@ -404,12 +405,13 @@ func main() {
 					},
 				},
 				Action:  func(c *cli.Context) error {
-					tokenId, _, versionString, err := frodolibs.Authenticate(tenant, username, password, "/")
+					frt := frodolibs.NewFRToken(tenant, realm)
+					err := frt.Authenticate(username, password)
 					if err != nil {
 						fmt.Println(err)
 					}
 
-					journeys, _ := frodolibs.ListJourneys(tenant, tokenId, realm, versionString)
+					journeys, _ := frodolibs.ListJourneys(frt)
 					customPresent := false
 					fmt.Printf("List of journeys:\n")
 					for item := range journeys {
@@ -430,7 +432,7 @@ func main() {
 			{
 				Name:    "describe",
 				Aliases: []string{"d"},
-				Usage:   "Import all the trees in a realm",
+				Usage:   "Describe all the trees in a realm",
 				Flags: []cli.Flag {
 					&cli.StringFlag{
 						Name:        	"tenant",
@@ -480,17 +482,17 @@ func main() {
 					},
 				},
 				Action:  func(c *cli.Context) error {
-					tokenId, deploymentType, _, err := frodolibs.Authenticate(tenant, username, password, "/")
-					bearerToken := ""
+					frt := frodolibs.NewFRToken(tenant, realm)
+					err := frt.Authenticate(username, password)
 					if err == nil {
 						// fmt.Println(tokenId)
-						if deploymentType == "Cloud" || deploymentType == "ForgeOps" {
-							bearerToken, err = frodolibs.GetAccessToken(tenant, tokenId, "/")
+						if frt.GetDeploymentType() == "Cloud" || frt.GetDeploymentType() == "ForgeOps" {
+							err = frt.GetAccessToken()
 							if err != nil {
 								fmt.Println(err)
 							}
 						}
-						journeyData, err1 := frodolibs.GetJourneyData(tenant, tokenId, bearerToken, realm, journey, deploymentType)
+						journeyData, err1 := frodolibs.GetJourneyData(frt, journey)
 						if err1 == nil {
 							treeDescription := frodolibs.DescribeTree(journeyData)
 							fmt.Printf("\n==========\n")
@@ -587,57 +589,5 @@ func main() {
 	if err != nil {
 	  log.Fatal(err)
 	}
-
-	// var tenant string
-	// var username string
-	// var password string
-
-	// flag.Usage = func() {
-	// 	fmt.Println("Usage: ./getAdminToken -tanant <tenant> -username <username> -password <password>")
-	// 	flag.PrintDefaults()
-	// }
-
-	// flag.StringVar( & tenant, "tenant", "", "tenant url - ex: https://openam-simple-dev.forgeblocks.com/am")
-	// flag.StringVar( & username, "username", "", "a tenant admin username")
-	// flag.StringVar( & password, "password", "", "tenant admin's password")
-	// flag.Parse()
-
-	// if tenant == "" || username == "" || password == "" {
-	// 	fmt.Println("Usage1: ./getAdminToken -tanant <tenant> -username <username> -password <password>")
-	// 	flag.PrintDefaults()
-	// 	os.Exit(1)
-	// }
-	// tokenId, err: = frodolibs.Authenticate(tenant, username, password, "/")
-	// if err == nil {
-	// 	fmt.Println(tokenId)
-	// } else {
-	// 	fmt.Println(err)
-	// }
-	// bearerToken, _: = frodolibs.GetAccessToken(tenant, tokenId, "/")
 	// configList, _ := frodolibs.ExportConfigEntity(tenant, bearerToken, "")
-
-	// journey, _ := frodolibs.GetJourneyData(tenant, tokenId, bearerToken, "alpha", "Copy of Newlogin")
-	// fmt.Println(frodolibs.DescribeTree(journey))
-	// var prettyJSON bytes.Buffer
-	// // _ = configList
-	// journeyJSON, _ := json.Marshal(journey)
-	// error := json.Indent(&prettyJSON, journeyJSON, "", "  ")
-	// if error != nil {
-	//     fmt.Println("JSON parse error: ", error)
-	//     return
-	// }
-	// fmt.Println(string(prettyJSON.Bytes()))
-	// journeys, _ := frodolibs.ListJourneys(tenant, tokenId, "alpha")
-	// customPresent := false
-	// for item := range journeys {
-	// 	if journeys[item] == true {
-	// 		customPresent = true
-	// 		fmt.Printf("%s (*)\n", item)
-	// 	} else {
-	// 		fmt.Printf("%s\n", item)
-	// 	}
-	// }
-	// if customPresent {
-	// 	fmt.Println("(*) custom node")
-	// }
 }
