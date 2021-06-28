@@ -29,6 +29,59 @@ func main() {
 		Usage: "Help",
 	}
 
+	tenantFlag := &cli.StringFlag{
+		Name:        	"tenant",
+		Aliases: 		[]string{"h"},
+		Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
+		Destination:	&tenant,
+		Required:		true,
+	}
+
+	usernameFlag := &cli.StringFlag{
+		Name:			"user",
+		Aliases: 		[]string{"u"},
+		Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
+		Destination:	&username,
+		Required:		true,
+	}
+
+	passwordFlag := &cli.StringFlag{
+		Name:        	"password",
+		Aliases: 		[]string{"p"},
+		Usage:       	"Password",
+		Destination: 	&password,
+		Required:		true,
+	}
+
+	treeFlag := &cli.StringFlag{
+		Name:        	"tree",
+		Aliases: 		[]string{"t"},
+		Usage:       	"Specify the name of an authentication tree. Mandatory in combination with the following actions: -i, -e, -d.",
+		Destination: 	&journey,
+		Required:		true,
+	}
+
+	realmFlag := &cli.StringFlag{
+		Name:        	"realm",
+		Aliases: 		[]string{"r"},
+		Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
+		Destination: 	&realm,
+	}
+
+	fileFlag := &cli.StringFlag{
+		Name:        	"file",
+		Aliases: 		[]string{"f"},
+		Usage:       	"If supplied, export/list to and import from <file> instead of stdout and stdin. For -S, use as file prefix",
+		Destination: 	&filename,
+	}
+
+	versionFlag := &cli.StringFlag{
+		Name:        	"version",
+		Aliases: 		[]string{"v"},
+		Usage:       	"Override version. Notation: \"X.Y.Z\" e.g. \"6.5.2\".\nOverride detected version with any version. This is helpful in\norder to check if trees in one environment would be compatible \nrunning in another environment (e.g. in preparation of migrating\nfrom on-prem to ForgeRock Identity Cloud PaaS. Only impacts these\nactions: -d, -l.",
+		Destination: 	&version,
+	}
+
 	app := &cli.App{
 		Name: "frodo",
 		Usage: "ForgeROckDo - a cli utility for managing (export/import etc.) ForgeRock platform configuration",
@@ -37,29 +90,7 @@ func main() {
 				Name:    "info",
 				Aliases: []string{"z"},
 				Usage:   "Login, print versions and tokens, then exit.",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag,},
 				Action:  func(c *cli.Context) error {
 					frt := frodolibs.NewFRToken(tenant, "/")
 					// fmt.Printf("%s, %s, %s, %s, %s, %s\n", frt.tenant, frt.realm, frt.cookieName, frt.tokenId, frt.bearerToken, frt.version)
@@ -84,48 +115,7 @@ func main() {
 				Name:    "export",
 				Aliases: []string{"e"},
 				Usage:   "Export an authentication tree",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"tree",
-						Aliases: 		[]string{"t"},
-						Usage:       	"Specify the name of an authentication tree. Mandatory in combination with the following actions: -i, -e, -d.",
-						Destination: 	&journey,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-					&cli.StringFlag{
-						Name:        	"file",
-						Aliases: 		[]string{"f"},
-						Usage:       	"If supplied, export/list to and import from <file> instead of stdout and stdin. For -S, use as file prefix",
-						Destination: 	&filename,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, treeFlag, realmFlag, fileFlag,},
 				Action:  func(c *cli.Context) error {
 					frt := frodolibs.NewFRToken(tenant, realm)
 					err := frt.Authenticate(username, password)
@@ -173,41 +163,7 @@ func main() {
 				Name:    "exportAll",
 				Aliases: []string{"E"},
 				Usage:   "Export all authentication trees in a realm",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-					&cli.StringFlag{
-						Name:        	"file",
-						Aliases: 		[]string{"f"},
-						Usage:       	"If supplied, export/list to and import from <file> instead of stdout and stdin. For -S, use as file prefix",
-						Destination: 	&filename,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, realmFlag, fileFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -216,35 +172,7 @@ func main() {
 				Name:    "exportAllSeparate",
 				Aliases: []string{"S"},
 				Usage:   "Export all the trees in a realm as separate files of the format FileprefixTreename.json.",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, realmFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -253,35 +181,7 @@ func main() {
 				Name:    "importAll",
 				Aliases: []string{"s"},
 				Usage:   "Import all the trees in the current directory",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, realmFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -290,48 +190,7 @@ func main() {
 				Name:    "import",
 				Aliases: []string{"i"},
 				Usage:   "Import an authentication tree.",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"tree",
-						Aliases: 		[]string{"t"},
-						Usage:       	"Specify the name of an authentication tree. Mandatory in combination with the following actions: -i, -e, -d.",
-						Destination: 	&journey,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-					&cli.StringFlag{
-						Name:        	"file",
-						Aliases: 		[]string{"f"},
-						Usage:       	"If supplied, export/list to and import from <file> instead of stdout and stdin. For -S, use as file prefix",
-						Destination: 	&filename,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, treeFlag, realmFlag, fileFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -340,35 +199,7 @@ func main() {
 				Name:    "importAllInRealm",
 				Aliases: []string{"I"},
 				Usage:   "Import all the trees in a realm",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, realmFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -377,33 +208,7 @@ func main() {
 				Name:    "list",
 				Aliases: []string{"l"},
 				Usage:   "If -h is supplied, describe the indicated tree in the realm, otherwise describe the tree export file indicated by -f",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-						Required:		true,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, realmFlag,},
 				Action:  func(c *cli.Context) error {
 					frt := frodolibs.NewFRToken(tenant, realm)
 					err := frt.Authenticate(username, password)
@@ -433,54 +238,7 @@ func main() {
 				Name:    "describe",
 				Aliases: []string{"d"},
 				Usage:   "Describe all the trees in a realm",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"tree",
-						Aliases: 		[]string{"t"},
-						Usage:       	"Specify the name of an authentication tree. Mandatory in combination with the following actions: -i, -e, -d.",
-						Destination: 	&journey,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"realm",
-						Aliases: 		[]string{"r"},
-						Usage:       	"Realm. If not specified, the root realm '/' is assumed. Specify realm as '/parent/child'. If using 'amadmin' as the user, login will happen against the root realm but subsequent operations will be performed in the realm specified. For all other users, login and subsequent operations will occur against the realm specified.",
-						Destination: 	&realm,
-					},
-					&cli.StringFlag{
-						Name:        	"file",
-						Aliases: 		[]string{"f"},
-						Usage:       	"If supplied, export/list to and import from <file> instead of stdout and stdin. For -S, use as file prefix",
-						Destination: 	&filename,
-					},
-					&cli.StringFlag{
-						Name:        	"version",
-						Aliases: 		[]string{"v"},
-						Usage:       	"Override version. Notation: \"X.Y.Z\" e.g. \"6.5.2\".\nOverride detected version with any version. This is helpful in\norder to check if trees in one environment would be compatible \nrunning in another environment (e.g. in preparation of migrating\nfrom on-prem to ForgeRock Identity Cloud PaaS. Only impacts these\nactions: -d, -l.",
-						Destination: 	&version,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag, treeFlag, realmFlag, fileFlag, versionFlag,},
 				Action:  func(c *cli.Context) error {
 					frt := frodolibs.NewFRToken(tenant, realm)
 					err := frt.Authenticate(username, password)
@@ -518,29 +276,7 @@ func main() {
 				Name:    "describeAll",
 				Aliases: []string{"D"},
 				Usage:   "If -h is supplied, describe all the trees in the realm, otherwise describe all tree export files in the current directory",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
@@ -549,29 +285,7 @@ func main() {
 				Name:    "prune",
 				Aliases: []string{"p"},
 				Usage:   "Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.",
-				Flags: []cli.Flag {
-					&cli.StringFlag{
-						Name:        	"tenant",
-						Aliases: 		[]string{"h"},
-						Usage:       	"Access Management host URL, e.g.: https://login.example.com/openam",
-						Destination:	&tenant,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:			"user",
-						Aliases: 		[]string{"u"},
-						Usage:      	"Username to login with. Must be an admin user with appropriate rights to manages authentication trees.",
-						Destination:	&username,
-						Required:		true,
-					},
-					&cli.StringFlag{
-						Name:        	"password",
-						Aliases: 		[]string{"p"},
-						Usage:       	"Password",
-						Destination: 	&password,
-						Required:		true,
-					},
-				},
+				Flags: []cli.Flag {tenantFlag, usernameFlag, passwordFlag,},
 				Action:  func(c *cli.Context) error {
 					return nil
 				},
