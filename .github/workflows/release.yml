@@ -40,5 +40,5 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-#         project_path: "./frodo"
+        project_path: frodo
         pre_command: "go get -v -t -d ./... "
