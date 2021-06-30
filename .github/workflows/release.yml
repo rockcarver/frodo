@@ -21,6 +21,10 @@ jobs:
       with:
         repository: rockcarver/frodolibs
         path: frodolibs
+    - name: current directory
+      run: |
+        pwd
+        ls -l
     - name: create release action
       uses: wangyoucao577/go-release-action@v1.18
       with:
