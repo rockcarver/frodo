@@ -41,4 +41,4 @@ jobs:
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         project_path: frodo
-        pre_command: "go get -v -t -d ./... "
+#         pre_command: "go get -v -t -d ./... "
