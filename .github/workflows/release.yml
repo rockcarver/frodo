@@ -24,7 +24,15 @@ jobs:
     - name: current directory
       run: |
         pwd
-        ls -l
+        echo "in frodo"
+        ls -l frodo
+        echo "in frodolibs"
+        ls -l frodolibs
+        echo "one up"
+        ls -l ../
+        echo "two up"
+        ls -l ../../
+        echo "done"
     - name: create release action
       uses: wangyoucao577/go-release-action@v1.18
       with:
