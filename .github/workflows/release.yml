@@ -22,7 +22,7 @@ jobs:
         repository: rockcarver/frodolibs
         path: frodolibs
     - name: create release action
-      uses: wangyoucao577/go-release-action@v1.3
+      uses: wangyoucao577/go-release-action@v1.18
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
