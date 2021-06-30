@@ -12,8 +12,17 @@ jobs:
         goos: [linux, windows, darwin]
         goarch: [amd64]
     steps:
-    - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.3
+    - name: checkout frodo
+      uses: actions/checkout@v2
+      with:
+        path: frodo
+    - name: checkout frodolibs
+      uses: actions/checkout@v2
+      with:
+        repository: rockcarver/frodolibs
+        path: frodolibs
+    - name: create release action
+      uses: wangyoucao577/go-release-action@v1.3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
