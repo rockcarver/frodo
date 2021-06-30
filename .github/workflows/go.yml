@@ -28,7 +28,11 @@ jobs:
         go-version: 1.16
 
     - name: Build
-      run: go build -v ./...
+      run: |
+        cd frodo
+        go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: |
+        frodo
+        go test -v ./...
