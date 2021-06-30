@@ -13,8 +13,10 @@ jobs:
     steps:
     - name: Checkout frodo
       uses: actions/checkout@v2
-      
-    - name: Checkout tools repo
+      with:
+        path: frodo
+
+    - name: Checkout frodolibs
       uses: actions/checkout@v2
       with:
         repository: rockcarver/frodolibs
