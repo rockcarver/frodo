@@ -21,11 +21,13 @@ jobs:
       with:
         repository: rockcarver/frodolibs
         path: frodolibs
-    - name: create release action
-      uses: wangyoucao577/go-release-action@v1.3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: ${{ matrix.goos }}
-        goarch: ${{ matrix.goarch }}
-        project_path: "./frodo"
-        pre_command: "go get -v -t -d ./... "
+    - name: Build
+      run: pwd
+#     - name: create release action
+#       uses: wangyoucao577/go-release-action@v1.3
+#       with:
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+#         goos: ${{ matrix.goos }}
+#         goarch: ${{ matrix.goarch }}
+#         project_path: "./frodo"
+#         pre_command: "go get -v -t -d ./... "
