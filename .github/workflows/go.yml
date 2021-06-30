@@ -11,7 +11,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout frodo
+      uses: actions/checkout@v2
+      
+    - name: Checkout tools repo
+      uses: actions/checkout@v2
+      with:
+        repository: rockcarver/frodolibs
+        path: frodolibs
 
     - name: Set up Go
       uses: actions/setup-go@v2
