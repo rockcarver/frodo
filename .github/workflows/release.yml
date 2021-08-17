@@ -1,0 +1,44 @@
+on: 
+  release:
+    types: [created]
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/386, darwin/amd64 
+        goos: [linux, windows, darwin]
+        goarch: [amd64]
+    steps:
+    - name: checkout frodo
+      uses: actions/checkout@v2
+      with:
+        path: frodo
+    - name: checkout frodolibs
+      uses: actions/checkout@v2
+      with:
+        repository: rockcarver/frodolibs
+        path: frodolibs
+    - name: current directory
+      run: |
+        pwd
+        echo "in frodo"
+        ls -l frodo
+        echo "in frodolibs"
+        ls -l frodolibs
+        echo "one up"
+        ls -l ../
+        echo "two up"
+        ls -l ../../
+        cd frodo
+        echo "done"
+    - name: create release action
+      uses: wangyoucao577/go-release-action@v1.18
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        project_path: frodo
+#         pre_command: "go get -v -t -d ./... "
