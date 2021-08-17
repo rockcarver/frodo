@@ -178,7 +178,7 @@ func main() {
                 Usage:   "Export all the journeys/trees in a realm",
                 Flags:   []cli.Flag{hostFlag, usernameFlag, passwordFlag, realmFlag, fileFlag, deploymentFlag},
                 Action: func(c *cli.Context) error {
-                    frt := frodolibs.NewFRToken(tenant, realm)
+                    frt := frodolibs.NewFRToken(host, realm)
                     err := frt.Authenticate(username, password)
                     if err == nil {
                         if frt.GetDeploymentType() == "Cloud" || frt.GetDeploymentType() == "ForgeOps" {
@@ -217,7 +217,7 @@ func main() {
                 Usage:   "Export all the journeys/trees in a realm as separate files of the format FileprefixTreename.json.",
                 Flags:   []cli.Flag{hostFlag, usernameFlag, passwordFlag, realmFlag, deploymentFlag},
                 Action: func(c *cli.Context) error {
-                    frt := frodolibs.NewFRToken(tenant, realm)
+                    frt := frodolibs.NewFRToken(host, realm)
                     err := frt.Authenticate(username, password)
                     if err == nil {
                         if frt.GetDeploymentType() == "Cloud" || frt.GetDeploymentType() == "ForgeOps" {
@@ -361,7 +361,7 @@ func main() {
                 Usage:   "If -h is supplied, describe all the journeys/trees in the realm, otherwise describe *.json files in the current directory.",
                 Flags:   []cli.Flag{hostFlag, usernameFlag, passwordFlag, deploymentFlag},
                 Action: func(c *cli.Context) error {
-                    frt := frodolibs.NewFRToken(tenant, realm)
+                    frt := frodolibs.NewFRToken(host, realm)
                     err := frt.Authenticate(username, password)
                     if err != nil {
                         fmt.Println(err)
@@ -412,5 +412,5 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    // configList, _ := frodolibs.ExportConfigEntity(tenant, bearerToken, "")
+    // configList, _ := frodolibs.ExportConfigEntity(host, bearerToken, "")
 }
