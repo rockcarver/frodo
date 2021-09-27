@@ -1,16 +1,16 @@
 {
   "name": "frodo",
-  "version": "1.0.0",
-  "description": "ForgeROckDO",
+  "version": "0.0.1",
+  "description": "ForgeROckDO - the one ForgeRock cli to rule them all",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "sandeep.chaturvedi@forgerock.com",
   "license": "MIT",
   "bin": "app.js",
   "pkg": {
-    "scripts": "cmds/**/*.js"
+    "scripts": "modules/**/*.js"
   },
   "dependencies": {
     "axios": "^0.21.4",

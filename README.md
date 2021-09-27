@@ -5,71 +5,34 @@ This is the ForgeROckDO (frodo) cli executable. This is a statically linked bina
 # Developing
 
 ## Prerequisites
-- Install go
-- Set GOPATH in your profile (default is ~/go)
-- Add $GOPATH/bin to your PATH
+- Install nodejs (tested on v14.9.0) and npm (included with node)
 
 ## Process
-- Create directories
-```
-cd $GOPATH
-mkdir -p src/github.com/rockcarver
-```
 - Clone this repo
 ```
-cd $GOPATH/src/github.com/rockcarver
+cd $HOME # or any other directory you wish to clone to
 git clone git@github.com:rockcarver/frodo.git
 ```
-- Clone the frodolibs repo
+- Build
 ```
-cd $GOPATH/src/github.com/rockcarver
-git clone git@github.com:rockcarver/frodolibs.git
+cd $HOME/frodo
+npm install
+pkg .
 ```
-
-## Build
+This will build `frodo` in local directory. There are three binaries created
 ```
-cd $GOPATH/src/github.com/rockcarver/frodo
-go build
-```
-This will build `frodo` in local directory. One can also
-```
-cd $GOPATH/src/github.com/rockcarver/frodo
-go install
-```
-which will build and move the `frodo` binary to $GOPATH/bin
-
-
-## Cross platform
-### Building on linux
-
-To build for MacOS
-```
-cd $GOPATH/src/github.com/rockcarver/frodo
-GOOS=darwin GOARCH=amd64 go install
-```
-To build for Windows
-```
-GOOS=windows GOARCH=amd64 go install
-```
-
-### Building on MacOS
-To build for linux
-```
-cd $GOPATH/src/github.com/rockcarver/frodo
-GOOS=linux GOARCH=amd64 go install
-```
-To build for Windows
-```
-GOOS=windows GOARCH=amd64 go install
+frodo-linux
+frodo-macos
+frodo-win.exe
 ```
 
 # Run
 `frodo` is self contained, statically linked, so no dependencies should be needed. It can be run as:
 ```
-$GOPATH/frodo
+$HOME/frodo/frodo-linux # or the platform equivalent binary
 ```
 or
 ```
-./frodo
+./frodo-linux # or the platform equivalent binary
 ```
 
