@@ -1,6 +1,6 @@
 Very basic README for now...
 
-This is the ForgeROckDO (frodo) cli executable. This is a statically linked binary which can be cross compiled for multiple platforms (linux, MacOS, Windows etc.) and architectures (386 (32-bit x86), amd64 (64-bit x86_64), arm5, arm7 etc.)
+This is the ForgeROckDO (frodo) cli executable. This is a statically linked binary which can be cross compiled for multiple platforms (linux, MacOS, Windows etc.).
 
 # Developing
 
@@ -17,7 +17,7 @@ git clone git@github.com:rockcarver/frodo.git
 ```
 cd $HOME/frodo
 npm install
-pkg .
+pkg -C GZip .
 ```
 This will build `frodo` in local directory. There are three binaries created
 ```
@@ -31,8 +31,3 @@ frodo-win.exe
 ```
 $HOME/frodo/frodo-linux # or the platform equivalent binary
 ```
-or
-```
-./frodo-linux # or the platform equivalent binary
-```
-
