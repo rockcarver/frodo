@@ -59,7 +59,7 @@ function Setup() {
 all journeys/trees in the realm if no -t is supplied, otherwise \
 describe the journey/tree export file indicated by -f.")
         .action(async (options, command) => {
-            console.log('describe command called');
+            // console.log('describe command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -112,7 +112,7 @@ describe the journey/tree export file indicated by -f.")
         .addOption(common.fileOption)
         .description("Export an authentication journey/tree.")
         .action(async (options, command) => {
-            console.log('export command called');
+            // console.log('export command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -137,7 +137,7 @@ describe the journey/tree export file indicated by -f.")
         .helpOption("-l, --help", "Help")
         .description("Export all the journeys/trees in a realm.")
         .action(async (options, command) => {
-            console.log('exportAll command called');
+            // console.log('exportAll command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -162,7 +162,7 @@ describe the journey/tree export file indicated by -f.")
         .description("Export all the journeys/trees in a realm as separate files of the \
 format <journey/tree name>.json.")
         .action(async (options, command) => {
-            console.log('exportAllSeparate command called');
+            // console.log('exportAllSeparate command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -191,7 +191,7 @@ format <journey/tree name>.json.")
         .addOption(common.noReUUIDOption)
         .description("Import an authentication tree")
         .action(async (options, command) => {
-            console.log('import command called');
+            // console.log('import command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -216,7 +216,7 @@ format <journey/tree name>.json.")
         .addOption(common.noReUUIDOption)
         .description("Import all the trees in a realm.")
         .action(async (options, command) => {
-            console.log('import all command called');
+            // console.log('import all command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -239,7 +239,7 @@ format <journey/tree name>.json.")
         .helpOption("-l, --help", "Help")
         .description("Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.")
         .action(async (options, command) => {
-            console.log('prune command called');
+            // console.log('prune command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -259,7 +259,7 @@ format <journey/tree name>.json.")
             });
             if(ok) {
                 process.stdout.write("Pruning.");
-                // RemoveOrphanedNodes(frToken, allNodes, orphanedNodes);
+                RemoveOrphanedNodes(frToken, allNodes, orphanedNodes);
             }
             process.stdout.write("done");
             console.log("");

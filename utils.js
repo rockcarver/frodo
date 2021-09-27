@@ -1,6 +1,5 @@
 const util = require('util');
 const url = require('url');
-const { parsed } = require('yargs');
 
 const realmPathTemplate = "/realms/%s"
 const amApiVersion = "resource=1.0"
