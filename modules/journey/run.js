@@ -223,12 +223,16 @@ async function GetJourneyStructureData(frToken, name) {
         const jURL = util.format(journeyURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), name);
         const response = await axios.get(jURL, {headers: headers});
         if(response.status < 200 || response.status > 399) {
-            console.error("GetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found", response.status);
+            console.error("\nGetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found", response.status);
             return null;
         }
         return response.data;
     } catch(e) {
-        console.error("GetJourneyStructureData ERROR: get journey structure error - ", e.message);
+        if(e.response.status == 404) {
+            console.error("\nGetJourneyStructureData ERROR: journey %s not found", name);
+        } else {
+            console.error("\nGetJourneyStructureData ERROR: get journey structure error - ", e.message);
+        }
         return null;
     }
 }
@@ -412,7 +416,17 @@ async function PutScriptData(frToken, id, data) {
         }
         return "";
     } catch(e) {
-        console.error(`PutScriptData ERROR: put script error, script ${id} - ${e.message}`);
+        if(e.response.status == 409) {
+            console.error("PutScriptData ERROR: script with name [%s] already exists, using renaming policy... <name> => <name - imported (n)>", data.name);
+            let newName = utils.ApplyRenamingPolicy(data.name);
+            //console.log(newName);
+            console.log("Trying to save script as %s", newName);
+            data.name = newName;
+            PutScriptData(frToken, id, data);
+            return "";
+        } else {
+            console.error(`PutScriptData ERROR: put script error, script ${id} - ${e.message}`);
+        }        
         return null;
     }
 }
@@ -479,6 +493,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
     if(sourceOrigin == targetOrigin) {
         console.log(`Importing journey ${treeId} to the same environment and realm from where it was exported`);
     }
+
     process.stdout.write("Importing scripts ")
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
         single?console.log(`${scriptData.name}`):console.log(".");
@@ -494,7 +509,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
         let templateLongId = templateData._id;
         single?console.log(`${templateId}`):console.log(".");
         if(await PutEmailTemplateData(frToken, templateId, templateLongId, templateData) == null) {
-            console.error(`ERROR: error importing script ${id} in journey ${treeId}`);
+            console.error(`ERROR: error importing template ${id} in journey ${treeId}`);
             return null;
         }
     }
@@ -530,14 +545,14 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
             uuidMap[nodeId] = newUuid;
         }
         nodeData._id = newUuid;
-        console.log(uuidMap);
+        // console.log(uuidMap);
 
         if(nodeType == "PageNode" && !noreuuid) {
             for (const [inPageNodeId, inPageNodeData] of Object.entries(nodeData.nodes)) {
                 let currentId = inPageNodeData._id;
-                console.log(nodeData);
+                // console.log(nodeData);
                 nodeData = JSON.parse(utils.replaceAll(JSON.stringify(nodeData), currentId, uuidMap[currentId]));
-                console.log(nodeData);
+                // console.log(nodeData);
             }
         }
 

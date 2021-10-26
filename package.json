@@ -15,6 +15,10 @@
   "dependencies": {
     "axios": "^0.21.4",
     "commander": "^8.2.0",
+    "fs-extra": "^10.0.0",
+    "properties-reader": "^2.2.0",
+    "replaceall": "^0.1.6",
+    "underscore": "^1.13.1",
     "uuid": "^8.3.2",
     "yesno": "^0.3.1"
   }

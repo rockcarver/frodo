@@ -2,6 +2,9 @@ frodo-linux
 frodo-macos
 frodo-win.exe
 
+connections.json
+journey-*.json
+
 # Logs
 logs
 *.log

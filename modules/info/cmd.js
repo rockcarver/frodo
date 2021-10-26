@@ -14,8 +14,8 @@ function Setup() {
     info
         .helpOption("-l, --help", "Help")
         .addOption(common.hostOption.makeOptionMandatory())
-        .addOption(common.userOption.makeOptionMandatory())
-        .addOption(common.passwordOption.makeOptionMandatory())
+        .addOption(common.userOption)
+        .addOption(common.passwordOption)
         .addOption(common.deploymentOption)
         .description("Login, print versions and tokens, then exit")
         .action(async (options, command) => {

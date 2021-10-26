@@ -1,4 +1,5 @@
 const axios = require('axios');
+const fs = require('fs');
 const url = require('url');
 const util = require('util');
 const { createHash, randomBytes } = require('crypto');
@@ -156,8 +157,13 @@ async function Authenticate(frToken) {
             return null;
         }
     } catch(e) {
-        console.error("error in authentication - ", e);
-        return null;
+        if(e.response.status == 401) {
+            console.error("error in authentication - %s", e.message);
+            console.error("+++ likely cause, bad credentials!!! +++");
+        } else {
+            console.error("error in authentication - ", e);
+            return null;
+        }
     }
 }
 
@@ -236,11 +242,37 @@ async function GetAccessToken(frToken) {
 }
 
 async function GetTokens(frToken) {
+    let credsFromParameters = true;
+    // if username/password on cli are empty, try to read from connections.json
+    if(frToken.username == null && frToken.password == null) {
+        credsFromParameters = false;
+        const data = fs.readFileSync("./connections.json", 'utf8');
+        const connectionsData = JSON.parse(data);
+        if(!connectionsData[frToken.tenant]) {
+            console.error("No saved credentials for tenant %s. Please specify username and password when invoking the tool");
+            return;
+        }
+        frToken.username = connectionsData[frToken.tenant].username;
+        frToken.password = connectionsData[frToken.tenant].password;
+    }
     await Authenticate(frToken);
     // console.log("Session token: " + frToken.cookieValue);
-    if(frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps") {
+    if(frToken.cookieValue && (frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps")) {
         await GetAccessToken(frToken)
         // console.log("Bearer token: " + frToken.bearerToken);
+    }
+    if(frToken.cookieValue && credsFromParameters) {
+        // valid cookie, which means valid username/password combo. Save it in connections.json
+        console.log("Saving creds in connections.json...");
+        const data = fs.readFileSync("./connections.json", 'utf8');
+        const connectionsData = JSON.parse(data);
+        connectionsData[frToken.tenant] = {
+            username: frToken.username,
+            password: frToken.password
+        };
+        fs.writeFileSync("./connections.json", JSON.stringify(connectionsData, null, 2));
+    } else if(!frToken.cookieValue) {
+        throw new Error("Authentication failed");
     }
 }
 

@@ -1,5 +1,6 @@
 const util = require('util');
 const url = require('url');
+// var _ = require('underscore');
 
 const realmPathTemplate = "/realms/%s"
 const amApiVersion = "resource=1.0"
@@ -10,6 +11,22 @@ function escapeRegExp(str) {
 
 function replaceAll(str, find, replace) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+function ApplyRenamingPolicy(name) {
+    const capturingRegex = /(.* - imported) \(([0-9]+)\)/;
+    const found = name.match(capturingRegex);
+    if(found) {
+        // already renamed one or more times
+        // console.log(found);
+        if(found.length > 0 && found.length == 3) {
+            // return the next number
+            return found[1] + " (" + (parseInt(found[2])+1) + ")";
+        }
+    } else {
+        // first time
+        return name + " - imported (1)";
+    }
 }
 
 function GetRealmUrl(realm) {
@@ -28,6 +45,15 @@ function GetTenantURL(tenant) {
     // console.log(parsedUrl);
     return `${parsedUrl.protocol}//${parsedUrl.host}`;
 }
+
+// function FindEnvKey(key, data, envData) {
+//     if(_.property(key.split("."))(data) != "undefined") {
+//         const valueFromConfig = _.property(key.split("."))(data);
+//         _.property(key.split("."))(data) = envData[key];
+//         // update envData with actual value from exported config
+//         _.property(key.split("."))(envData) = valueFromConfig;
+//     }
+// }
 
 
 var ootbnodetypes_7_1 = [
@@ -329,6 +355,7 @@ var ootbnodetypes_6 = [
 module.exports.replaceAll = replaceAll;
 module.exports.GetRealmUrl = GetRealmUrl;
 module.exports.GetTenantURL = GetTenantURL;
+module.exports.ApplyRenamingPolicy = ApplyRenamingPolicy;
 module.exports.amApiVersion = amApiVersion;
 module.exports.ootbnodetypes_6 = ootbnodetypes_6;
 module.exports.ootbnodetypes_6_5 = ootbnodetypes_6_5;
