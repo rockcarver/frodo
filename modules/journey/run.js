@@ -339,6 +339,7 @@ async function GetJourneyData(frToken, journey) {
     journeyMap["emailTemplates"] = emailTemplatesMap;
     journeyMap["nodes"] = nodesMap;
     journeyMap["tree"] = journeyStructureData
+    console.log("done.");
     return journeyMap;
 }
 

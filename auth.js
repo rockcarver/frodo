@@ -275,6 +275,7 @@ async function GetTokens(frToken) {
     } else if(!frToken.cookieValue) {
         return false;
     }
+    return true;
 }
 
 // module.exports.Authenticate = Authenticate;
