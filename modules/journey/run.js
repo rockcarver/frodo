@@ -417,16 +417,15 @@ async function PutScriptData(frToken, id, data) {
         return "";
     } catch(e) {
         if(e.response.status == 409) {
-            console.error("PutScriptData ERROR: script with name [%s] already exists, using renaming policy... <name> => <name - imported (n)>", data.name);
+            console.error("PutScriptData WARNING: script with name [%s] already exists, using renaming policy... <name> => <name - imported (n)>", data.name);
             let newName = utils.ApplyRenamingPolicy(data.name);
             //console.log(newName);
             console.log("Trying to save script as %s", newName);
             data.name = newName;
             PutScriptData(frToken, id, data);
             return "";
-        } else {
-            console.error(`PutScriptData ERROR: put script error, script ${id} - ${e.message}`);
-        }        
+        }
+        console.error(`PutScriptData ERROR: put script error, script ${id} - ${e.message}`);
         return null;
     }
 }
@@ -452,6 +451,15 @@ async function PutEmailTemplateData(frToken, id, longid, data) {
         }
         return "";
     } catch(e) {
+        // if(e.response.status == 409) {
+        //     console.error("PutEmailTemplateData ERROR: template with name [%s] already exists, using renaming policy... <name> => <name - imported (n)>", data.name);
+        //     let newName = utils.ApplyRenamingPolicy(data.name);
+        //     //console.log(newName);
+        //     console.log("Trying to save script as %s", newName);
+        //     data.name = newName;
+        //     PutScriptData(frToken, id, data);
+        //     return "";
+        // }
         console.error(`PutEmailTemplateData ERROR: put template error, script ${id} - ${e.message}`);
         return null;
     }
@@ -496,7 +504,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
 
     process.stdout.write("Importing scripts ")
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-        single?console.log(`${scriptData.name}`):console.log(".");
+        single?process.stdout.write(`[${scriptData.name}] `):process.stdout.write(".");
         if(await PutScriptData(frToken, scriptId, scriptData) == null) {
             console.error(`ERROR: error importing script ${id} in journey ${treeId}`);
             return null;
@@ -507,7 +515,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
     process.stdout.write("Importing email templates ")
     for (const [templateId, templateData] of Object.entries(journeyMap.emailTemplates)) {
         let templateLongId = templateData._id;
-        single?console.log(`${templateId}`):console.log(".");
+        single?process.stdout.write(`[${templateId}] `):process.stdout.write(".");
         if(await PutEmailTemplateData(frToken, templateId, templateLongId, templateData) == null) {
             console.error(`ERROR: error importing template ${id} in journey ${treeId}`);
             return null;
@@ -518,7 +526,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
     process.stdout.write("Importing inner nodes (nodes inside page nodes) ")
     for (const [innerNodeId, innerNodeData] of Object.entries(journeyMap.innernodes)) {
         let nodeType = innerNodeData._type._id;
-        single?console.log(`${innerNodeId}`):console.log(".");
+        single?process.stdout.write(`[${innerNodeId}] `):process.stdout.write(".");
         if(noreuuid) {
             newUuid = innerNodeId;
         } else {
@@ -537,7 +545,7 @@ async function ImportJourney(frToken, id, journeyMap, noreuuid, single) {
     process.stdout.write("Importing nodes ")
     for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
         let nodeType = nodeData._type._id;
-        single?console.log(`${nodeId}`):console.log(".");
+        single?process.stdout.write(`[${nodeId}] `):process.stdout.write(".");
         if(noreuuid) {
             newUuid = nodeId;
         } else {

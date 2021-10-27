@@ -121,12 +121,12 @@ describe the journey/tree export file indicated by -f.")
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
             let fileName = "journey-"+command.opts().file;
-            if (fileName && fs.existsSync(fileName)) {
+            if (command.opts().file && fs.existsSync(fileName)) {
                 console.error("File %s already exists, please specify a different name!", fileName);
             } else {
                 await GetTokens(frToken);
                 const journeyData = await GetJourneyData(frToken, command.opts().tree);
-                if (fileName) {
+                if (command.opts().file) {
                     fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
                         if (err) {
                             return console.error("ERROR - can't save journey to file");
@@ -152,7 +152,7 @@ describe the journey/tree export file indicated by -f.")
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
             let fileName = "all-journeys-"+command.opts().file;
-            if (fileName && fs.existsSync(fileName)) {
+            if (command.opts().file && fs.existsSync(fileName)) {
                 console.error("File %s already exists, please specify a different name!", fileName);
             } else {
                 await GetTokens(frToken);
@@ -163,7 +163,7 @@ describe the journey/tree export file indicated by -f.")
                     journeysMap[item.name] = await GetJourneyData(frToken, item.name);
                 }
                 topLevelMap.trees = journeysMap;    
-                if (fileName) {
+                if (command.opts().file) {
                     fs.writeFile(fileName, JSON.stringify(topLevelMap, null, 2), function (err, data) {
                         if (err) {
                             return console.error("ERROR - can't save journeys to file");
