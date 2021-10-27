@@ -22,6 +22,7 @@ const program = new Command();
                 program.addCommand(m.Setup());
             }
         }
+        program.showHelpAfterError();
         program.parse();
     } catch (e) {
         console.error("ERROR: exception running frodo - ", e);

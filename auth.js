@@ -51,47 +51,47 @@ function CheckAndSkip2FA(payload) {
 }
 
 async function DetermineDeployment(frToken) {
-	const fidcClientId = "RCSClient";
+	const fidcClientId = "idmAdminClient";
 	const forgeopsClientId = "idm-admin-ui";
     let response, response2;
 
-	// try to get fidcClientId first
+    const verifier = base64url.encode(randomBytes(32));
+    const challenge = base64url.encode(createHash('sha256').update(verifier).digest());
+    const challengeMethod = "S256";
+    const authorizeURL = util.format(authorizeURLTemplate, frToken.tenant, "");
+    const redirectURL = url.resolve(frToken.tenant, redirectURLTemplate);
+
     const headers = {
         "Accept-API-Version": utils.amApiVersion,
+        "Content-Type": "application/x-www-form-urlencoded",
         "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
     };
-    let oauthClientURL = util.format(oauthClientURLTemplate, frToken.tenant, "/alpha", fidcClientId);
+    let bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${fidcClientId}&csrf=${frToken.cookieValue}&decision=allow&code_challenge=${challenge}&code_challenge_method=${challengeMethod}`;
+   
+    // let oauthClientURL = util.format(oauthClientURLTemplate, frToken.tenant, "/alpha", fidcClientId);
     try {
-        response = await axios.get(oauthClientURL, {headers: headers});
+        // response = await axios.get(oauthClientURL, {headers: headers});
+        response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});
     } catch(e) {
-        if(e.response.status == 404) {
+        if(e.response.status == 302) {
+            console.log(`${fidcClientId} found, likely Cloud deployment`);
+            return "Cloud";
+        } else {
             try {
-                // console.log("trying forgeops...");
-                oauthClientURL = util.format(oauthClientURLTemplate, frToken.tenant, "", forgeopsClientId);
-                response2 = await axios.get(oauthClientURL, {headers: headers});
-            } catch(err) {
-                if(err.response.status == 404) {
+                bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${forgeopsClientId}&csrf=${frToken.cookieValue}&decision=allow&code_challenge=${challenge}&code_challenge_method=${challengeMethod}`;            
+                response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});    
+            } catch(ex) {
+                if(ex.response.status == 302) {
+                    console.log(`${forgeopsClientId} found, likely ForgeOps deployment`);
+                    return "ForgeOps";
+                } else {
                     console.log("No known OAuth clients found, likely classic deployment");
-                    return "Classic";                        
+                    return "Classic";
                 }
-            }
-            if(response2.status >= 200 && response2.status < 400) {
-                console.log(`${forgeopsClientId} found, likely ForgeOps deployment`);
-                adminClientId = forgeopsClientId;
-                return "ForgeOps";
-            } else {
-                console.error("Error determining deployment type, please try again with type override");
-                return "";
             }
         }
     }
-    if(response.status >= 200 && response.status < 400) {
-        console.log(`${fidcClientId} found, likely Cloud deployment`);
-        return "Cloud";
-    } else {
-        console.error("Error determining deployment type, please try again with type override");
-        return "";
-    }
+    console.error("Error determining deployment type, please try again with type override");
     return "";
 }
 
@@ -249,8 +249,8 @@ async function GetTokens(frToken) {
         const data = fs.readFileSync("./connections.json", 'utf8');
         const connectionsData = JSON.parse(data);
         if(!connectionsData[frToken.tenant]) {
-            console.error("No saved credentials for tenant %s. Please specify username and password when invoking the tool");
-            return;
+            console.error("No saved credentials for tenant [%s]. Please specify username and password when invoking the tool", frToken.tenant);
+            return false;
         }
         frToken.username = connectionsData[frToken.tenant].username;
         frToken.password = connectionsData[frToken.tenant].password;
@@ -271,8 +271,9 @@ async function GetTokens(frToken) {
             password: frToken.password
         };
         fs.writeFileSync("./connections.json", JSON.stringify(connectionsData, null, 2));
+        return true;
     } else if(!frToken.cookieValue) {
-        throw new Error("Authentication failed");
+        return false;
     }
 }
 

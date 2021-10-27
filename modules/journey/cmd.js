@@ -41,13 +41,14 @@ function Setup() {
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
             // console.log(frToken);
-            await GetTokens(frToken);
-            const journeyList = await ListJourneys(frToken);
-            console.log(`List of journeys in realm ${frToken.realm}`);
-            journeyList.forEach((item, index) => {
-                console.log(`- ${item.name} ${item.custom?"*":""}`);
-            })
-            console.log("(*) Tree contains custom node(s).");
+            if(await GetTokens(frToken)) {
+                const journeyList = await ListJourneys(frToken);
+                console.log(`List of journeys in realm ${frToken.realm}`);
+                journeyList.forEach((item, index) => {
+                    console.log(`- ${item.name} ${item.custom?"*":""}`);
+                })
+                console.log("(*) Tree contains custom node(s).");    
+            }
         });
 
     journey
@@ -79,16 +80,17 @@ describe the journey/tree export file indicated by -f.")
                     treeDescription.push(DescribeTree(journeyData));
                 });
             } else {
-                await GetTokens(frToken);
-                if (typeof command.opts().tree == 'undefined') {
-                    const journeyList = await ListJourneys(frToken);
-                    for (const item of journeyList) {
-                        const journeyData = await GetJourneyData(frToken, item.name);
+                if(await GetTokens(frToken)) {
+                    if (typeof command.opts().tree == 'undefined') {
+                        const journeyList = await ListJourneys(frToken);
+                        for (const item of journeyList) {
+                            const journeyData = await GetJourneyData(frToken, item.name);
+                            treeDescription.push(DescribeTree(journeyData));
+                        }
+                    } else {
+                        const journeyData = await GetJourneyData(frToken, command.opts().tree);
                         treeDescription.push(DescribeTree(journeyData));
                     }
-                } else {
-                    const journeyData = await GetJourneyData(frToken, command.opts().tree);
-                    treeDescription.push(DescribeTree(journeyData));
                 }
             }
             for (const item of treeDescription) {
@@ -124,16 +126,17 @@ describe the journey/tree export file indicated by -f.")
             if (command.opts().file && fs.existsSync(fileName)) {
                 console.error("File %s already exists, please specify a different name!", fileName);
             } else {
-                await GetTokens(frToken);
-                const journeyData = await GetJourneyData(frToken, command.opts().tree);
-                if (command.opts().file) {
-                    fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
-                        if (err) {
-                            return console.error("ERROR - can't save journey to file");
-                        }
-                    });
-                } else {
-                    console.log(JSON.stringify(journeyData, null, 2));
+                if(await GetTokens(frToken)) {
+                    const journeyData = await GetJourneyData(frToken, command.opts().tree);
+                    if (command.opts().file) {
+                        fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
+                            if (err) {
+                                return console.error("ERROR - can't save journey to file");
+                            }
+                        });
+                    } else {
+                        console.log(JSON.stringify(journeyData, null, 2));
+                    }
                 }
             }
         });
@@ -155,22 +158,23 @@ describe the journey/tree export file indicated by -f.")
             if (command.opts().file && fs.existsSync(fileName)) {
                 console.error("File %s already exists, please specify a different name!", fileName);
             } else {
-                await GetTokens(frToken);
-                const journeysMap = {};
-                const topLevelMap = {};
-                const journeyList = await ListJourneys(frToken);
-                for (const item of journeyList) {
-                    journeysMap[item.name] = await GetJourneyData(frToken, item.name);
-                }
-                topLevelMap.trees = journeysMap;    
-                if (command.opts().file) {
-                    fs.writeFile(fileName, JSON.stringify(topLevelMap, null, 2), function (err, data) {
-                        if (err) {
-                            return console.error("ERROR - can't save journeys to file");
-                        }
-                    });
-                } else {
-                    console.log(JSON.stringify(topLevelMap, null, 2));
+                if(await GetTokens(frToken)) {
+                    const journeysMap = {};
+                    const topLevelMap = {};
+                    const journeyList = await ListJourneys(frToken);
+                    for (const item of journeyList) {
+                        journeysMap[item.name] = await GetJourneyData(frToken, item.name);
+                    }
+                    topLevelMap.trees = journeysMap;    
+                    if (command.opts().file) {
+                        fs.writeFile(fileName, JSON.stringify(topLevelMap, null, 2), function (err, data) {
+                            if (err) {
+                                return console.error("ERROR - can't save journeys to file");
+                            }
+                        });
+                    } else {
+                        console.log(JSON.stringify(topLevelMap, null, 2));
+                    }
                 }
             }
         });
@@ -189,28 +193,29 @@ format <journey/tree name>.json.")
             frToken.tenant = command.parent.opts().host;
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
-            await GetTokens(frToken);
-            const journeyList = await ListJourneys(frToken);
-            let proceed = true;
-            for (const item of journeyList) {
-                let fileName = `./journey-${item}.json`;
-                if (fs.existsSync(fileName)) {
-                    proceed = false;
-                    console.error("File %s already exists, please move/rename existing file to prevent losing already exported journeys!", fileName);
-                }
-            }
-            if(proceed) {
+            if(await GetTokens(frToken)) {
+                const journeyList = await ListJourneys(frToken);
+                let proceed = true;
                 for (const item of journeyList) {
-                    const journeyData = await GetJourneyData(frToken, item.name);
                     let fileName = `./journey-${item}.json`;
-                    fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
-                        if (err) {
-                            return console.error(`ERROR - can't save journey ${item} to file`);
-                        }
-                    });
+                    if (fs.existsSync(fileName)) {
+                        proceed = false;
+                        console.error("File %s already exists, please move/rename existing file to prevent losing already exported journeys!", fileName);
+                    }
                 }
-                topLevelMap.trees = journeysMap;
-                console.log(JSON.stringify(topLevelMap, null, 2));
+                if(proceed) {
+                    for (const item of journeyList) {
+                        const journeyData = await GetJourneyData(frToken, item.name);
+                        let fileName = `./journey-${item}.json`;
+                        fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
+                            if (err) {
+                                return console.error(`ERROR - can't save journey ${item} to file`);
+                            }
+                        });
+                    }
+                    topLevelMap.trees = journeysMap;
+                    console.log(JSON.stringify(topLevelMap, null, 2));
+                }
             }
         });
 
@@ -229,15 +234,16 @@ format <journey/tree name>.json.")
             frToken.tenant = command.parent.opts().host;
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
-            await GetTokens(frToken);
-            fs.readFile(command.opts().file, 'utf8', function (err, data) {
-                if (err) throw err;
-                const journeyData = JSON.parse(data);
-                ImportJourney(frToken, command.opts().tree, journeyData, command.opts().noReUUIDOption, true).then(result=>{
-                    if(!result == null)
-                        console.log("Import done.");
+            if(await GetTokens(frToken)) {
+                fs.readFile(command.opts().file, 'utf8', function (err, data) {
+                    if (err) throw err;
+                    const journeyData = JSON.parse(data);
+                    ImportJourney(frToken, command.opts().tree, journeyData, command.opts().noReUUIDOption, true).then(result=>{
+                        if(!result == null)
+                            console.log("Import done.");
+                    });
                 });
-            });
+            }
         });
 
     journey
@@ -254,15 +260,16 @@ format <journey/tree name>.json.")
             frToken.tenant = command.parent.opts().host;
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
-            await GetTokens(frToken);
-            fs.readFile(command.opts().file, 'utf8', function (err, data) {
-                if (err) throw err;
-                const journeyData = JSON.parse(data);
-                ImportAllJourneys(frToken, journeyData, command.opts().noReUUIDOption, false).then(result=>{
-                    if(!result == null)
-                        console.log("Import all done.");
+            if(await GetTokens(frToken)) {
+                fs.readFile(command.opts().file, 'utf8', function (err, data) {
+                    if (err) throw err;
+                    const journeyData = JSON.parse(data);
+                    ImportAllJourneys(frToken, journeyData, command.opts().noReUUIDOption, false).then(result=>{
+                        if(!result == null)
+                            console.log("Import all done.");
+                    });
                 });
-            });
+            }
         });
 
     journey
@@ -277,25 +284,26 @@ format <journey/tree name>.json.")
             frToken.tenant = command.parent.opts().host;
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
-            await GetTokens(frToken);
-            const allNodes = [];
-            const orphanedNodes = [];
-            console.log("Analyzing authentication nodes configuration artifacts...");
-            await FindOrphanedNodes(frToken, allNodes, orphanedNodes);
-            console.log(`Total nodes:       ${allNodes.length}`);
-            console.log(`Orphaned nodes:    ${orphanedNodes.length}`);
-            // console.log(orphanedNodes);
-            const ok = await yesno({
-                question: "Do you want to prune (permanently delete) all the orphaned node instances?(y|n):"
-            });
-            if(ok) {
-                process.stdout.write("Pruning.");
-                RemoveOrphanedNodes(frToken, allNodes, orphanedNodes);
+            if(await GetTokens(frToken)) {
+                const allNodes = [];
+                const orphanedNodes = [];
+                console.log("Analyzing authentication nodes configuration artifacts...");
+                await FindOrphanedNodes(frToken, allNodes, orphanedNodes);
+                console.log(`Total nodes:       ${allNodes.length}`);
+                console.log(`Orphaned nodes:    ${orphanedNodes.length}`);
+                // console.log(orphanedNodes);
+                const ok = await yesno({
+                    question: "Do you want to prune (permanently delete) all the orphaned node instances?(y|n):"
+                });
+                if(ok) {
+                    process.stdout.write("Pruning.");
+                    RemoveOrphanedNodes(frToken, allNodes, orphanedNodes);
+                }
+                process.stdout.write("done");
+                console.log("");
             }
-            process.stdout.write("done");
-            console.log("");
         });
-
+    journey.showHelpAfterError();
     return journey;
 }
 module.exports.Setup = Setup;

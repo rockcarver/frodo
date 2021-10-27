@@ -49,10 +49,12 @@ ${recipes}`)
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
             // console.log(command.opts());
-            await GetTokens(frToken);
-            let r = require(`./${command.opts().name}/run.js`);
-            r.Cook(frToken, command.opts().name);
+            if(await GetTokens(frToken)) {
+                let r = require(`./${command.opts().name}/run.js`);
+                r.Cook(frToken, command.opts().name);
+            }
         });
+    recipe.showHelpAfterError();
     return recipe;
 }
 module.exports.Setup = Setup;

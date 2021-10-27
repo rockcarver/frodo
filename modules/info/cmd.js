@@ -26,13 +26,15 @@ function Setup() {
             frToken.tenant = command.opts().host;
             frToken.deploymentType = command.opts().type;
             // console.log(frToken);
-            await GetTokens(frToken);
-            console.log("Cookie name: " + frToken.cookieName);
-            console.log("Session token: " + frToken.cookieValue);
-            if (frToken.bearerToken) {
-                console.log("Bearer token: " + frToken.bearerToken);
+            if(await GetTokens(frToken)) {
+                console.log("Cookie name: " + frToken.cookieName);
+                console.log("Session token: " + frToken.cookieValue);
+                if (frToken.bearerToken) {
+                    console.log("Bearer token: " + frToken.bearerToken);
+                }    
             }
         });
+    info.showHelpAfterError();
     return info;
 }
 module.exports.Setup = Setup;
