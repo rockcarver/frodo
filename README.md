@@ -50,6 +50,7 @@ git clone git@github.com:rockcarver/frodo.git
 ```
 cd $HOME/frodo
 npm install
+npm install -g pkg
 pkg -C GZip .
 ```
 This will build `frodo` in local directory. There are three binaries created
