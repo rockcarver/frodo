@@ -241,12 +241,24 @@ async function GetAccessToken(frToken) {
     }
 }
 
+const connFile = {
+    "name":"./connections.json",
+    "options":'utf8',
+    "indentation":4
+};
+
 async function GetTokens(frToken) {
+
+    // create connections.json file if it doesn't exist
+    if (!fs.existsSync(connFile.name)) {
+        fs.writeFileSync(connFile.name, JSON.stringify("{}", null, connFile.indentation));
+    }
+
     let credsFromParameters = true;
     // if username/password on cli are empty, try to read from connections.json
     if(frToken.username == null && frToken.password == null) {
         credsFromParameters = false;
-        const data = fs.readFileSync("./connections.json", 'utf8');
+        const data = fs.readFileSync(connFile.name, connFile.options);
         const connectionsData = JSON.parse(data);
         if(!connectionsData[frToken.tenant]) {
             console.error("No saved credentials for tenant [%s]. Please specify username and password when invoking the tool", frToken.tenant);
@@ -264,13 +276,14 @@ async function GetTokens(frToken) {
     if(frToken.cookieValue && credsFromParameters) {
         // valid cookie, which means valid username/password combo. Save it in connections.json
         console.log("Saving creds in connections.json...");
-        const data = fs.readFileSync("./connections.json", 'utf8');
+
+        const data = fs.readFileSync(connFile.name, connFile.options);
         const connectionsData = JSON.parse(data);
         connectionsData[frToken.tenant] = {
             username: frToken.username,
             password: frToken.password
         };
-        fs.writeFileSync("./connections.json", JSON.stringify(connectionsData, null, 2));
+        fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
         return true;
     } else if(!frToken.cookieValue) {
         return false;
