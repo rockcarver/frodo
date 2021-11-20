@@ -251,7 +251,23 @@ async function GetTokens(frToken) {
 
     // create connections.json file if it doesn't exist
     if (!fs.existsSync(connFile.name)) {
-        fs.writeFileSync(connFile.name, JSON.stringify("{}", null, connFile.indentation));
+        fs.writeFileSync(connFile.name, JSON.stringify({}, null, connFile.indentation));
+    }
+    // convert clear text password to base64-encoded
+    else {
+        const data = fs.readFileSync(connFile.name, connFile.options);
+        var connectionsData = JSON.parse(data);
+        var convert = false;
+        Object.keys(connectionsData).forEach(conn => {
+            if (connectionsData[conn].password) {
+                convert = true;
+                connectionsData[conn].encodedPassword = Buffer.from(connectionsData[conn].password).toString('base64');
+                delete connectionsData[conn].password;
+            }
+        });
+        if (convert) {
+            fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
+        }
     }
 
     let credsFromParameters = true;
@@ -261,11 +277,11 @@ async function GetTokens(frToken) {
         const data = fs.readFileSync(connFile.name, connFile.options);
         const connectionsData = JSON.parse(data);
         if(!connectionsData[frToken.tenant]) {
-            console.error("No saved credentials for tenant [%s]. Please specify username and password when invoking the tool", frToken.tenant);
+            console.error("No saved credentials for tenant [%s]. Please specify -u <username> and -p <password> when invoking the tool", frToken.tenant);
             return false;
         }
         frToken.username = connectionsData[frToken.tenant].username;
-        frToken.password = connectionsData[frToken.tenant].password;
+        frToken.password = Buffer.from(connectionsData[frToken.tenant].encodedPassword, 'base64').toString(connFile.options);
     }
     await Authenticate(frToken);
     // console.log("Session token: " + frToken.cookieValue);
@@ -281,7 +297,7 @@ async function GetTokens(frToken) {
         const connectionsData = JSON.parse(data);
         connectionsData[frToken.tenant] = {
             username: frToken.username,
-            password: frToken.password
+            encodedPassword: Buffer.from(frToken.password).toString('base64')
         };
         fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
         return true;
