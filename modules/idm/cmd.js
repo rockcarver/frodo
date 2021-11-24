@@ -18,7 +18,7 @@ function Setup() {
     const idm = new Command("idm"); 
     idm
         .helpOption("-l, --help", "Help")
-        .addOption(common.hostOption.makeOptionMandatory())
+        .addOption(common.hostOptionM)
         .addOption(common.userOption)
         .addOption(common.passwordOption)
         .addOption(common.deploymentOption)
@@ -49,7 +49,7 @@ function Setup() {
     idm
         .command("export")
         .helpOption("-l, --help", "Help")
-        .addOption(common.nameOption.makeOptionMandatory())
+        .addOption(common.nameOptionM)
         .addOption(common.fileOption)
         // .addOption(common.fileOption.makeOptionMandatory())
         .description("Export an IDM configuration object from a deployment")
@@ -78,7 +78,7 @@ function Setup() {
     idm
         .command("exportAllRaw")
         .helpOption("-l, --help", "Help")
-        .addOption(common.dirOption.makeOptionMandatory())
+        .addOption(common.dirOptionM)
         .description("Export all IDM configuration objects from a deployment into separate JSON files in a directory specified by <directory>")
         .action(async (options, command) => {
             // console.log('list command called');
@@ -111,9 +111,9 @@ function Setup() {
     idm
         .command("exportAll")
         .helpOption("-l, --help", "Help")
-        .addOption(common.dirOption.makeOptionMandatory())
-        .addOption(common.entitiesFileOption.makeOptionMandatory())
-        .addOption(common.envFileOption.makeOptionMandatory())
+        .addOption(common.dirOptionM)
+        .addOption(common.entitiesFileOptionM)
+        .addOption(common.envFileOptionM)
         .description("Export all IDM configuration objects from a deployment")
         .action(async (options, command) => {
             // console.log('list command called');
@@ -209,6 +209,26 @@ function Setup() {
             // console.log("(*) Tree contains custom node(s).");
             }
         });
+
+    idm
+        .command("count")
+        .helpOption("-l, --help", "Help")
+        .addOption(common.managedNameOptionM)
+        .description("Count number of managed objects of a given type in an IDM instance")
+        .action(async (options, command) => {
+            // console.log('list command called');
+            const frToken = {};
+            frToken.username = command.parent.opts().user;
+            frToken.password = command.parent.opts().password;
+            frToken.tenant = command.parent.opts().host;
+            frToken.deploymentType = command.parent.opts().type;
+            frToken.realm = command.parent.opts().realm;
+            // console.log(frToken);
+            if(await GetTokens(frToken)) {
+                console.log(`Total count of [${command.opts().name}] objects : ${await run.GetCount(frToken, command.opts().name)}`);
+            }
+        });
+
     idm.showHelpAfterError();
     return idm;
 }

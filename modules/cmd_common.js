@@ -58,6 +58,10 @@ const nameOption = new Option("-N, --name <name>", "Config entity name to be exp
 managed, sync, provisioner-xxxx, etc.");
 const nameOptionM = new Option("-N, --name <name>", "Config entity name to be exported or imported/updated. Examples are \
 managed, sync, provisioner-xxxx, etc.")
+const managedNameOption = new Option("-N, --name <name>", "Managed object name to be operated on. Examples are \
+user, role, alpha_user, alpha_role etc.");
+const managedNameOptionM = new Option("-N, --name <name>", "Managed object name to be operated on. Examples are \
+user, role, alpha_user, alpha_role etc.")
 const dirOption = new Option("-D, --directory <directory>", "Directory for exporting all configuration entities to");
 const dirOptionM = new Option("-D, --directory <directory>", "Directory for exporting all configuration entities to");
 const entitiesFileOption = new Option("-E, --entitiesFile <file>", "JSON file that specifies the config entities to export/import.");
@@ -78,6 +82,7 @@ nameOptionM.makeOptionMandatory();
 dirOptionM.makeOptionMandatory();
 entitiesFileOptionM.makeOptionMandatory();
 envFileOptionM.makeOptionMandatory();
+managedNameOptionM.makeOptionMandatory();
 
 module.exports = {
     hostOption,
@@ -105,5 +110,7 @@ module.exports = {
     entitiesFileOption,
     entitiesFileOptionM,
     envFileOption,
-    envFileOptionM
+    envFileOptionM,
+    managedNameOption,
+    managedNameOptionM
 }
