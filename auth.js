@@ -5,6 +5,7 @@ const util = require('util');
 const { createHash, randomBytes } = require('crypto');
 const utils = require('./utils.js')
 const base64url = require('./base64url.js');
+var readlineSync = require('readline-sync');
 
 const adminClientPassword = "doesnotmatter"
 const serverInfoURLTemplate = "%s/json/serverinfo/%s"
@@ -27,24 +28,41 @@ async function GetCookieName(tenant) {
     }
 }
 
-function CheckAndSkip2FA(payload) {
+async function CheckAndHandle2FA(payload) {
     // console.log(JSON.stringify(payload, null, 2));
+    // let skippable = false;
     if("callbacks" in payload) {
         for(const element of payload.callbacks) {
             if(element.type == "HiddenValueCallback") {
                 if(element.input[0].value.includes("skip")) {
+                    // skippable = true;
                     element.input[0].value = "Skip";
+                    return {
+                        need2fa: true,
+                        // canskip: true,
+                        payload: payload
+                    }
                 }
             }
-        }
-        return {
-            need2fa: true,
-            payload: payload
+            if(element.type == "NameCallback") {
+                if(element.output[0].value.includes("code")) {
+                    // skippable = false;
+                    console.log("2FA is enabled and required for this user...");
+                    const code = readlineSync.question(`${element.output[0].value}: `);
+                    element.input[0].value = code;
+                    return {
+                        need2fa: true,
+                        // canskip: false,
+                        payload: payload
+                    }
+                }
+            }
         }
     } else {
         // console.info("NO2FA");
         return {
             need2fa: false,
+            // canskip: null,
             payload: payload
         }
     }
@@ -135,7 +153,7 @@ async function Authenticate(frToken) {
             "Content-Type": "application/json",
             "Accept-API-Version": apiVersion
         };
-        const skip2FA = CheckAndSkip2FA(response.data);
+        const skip2FA = await CheckAndHandle2FA(response.data);
         let response2 = {};
         if(skip2FA.need2fa) {
             response2 = await axios.post(authURL, skip2FA.payload, {headers: headers2});
@@ -153,10 +171,12 @@ async function Authenticate(frToken) {
             // console.log(frToken);
             return "";
         } else {
-            console.error("error in authenticating - ", e.message);
+            console.error("error in authentication");
+            console.error("+++ likely cause, bad credentials!!! +++");
             return null;
         }
     } catch(e) {
+        // console.log(e);
         if(e.response.status == 401) {
             console.error("error in authentication - %s", e.message);
             console.error("+++ likely cause, bad credentials!!! +++");
