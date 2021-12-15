@@ -68,6 +68,11 @@ const entitiesFileOption = new Option("-E, --entitiesFile <file>", "JSON file th
 const entitiesFileOptionM = new Option("-E, --entitiesFile <file>", "JSON file that specifies the config entities to export/import.");
 const envFileOption = new Option("-e, --envFile <file>", "File that defines environment specific variables for replacement during configuration export/import.");
 const envFileOptionM = new Option("-e, --envFile <file>", "File that defines environment specific variables for replacement during configuration export/import.");
+const apiKeyOption = new Option("-k, --key <key>", "API key for logging API (ForgeRock ID Cloud only)");
+const apiKeyOptionM = new Option("-k, --key <key>", "API key for logging API (ForgeRock ID Cloud only)");
+const apiSecretOption = new Option("-s, --secret <secret>", "API secret for logging API (ForgeRock ID Cloud only)");
+const apiSecretOptionM = new Option("-s, --secret <secret>", "API secret for logging API (ForgeRock ID Cloud only)");
+const sourcesOption = new Option("-c, --sources <sources>", "Comma separated list of log sources");
 
 hostOptionM.makeOptionMandatory();
 userOptionM.makeOptionMandatory();
@@ -83,6 +88,9 @@ dirOptionM.makeOptionMandatory();
 entitiesFileOptionM.makeOptionMandatory();
 envFileOptionM.makeOptionMandatory();
 managedNameOptionM.makeOptionMandatory();
+apiKeyOptionM.makeOptionMandatory();
+apiSecretOptionM.makeOptionMandatory();
+sourcesOption.makeOptionMandatory();
 
 module.exports = {
     hostOption,
@@ -112,5 +120,10 @@ module.exports = {
     envFileOption,
     envFileOptionM,
     managedNameOption,
-    managedNameOptionM
+    managedNameOptionM,
+    apiKeyOption,
+    apiKeyOptionM,
+    apiSecretOption,
+    apiSecretOptionM,
+    sourcesOption
 }

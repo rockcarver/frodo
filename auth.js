@@ -261,47 +261,15 @@ async function GetAccessToken(frToken) {
     }
 }
 
-const connFile = {
-    "name":"./connections.json",
-    "options":'utf8',
-    "indentation":4
-};
 
 async function GetTokens(frToken) {
-
-    // create connections.json file if it doesn't exist
-    if (!fs.existsSync(connFile.name)) {
-        fs.writeFileSync(connFile.name, JSON.stringify({}, null, connFile.indentation));
-    }
-    // convert clear text password to base64-encoded
-    else {
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        var connectionsData = JSON.parse(data);
-        var convert = false;
-        Object.keys(connectionsData).forEach(conn => {
-            if (connectionsData[conn].password) {
-                convert = true;
-                connectionsData[conn].encodedPassword = Buffer.from(connectionsData[conn].password).toString('base64');
-                delete connectionsData[conn].password;
-            }
-        });
-        if (convert) {
-            fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
-        }
-    }
-
     let credsFromParameters = true;
     // if username/password on cli are empty, try to read from connections.json
     if(frToken.username == null && frToken.password == null) {
         credsFromParameters = false;
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        const connectionsData = JSON.parse(data);
-        if(!connectionsData[frToken.tenant]) {
-            console.error("No saved credentials for tenant [%s]. Please specify -u <username> and -p <password> when invoking the tool", frToken.tenant);
-            return false;
-        }
-        frToken.username = connectionsData[frToken.tenant].username;
-        frToken.password = Buffer.from(connectionsData[frToken.tenant].encodedPassword, 'base64').toString(connFile.options);
+        const conn = utils.GetConnection(frToken.tenant);
+        frToken.username = conn.username;
+        frToken.password = conn.password;
     }
     await Authenticate(frToken);
     // console.log("Session token: " + frToken.cookieValue);
@@ -311,15 +279,7 @@ async function GetTokens(frToken) {
     }
     if(frToken.cookieValue && credsFromParameters) {
         // valid cookie, which means valid username/password combo. Save it in connections.json
-        console.log("Saving creds in connections.json...");
-
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        const connectionsData = JSON.parse(data);
-        connectionsData[frToken.tenant] = {
-            username: frToken.username,
-            encodedPassword: Buffer.from(frToken.password).toString('base64')
-        };
-        fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
+        utils.SaveConnection(frToken);
         return true;
     } else if(!frToken.cookieValue) {
         return false;

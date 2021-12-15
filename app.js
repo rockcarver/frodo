@@ -2,11 +2,13 @@ fs = require('fs')
 const {
     Command
 } = require('commander');
+const utils = require('./utils.js')
 
 const program = new Command();
 
 (async () => {
     try {
+        utils.InitConnections();
         /*  Dynamically load frodo modules from the "modules" subdirectory, each module has is own "<module_name>"
             subdirectory under "modules".
             Refer to the "journey" module for structure of a module.
