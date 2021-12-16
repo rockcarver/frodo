@@ -58,21 +58,26 @@ async function SaveConnection(frToken) {
     console.log(`Saving creds in ${filename}...`);
     // const data = fs.readFileSync(filename, connFile.options);
     let connectionsData = {};
+    let existingData = {};
     try {
         const fstat = fs.statSync(filename);
         const data = fs.readFileSync(filename, "utf8");
         connectionsData = JSON.parse(data);
-        if(connectionsData[frToken.tenant])
+        if(connectionsData[frToken.tenant]) {
+            existingData = connectionsData[frToken.tenant];
             console.log(`Updating existing connection profile ${frToken.tenant}`);
+        }
         else
             console.log(`Adding connection profile ${frToken.tenant}`);    
     } catch(e) {
+        console.log(e);
         console.log(`Creating connection profile file ${filename} with ${frToken.tenant}`);
     }
-    if(frToken.username) connectionsData[frToken.tenant].username = frToken.username;
-    if(frToken.password) connectionsData[frToken.tenant].encodedPassword = Buffer.from(frToken.password).toString('base64');
-    if(frToken.key) connectionsData[frToken.tenant].logApiKey = frToken.key;
-    if(frToken.key) connectionsData[frToken.tenant].logApiSecret = frToken.secret;
+    if(frToken.username) existingData.username = frToken.username;
+    if(frToken.password) existingData.encodedPassword = Buffer.from(frToken.password).toString('base64');
+    if(frToken.key) existingData.logApiKey = frToken.key;
+    if(frToken.key) existingData.logApiSecret = frToken.secret;
+    connectionsData[frToken.tenant] = existingData;
 
     fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
     console.log("done.");

@@ -35,7 +35,7 @@ function Setup() {
             apiToken.secret = command.parent.opts().secret;
             apiToken.tenant = command.parent.opts().host;
             // console.log(apiToken);
-            if (apiToken.key == null && apiToken.secret == null) {
+            if (!apiToken.key && !apiToken.secret) {
                 credsFromParameters = false;
                 const conn = utils.GetConnection(apiToken.tenant);
                 if (conn.key == null && conn.secret == null) {
