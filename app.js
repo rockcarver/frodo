@@ -17,13 +17,23 @@ const program = new Command();
                 - if desired, the implementation of sub command is large/complex, it can be in additional js source 
                     files. This keeps the "cmd.js" relatively cleaner.
         */
-        for (const f of fs.readdirSync("./modules", {withFileTypes: true})) {
-            // console.log(`${f.name} - ${f.isDirectory()}`)
-            if (f.isDirectory()) {
-                let m = require(`./modules/${f.name}/cmd.js`);
-                program.addCommand(m.Setup());
-            }
-        }
+        // for (const f of fs.readdirSync("./modules", {withFileTypes: true})) {
+        //     // console.log(`${f.name} - ${f.isDirectory()}`)
+        //     if (f.isDirectory()) {
+        //         let m = require(`./modules/${f.name}/cmd.js`);
+        //         program.addCommand(m.Setup());
+        //     }
+        // }
+        let modules = [];
+        modules.push(require("./modules/connections/cmd.js"));
+        modules.push(require("./modules/idm/cmd.js"));
+        modules.push(require("./modules/info/cmd.js"));
+        modules.push(require("./modules/journey/cmd.js"));
+        modules.push(require("./modules/logging/cmd.js"));
+        modules.forEach(m=>{
+            program.addCommand(m.Setup());
+        })
+        
         program.showHelpAfterError();
         program.parse();
     } catch (e) {
