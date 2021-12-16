@@ -29,7 +29,7 @@ function Setup() {
         .description("List all ID Cloud logging sources")
         .action(async (options, command) => {
             // console.log('list command called');
-            const apiToken = {};
+            let apiToken = {};
             let credsFromParameters = true;
             apiToken.key = command.parent.opts().key;
             apiToken.secret = command.parent.opts().secret;
@@ -42,6 +42,7 @@ function Setup() {
                     console.log("API key and secret not specified as parameters and no saved values found!");
                     return;
                 }
+                apiToken.tenant = conn.tenant;
                 apiToken.key = conn.key;
                 apiToken.secret = conn.secret;
             }
@@ -63,7 +64,7 @@ function Setup() {
         .description("\"tail\" (similar to the \"tail -f\" command) ID Cloud logs")
         .action(async (options, command) => {
             // console.log('list command called');
-            const apiToken = {};
+            let apiToken = {};
             apiToken.key = command.parent.opts().key;
             apiToken.secret = command.parent.opts().secret;
             apiToken.tenant = command.parent.opts().host;
@@ -77,6 +78,7 @@ function Setup() {
                     console.log("API key and secret not specified as parameters and no saved values found!");
                     return;
                 }
+                apiToken.tenant = conn.tenant;
                 apiToken.key = conn.key;
                 apiToken.secret = conn.secret;
             }

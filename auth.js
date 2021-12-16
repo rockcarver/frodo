@@ -268,6 +268,7 @@ async function GetTokens(frToken) {
     if(frToken.username == null && frToken.password == null) {
         credsFromParameters = false;
         const conn = utils.GetConnection(frToken.tenant);
+        frToken.tenant = conn.tenant;
         frToken.username = conn.username;
         frToken.password = conn.password;
     }

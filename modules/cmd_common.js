@@ -2,8 +2,12 @@ const {
     Option
 } = require('commander');
 
-const hostOption = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam");
-const hostOptionM = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam");
+const hostOption = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam. \
+If using a saved connection, just specifying the host or even a unique substring of host is sufficient (no credential \
+parameters needed.");
+const hostOptionM = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam. \
+If using a saved connection, just specifying the host or even a unique substring of host is sufficient (no credential \
+parameters needed.");
 const userOption = new Option("-u, --user <user>", "Username to login with. Must be an admin user \
 with appropriate rights to manage authentication trees");
 const userOptionM = new Option("-u, --user <user>", "Username to login with. Must be an admin user \

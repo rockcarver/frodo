@@ -1,6 +1,7 @@
 const util = require('util');
 const url = require('url');
 const os = require('os');
+const { UV_FS_O_FILEMAP } = require('constants');
 // var _ = require('underscore');
 
 const realmPathTemplate = "/realms/%s"
@@ -21,7 +22,7 @@ function replaceAll(str, find, replace) {
 }
 
 function GetConnectionFileName() {
-    return(require('os').homedir()+"/.frodorc");
+    return (require('os').homedir() + "/.frodorc");
     // if(os.platform() == "win32") {
     //     return "%userprofile%/.frodorc"
     // } else {
@@ -63,20 +64,18 @@ async function SaveConnection(frToken) {
         const fstat = fs.statSync(filename);
         const data = fs.readFileSync(filename, "utf8");
         connectionsData = JSON.parse(data);
-        if(connectionsData[frToken.tenant]) {
+        if (connectionsData[frToken.tenant]) {
             existingData = connectionsData[frToken.tenant];
             console.log(`Updating existing connection profile ${frToken.tenant}`);
-        }
-        else
-            console.log(`Adding connection profile ${frToken.tenant}`);    
-    } catch(e) {
-        console.log(e);
+        } else
+            console.log(`Adding connection profile ${frToken.tenant}`);
+    } catch (e) {
         console.log(`Creating connection profile file ${filename} with ${frToken.tenant}`);
     }
-    if(frToken.username) existingData.username = frToken.username;
-    if(frToken.password) existingData.encodedPassword = Buffer.from(frToken.password).toString('base64');
-    if(frToken.key) existingData.logApiKey = frToken.key;
-    if(frToken.key) existingData.logApiSecret = frToken.secret;
+    if (frToken.username) existingData.username = frToken.username;
+    if (frToken.password) existingData.encodedPassword = Buffer.from(frToken.password).toString('base64');
+    if (frToken.key) existingData.logApiKey = frToken.key;
+    if (frToken.key) existingData.logApiSecret = frToken.secret;
     connectionsData[frToken.tenant] = existingData;
 
     fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
@@ -89,27 +88,47 @@ function ListConnections() {
         const data = fs.readFileSync(filename, "utf8");
         const connectionsData = JSON.parse(data);
         console.log(`[Host] : [Username]`);
-        for(c in connectionsData) {
-            console.log(`- [${c}] : [${connectionsData[c].username}]${connectionsData[c].logApiKey?" [API key present]":""}`);
+        for (c in connectionsData) {
+            console.log(`- [${c}] : [${connectionsData[c].username}]${connectionsData[c].logApiKey?" [Log API key present]":""}`);
         }
-    } catch(e) {
+        console.log("Any unique substring of a saved host can be used as the value for host parameter in all commands");
+    } catch (e) {
         console.error(`No connections found in ${filename}`);
     }
 }
 
-    function GetConnection(tenant) {
-    const filename = GetConnectionFileName();
-    const data = fs.readFileSync(filename, connFile.options);
-    const connectionsData = JSON.parse(data);
-    if(!connectionsData[tenant]) {
-        console.error(`No saved credentials for tenant ${tenant}. Please specify -u <username> and -p <password> when invoking the tool`);
-        return false;
+function FindByWildcard(data, tenant) {
+    for(const savedTenant in data) {
+        if(savedTenant.includes(tenant)) {
+            let ret = data[savedTenant];
+            ret.tenant = savedTenant;
+            return ret;
+        }
     }
-    return {
-        username: connectionsData[tenant].username,
-        password: Buffer.from(connectionsData[tenant].encodedPassword, 'base64').toString(connFile.options),
-        key: connectionsData[tenant].logApiKey,
-        secret: connectionsData[tenant].logApiSecret
+    return null;
+}
+
+function GetConnection(tenant) {
+    try {
+        const filename = GetConnectionFileName();
+        const data = fs.readFileSync(filename, connFile.options);
+        const connectionsData = JSON.parse(data);
+        // if (!connectionsData[tenant]) {
+        const tenantData = FindByWildcard(connectionsData, tenant);
+        if(!tenantData) {
+            console.error(`No saved credentials for tenant ${tenant}. Please specify credentials on command line`);
+            return null;
+        }
+        return {
+            tenant: tenantData.tenant,
+            username: tenantData.username,
+            password: Buffer.from(tenantData.encodedPassword, 'base64').toString(connFile.options),
+            key: tenantData.logApiKey,
+            secret: tenantData.logApiSecret
+        }    
+    } catch(e) {
+        console.error("Can not read saved connection info, please specify credentials on command line")
+        return null;
     }
 }
 
