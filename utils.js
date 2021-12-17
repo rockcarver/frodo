@@ -121,10 +121,10 @@ function GetConnection(tenant) {
         }
         return {
             tenant: tenantData.tenant,
-            username: tenantData.username,
-            password: Buffer.from(tenantData.encodedPassword, 'base64').toString(connFile.options),
-            key: tenantData.logApiKey,
-            secret: tenantData.logApiSecret
+            username: tenantData.username?tenantData.username:null,
+            password: tenantData.encodedPassword?Buffer.from(tenantData.encodedPassword, 'base64').toString(connFile.options):null,
+            key: tenantData.logApiKey?tenantData.logApiKey:null,
+            secret: tenantData.logApiSecret?tenantData.logApiSecret:null
         }    
     } catch(e) {
         console.error("Can not read saved connection info, please specify credentials on command line")

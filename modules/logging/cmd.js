@@ -71,8 +71,7 @@ function Setup() {
 
             // console.log(command.opts());
 
-            if (apiToken.key == null && apiToken.secret == null) {
-                credsFromParameters = false;
+            if (!apiToken.key && !apiToken.secret) {
                 const conn = utils.GetConnection(apiToken.tenant);
                 if (conn.key == null && conn.secret == null) {
                     console.log("API key and secret not specified as parameters and no saved values found!");

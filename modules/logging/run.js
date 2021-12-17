@@ -154,20 +154,6 @@ async function tail(apiToken, source, cookie) {
             logsObject.result.filter(el => {
                 (!noise.includes(el.payload.logger) && !noise.includes(el.type))
             });
-            // var excluded = 0;
-            // logsObject.result.forEach(log => {
-            //     if ((exclude && (filter.includes(log.payload.logger) || filter.includes(log.type))) ||
-            //             (!exclude && (!filter.includes(log.payload.logger) || !filter.includes(log.type)))) {
-            //         excluded++
-            //         // console.log(JSON.stringify('EXCLUDED: exclude='+exclude+' filter includes '+log.payload.logger+'='+filter.includes(log.payload.logger)+' filter includes '+log.type+'='+filter.includes(log.type)))
-            //     } else {
-            //         // console.log(JSON.stringify('INCLUDED: exclude='+exclude+' filter includes '+log.payload.logger+'='+filter.includes(log.payload.logger)+' filter includes '+log.type+'='+filter.includes(log.type)))
-            //         console.log(JSON.stringify(log.payload))
-            //     }
-            // })
-            // if (excluded > 0) {
-            //     console.log('"Filtered out ' + excluded + ' events."')
-            // }
         }
         return logsObject;
     } catch (e) {
@@ -178,6 +164,9 @@ async function tail(apiToken, source, cookie) {
 
 async function TailLogs(apiToken, source, cookie) {
     const result = await tail(apiToken, source, cookie);
+    if(!cookie && result.result) {
+        await utils.SaveConnection(apiToken);
+    }
     result.result.forEach(e => {
         console.log(JSON.stringify(e.payload));
     });
