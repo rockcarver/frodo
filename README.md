@@ -1,11 +1,11 @@
 Very basic README for now...
 
-This is the ForgeROckDO (frodo) cli executable. This is a statically linked binary which can be cross compiled for multiple platforms (linux, MacOS, Windows etc.).
+This is the ForgeROck DO (frodo) CLI executable. This is a statically linked binary which can be cross compiled for multiple platforms (Linux, MacOS, Windows etc.).
 
 # Features
 ## Current
-- Obtain ForgeRock session token and admin access_tokens for a ForgeRock deployment
-- Saving and reading credentials (for multiple ForgeRock deployments) from a configuration file. For 
+- Obtain ForgeRock session token and admin access_tokens for a ForgeRock Identity Cloud or platform (ForgeOps) deployment
+- Saving and reading credentials (for multiple ForgeRock deployments) from a configuration file.
 - Export, import and pruning of journeys. Export includes scripts referenced by scripted decision nodes and when used with Identity Cloud or ForgeOps, `frodo` also includes Email Templates referenced by the Email Template or Email Suspend nodes.
 - Export of IDM configuration
 - Configuring a ForgeRock cloud tenant for a specific use case, also called a "recipe"
