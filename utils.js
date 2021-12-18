@@ -55,105 +55,6 @@ function GetTenantURL(tenant) {
 //     }
 // }
 
-
-var ootbnodetypes_7_1 = [
-	"PushRegistrationNode",
-	"GetAuthenticatorAppNode",
-	"MultiFactorRegistrationOptionsNode",
-	"OptOutMultiFactorAuthenticationNode",
-	"AcceptTermsAndConditionsNode",
-	"AccountActiveDecisionNode",
-	"AccountLockoutNode",
-	"AgentDataStoreDecisionNode",
-	"AnonymousSessionUpgradeNode",
-	"AnonymousUserNode",
-	"AttributeCollectorNode",
-	"AttributePresentDecisionNode",
-	"AttributeValueDecisionNode",
-	"AuthLevelDecisionNode",
-	"ChoiceCollectorNode",
-	"ConsentNode",
-	"CookiePresenceDecisionNode",
-	"CreateObjectNode",
-	"CreatePasswordNode",
-	"DataStoreDecisionNode",
-	"DeviceGeoFencingNode",
-	"DeviceLocationMatchNode",
-	"DeviceMatchNode",
-	"DeviceProfileCollectorNode",
-	"DeviceSaveNode",
-	"DeviceTamperingVerificationNode",
-	"DisplayUserNameNode",
-	"EmailSuspendNode",
-	"EmailTemplateNode",
-	"IdentifyExistingUserNode",
-	"IncrementLoginCountNode",
-	"InnerTreeEvaluatorNode",
-	"IotAuthenticationNode",
-	"IotRegistrationNode",
-	"KbaCreateNode",
-	"KbaDecisionNode",
-	"KbaVerifyNode",
-	"LdapDecisionNode",
-	"LoginCountDecisionNode",
-	"MessageNode",
-	"MetadataNode",
-	"MeterNode",
-	"ModifyAuthLevelNode",
-	"OneTimePasswordCollectorDecisionNode",
-	"OneTimePasswordGeneratorNode",
-	"OneTimePasswordSmsSenderNode",
-	"OneTimePasswordSmtpSenderNode",
-	"PageNode",
-	"PasswordCollectorNode",
-	"PatchObjectNode",
-	"PersistentCookieDecisionNode",
-	"PollingWaitNode",
-	"ProfileCompletenessDecisionNode",
-	"ProvisionDynamicAccountNode",
-	"ProvisionIdmAccountNode",
-	"PushAuthenticationSenderNode",
-	"PushResultVerifierNode",
-	"QueryFilterDecisionNode",
-	"RecoveryCodeCollectorDecisionNode",
-	"RecoveryCodeDisplayNode",
-	"RegisterLogoutWebhookNode",
-	"RemoveSessionPropertiesNode",
-	"RequiredAttributesDecisionNode",
-	"RetryLimitDecisionNode",
-	"ScriptedDecisionNode",
-	"SelectIdPNode",
-	"SessionDataNode",
-	"SetFailureUrlNode",
-	"SetPersistentCookieNode",
-	"SetSessionPropertiesNode",
-	"SetSuccessUrlNode",
-	"SocialFacebookNode",
-	"SocialGoogleNode",
-	"SocialNode",
-	"SocialOAuthIgnoreProfileNode",
-	"SocialOpenIdConnectNode",
-	"SocialProviderHandlerNode",
-	"TermsAndConditionsDecisionNode",
-	"TimeSinceDecisionNode",
-	"TimerStartNode",
-	"TimerStopNode",
-	"UsernameCollectorNode",
-	"ValidatedPasswordNode",
-	"ValidatedUsernameNode",
-	"WebAuthnAuthenticationNode",
-	"WebAuthnDeviceStorageNode",
-	"WebAuthnRegistrationNode",
-	"ZeroPageLoginNode",
-	"product-CertificateCollectorNode",
-	"product-CertificateUserExtractorNode",
-	"product-CertificateValidationNode",
-	"product-KerberosNode",
-	"product-ReCaptchaNode",
-	"product-Saml2Node",
-	"product-WriteFederationInformationNode"
-];
-
 var ootbnodetypes_7 = [
 	"AcceptTermsAndConditionsNode",
 	"AccountActiveDecisionNode",
@@ -247,6 +148,20 @@ var ootbnodetypes_7 = [
 	"product-Saml2Node",
 	"product-WriteFederationInformationNode"
 ];
+
+var ootbnodetypes_7_1 = [
+	"PushRegistrationNode",
+	"GetAuthenticatorAppNode",
+	"MultiFactorRegistrationOptionsNode",
+	"OptOutMultiFactorAuthenticationNode"
+].concat(ootbnodetypes_7);
+
+var ootbnodetypes_7_2 = [
+	"OathRegistrationNode",
+	"OathTokenVerifierNode",
+	"PassthroughAuthenticationNode",
+	"ConfigProviderNode"
+].concat(ootbnodetypes_7_1);
 
 var ootbnodetypes_6_5 = [
 	"AbstractSocialAuthLoginNode",
@@ -361,3 +276,4 @@ module.exports.ootbnodetypes_6 = ootbnodetypes_6;
 module.exports.ootbnodetypes_6_5 = ootbnodetypes_6_5;
 module.exports.ootbnodetypes_7 = ootbnodetypes_7;
 module.exports.ootbnodetypes_7_1 = ootbnodetypes_7_1;
+module.exports.ootbnodetypes_7_2 = ootbnodetypes_7_2;

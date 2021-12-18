@@ -18,6 +18,7 @@ const containerNodes = [
 ];
 
 const scriptedNodes = [
+    "ConfigProviderNode",
     "ScriptedDecisionNode",
     "ClientScriptNode",
     "CustomScriptNode"
@@ -40,9 +41,11 @@ async function IsCustom(frToken, journey) {
     // console.log(frToken.version);
     switch(frToken.version) {
         case "7.1.0":
+            ootbNodeTypes = utils.ootbnodetypes_7_1.slice(0);
+            break;
         case "7.2.0":
             // console.log("here");
-            ootbNodeTypes = utils.ootbnodetypes_7_1.slice(0);
+            ootbNodeTypes = utils.ootbnodetypes_7_2.slice(0);
             break;
         case "7.0.0":
         case "7.0.1":
