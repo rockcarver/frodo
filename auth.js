@@ -74,7 +74,7 @@ async function DetermineDeployment(frToken) {
         response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});
     } catch(e) {
         if(e.response.status == 302) {
-            console.log(`${fidcClientId} found, likely Cloud deployment`);
+            console.log("ForgeRock Identity Cloud detected.");
             return "Cloud";
         } else {
             try {
@@ -82,10 +82,10 @@ async function DetermineDeployment(frToken) {
                 response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});    
             } catch(ex) {
                 if(ex.response.status == 302) {
-                    console.log(`${forgeopsClientId} found, likely ForgeOps deployment`);
+                    console.log("ForgeOps deployment detected.");
                     return "ForgeOps";
                 } else {
-                    console.log("No known OAuth clients found, likely classic deployment");
+                    console.log("Classic deployment detected.");
                     return "Classic";
                 }
             }
@@ -145,23 +145,23 @@ async function Authenticate(frToken) {
         // console.log(response2.data);
         if("tokenId" in response2.data) {
             frToken.cookieValue = response2.data.tokenId;
-            frToken.version = await GetVersionInfo(frToken);
             if(!frToken.deploymentType) {
-                console.log("trying to auto-detect deployment type...");
+                // console.log("Detecting deployment type...");
                 frToken.deploymentType = await DetermineDeployment(frToken);
             }
+            frToken.version = await GetVersionInfo(frToken);
             // console.log(frToken);
             return "";
         } else {
-            console.error("error in authenticating - ", e.message);
+            console.error("error authenticating - ", e.message);
             return null;
         }
     } catch(e) {
         if(e.response.status == 401) {
-            console.error("error in authentication - %s", e.message);
-            console.error("+++ likely cause, bad credentials!!! +++");
+            console.error("error authenticating - %s", e.message);
+            console.error("+++ likely cause, bad credentials +++");
         } else {
-            console.error("error in authentication - ", e);
+            console.error("error authenticating - ", e);
             return null;
         }
     }
@@ -285,7 +285,7 @@ async function GetTokens(frToken) {
     }
     await Authenticate(frToken);
     // console.log("Session token: " + frToken.cookieValue);
-    if(frToken.cookieValue && (frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps")) {
+    if(frToken.cookieValue && !frToken.bearerToken && (frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps")) {
         await GetAccessToken(frToken)
         // console.log("Bearer token: " + frToken.bearerToken);
     }
