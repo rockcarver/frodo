@@ -100,6 +100,7 @@ async function DetermineDeployment(frToken) {
                 response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});    
             } catch(ex) {
                 if(ex.response.status == 302) {
+                    adminClientId = forgeopsClientId;
                     console.log("ForgeOps deployment detected.");
                     return "ForgeOps";
                 } else {
@@ -188,13 +189,14 @@ async function Authenticate(frToken) {
 }
 
 async function GetAuthCode(frToken, authorizeURL, redirectURL, codeChallenge, codeChallengeMethod)  {
-    // const authURL = util.format("%s/json%s/authenticate", frToken.tenant, GetRealmUrl("/"))
-    const headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
-    };
-    let bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${adminClientId}&csrf=${frToken.cookieValue}&decision=allow&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
     try {
+        // const authURL = util.format("%s/json%s/authenticate", frToken.tenant, GetRealmUrl("/"))
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        };
+        let bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${adminClientId}&csrf=${frToken.cookieValue}&decision=allow&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}`;
+        //console.error('bodyFormData: ', bodyFormData);
         const response = await axios.post(authorizeURL, bodyFormData, {headers: headers});
         if(response.status < 200 || response.status > 399) {
             console.error("error getting auth code");
