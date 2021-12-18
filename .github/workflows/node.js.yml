@@ -9,16 +9,15 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v2
+    - name: Install pkg
+      run: npm install -g pkg
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -27,3 +26,11 @@ jobs:
     - run: npm install
     - run: pkg .
 #     - run: npm test
+    - name: Binary release
+      uses: softprops/action-gh-release@v0.1.14
+      with:
+        files: |
+          frodo-linux
+          frodo-macos
+          frodo-win.exe
+

@@ -1,4 +1,5 @@
 const fs = require("fs")
+const utils = require('../../utils.js')
 
 const {
     Command
@@ -23,16 +24,7 @@ function Setup() {
         .description("List configured ForgeRock connections")
         .action(async (options, command) => {
             // console.log('list command called');
-            try {
-                const data = fs.readFileSync("./connections.json", 'utf8');
-                const connectionsData = JSON.parse(data);
-                console.log(`[Host] : [Username]`);
-                for(c in connectionsData) {
-                    console.log(`- [${c}] : [${connectionsData[c].username}]`);
-                }
-            } catch(e) {
-                console.error("No connections found in ./connections.json");
-            }
+            utils.ListConnections();
         });
 
     connections
@@ -41,31 +33,19 @@ function Setup() {
         .addOption(common.hostOptionM)
         .addOption(common.userOptionM)
         .addOption(common.passwordOptionM)
+        .addOption(common.apiKeyOption)
+        .addOption(common.apiSecretOption)
         .helpOption("-l, --help", "Help")
-        .description("Add a new ForgeRock connection")
+        .description("Add a new ForgeRock connection. You have to specify a URL, username and password at a minimum.\n" +
+                    "Optionally, for ForgeRock ID Cloud, you can also add a log API key and secret")
         .action(async (options, command) => {
             // console.log('list command called');
-            let connectionsData = {};
-            fs.stat("./connections.json", function(err, stat) {
-                if(err == null) {
-                    const data = fs.readFileSync("./connections.json", 'utf8');
-                    connectionsData = JSON.parse(data);
-                    if(connectionsData[command.opts().host])
-                        console.log(`Updating existing connection profile ${command.opts().host}`);
-                    else
-                        console.log(`Adding connection profile ${command.opts().host}`);    
-                } else if(err.code === 'ENOENT') {
-                    console.log(`Creating connection profile file ./connections.json with ${command.opts().host}`);
-                } else {
-                    console.error("Error in adding connection profile: ", err.code);
-                    return;
-                }
-                connectionsData[command.opts().host] = {
-                    username: command.opts().user,
-                    password: command.opts().password
-                };
-                fs.writeFileSync("./connections.json", JSON.stringify(connectionsData, null, 2));
-                console.log("done.");
+            utils.SaveConnection({
+                tenant: command.opts().host,
+                username: command.opts().user,
+                password: command.opts().password,
+                key: command.opts().key,
+                secret: command.opts().secret
             });
         });
 
@@ -74,26 +54,27 @@ function Setup() {
         .showHelpAfterError()
         .addOption(common.hostOptionM)
         .helpOption("-l, --help", "Help")
-        .description("Delete an existing ForgeRock connection (can also be done by editing ./connections.json in a text editor)")
+        .description("Delete an existing ForgeRock connection (can also be done by editing '$HOME/.frodorc' in a text editor)")
         .action(async (options, command) => {
             // console.log('list command called');
+            const filename = utils.GetConnectionFileName();
             let connectionsData = {};
-            fs.stat("./connections.json", function(err, stat) {
+            fs.stat(filename, function(err, stat) {
                 if(err == null) {
-                    const data = fs.readFileSync("./connections.json", 'utf8');
+                    const data = fs.readFileSync(filename, "utf8");
                     connectionsData = JSON.parse(data);
                     if(connectionsData[command.opts().host])
                         console.log(`Deleting existing connection profile ${command.opts().host}`);
                     else
                         console.log(`Connection profile ${command.opts().host} not found`);
                 } else if(err.code === 'ENOENT') {
-                    console.log(`Connection profile file ./connections.json not found`);
+                    console.log(`Connection profile file ${filename} not found`);
                 } else {
                     console.error("Error in deleting connection profile: ", err.code);
                     return;
                 }
                 delete connectionsData[command.opts().host];
-                fs.writeFileSync("./connections.json", JSON.stringify(connectionsData, null, 2));
+                fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
                 console.log("done.");
             });
         });

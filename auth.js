@@ -5,6 +5,7 @@ const util = require('util');
 const { createHash, randomBytes } = require('crypto');
 const utils = require('./utils.js')
 const base64url = require('./base64url.js');
+var readlineSync = require('readline-sync');
 
 const adminClientPassword = "doesnotmatter"
 const serverInfoURLTemplate = "%s/json/serverinfo/%s"
@@ -27,24 +28,41 @@ async function GetCookieName(tenant) {
     }
 }
 
-function CheckAndSkip2FA(payload) {
+async function CheckAndHandle2FA(payload) {
     // console.log(JSON.stringify(payload, null, 2));
+    // let skippable = false;
     if("callbacks" in payload) {
         for(const element of payload.callbacks) {
             if(element.type == "HiddenValueCallback") {
                 if(element.input[0].value.includes("skip")) {
+                    // skippable = true;
                     element.input[0].value = "Skip";
+                    return {
+                        need2fa: true,
+                        // canskip: true,
+                        payload: payload
+                    }
                 }
             }
-        }
-        return {
-            need2fa: true,
-            payload: payload
+            if(element.type == "NameCallback") {
+                if(element.output[0].value.includes("code")) {
+                    // skippable = false;
+                    console.log("2FA is enabled and required for this user...");
+                    const code = readlineSync.question(`${element.output[0].value}: `);
+                    element.input[0].value = code;
+                    return {
+                        need2fa: true,
+                        // canskip: false,
+                        payload: payload
+                    }
+                }
+            }
         }
     } else {
         // console.info("NO2FA");
         return {
             need2fa: false,
+            // canskip: null,
             payload: payload
         }
     }
@@ -135,7 +153,7 @@ async function Authenticate(frToken) {
             "Content-Type": "application/json",
             "Accept-API-Version": apiVersion
         };
-        const skip2FA = CheckAndSkip2FA(response.data);
+        const skip2FA = await CheckAndHandle2FA(response.data);
         let response2 = {};
         if(skip2FA.need2fa) {
             response2 = await axios.post(authURL, skip2FA.payload, {headers: headers2});
@@ -154,9 +172,11 @@ async function Authenticate(frToken) {
             return "";
         } else {
             console.error("error authenticating - ", e.message);
+            console.error("+++ likely cause, bad credentials!!! +++");
             return null;
         }
     } catch(e) {
+        // console.log(e);
         if(e.response.status == 401) {
             console.error("error authenticating - %s", e.message);
             console.error("+++ likely cause, bad credentials +++");
@@ -241,47 +261,16 @@ async function GetAccessToken(frToken) {
     }
 }
 
-const connFile = {
-    "name":"./connections.json",
-    "options":'utf8',
-    "indentation":4
-};
 
 async function GetTokens(frToken) {
-
-    // create connections.json file if it doesn't exist
-    if (!fs.existsSync(connFile.name)) {
-        fs.writeFileSync(connFile.name, JSON.stringify({}, null, connFile.indentation));
-    }
-    // convert clear text password to base64-encoded
-    else {
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        var connectionsData = JSON.parse(data);
-        var convert = false;
-        Object.keys(connectionsData).forEach(conn => {
-            if (connectionsData[conn].password) {
-                convert = true;
-                connectionsData[conn].encodedPassword = Buffer.from(connectionsData[conn].password).toString('base64');
-                delete connectionsData[conn].password;
-            }
-        });
-        if (convert) {
-            fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
-        }
-    }
-
     let credsFromParameters = true;
     // if username/password on cli are empty, try to read from connections.json
     if(frToken.username == null && frToken.password == null) {
         credsFromParameters = false;
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        const connectionsData = JSON.parse(data);
-        if(!connectionsData[frToken.tenant]) {
-            console.error("No saved credentials for tenant [%s]. Please specify -u <username> and -p <password> when invoking the tool", frToken.tenant);
-            return false;
-        }
-        frToken.username = connectionsData[frToken.tenant].username;
-        frToken.password = Buffer.from(connectionsData[frToken.tenant].encodedPassword, 'base64').toString(connFile.options);
+        const conn = utils.GetConnection(frToken.tenant);
+        frToken.tenant = conn.tenant;
+        frToken.username = conn.username;
+        frToken.password = conn.password;
     }
     await Authenticate(frToken);
     // console.log("Session token: " + frToken.cookieValue);
@@ -291,15 +280,7 @@ async function GetTokens(frToken) {
     }
     if(frToken.cookieValue && credsFromParameters) {
         // valid cookie, which means valid username/password combo. Save it in connections.json
-        console.log("Saving creds in connections.json...");
-
-        const data = fs.readFileSync(connFile.name, connFile.options);
-        const connectionsData = JSON.parse(data);
-        connectionsData[frToken.tenant] = {
-            username: frToken.username,
-            encodedPassword: Buffer.from(frToken.password).toString('base64')
-        };
-        fs.writeFileSync(connFile.name, JSON.stringify(connectionsData, null, connFile.indentation));
+        utils.SaveConnection(frToken);
         return true;
     } else if(!frToken.cookieValue) {
         return false;

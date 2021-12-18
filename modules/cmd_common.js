@@ -2,12 +2,16 @@ const {
     Option
 } = require('commander');
 
-const hostOption = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam");
-const hostOptionM = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam");
+const hostOption = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam. \
+If using a saved connection, just specifying the host or even a unique substring of host is sufficient (no credential \
+parameters needed.");
+const hostOptionM = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam. \
+If using a saved connection, just specifying the host or even a unique substring of host is sufficient (no credential \
+parameters needed.");
 const userOption = new Option("-u, --user <user>", "Username to login with. Must be an admin user \
-with appropriate rights to manages authentication trees");
+with appropriate rights to manage authentication trees");
 const userOptionM = new Option("-u, --user <user>", "Username to login with. Must be an admin user \
-with appropriate rights to manages authentication trees");
+with appropriate rights to manage authentication trees");
 const passwordOption = new Option("-p, --password <password>", "Password");
 const passwordOptionM = new Option("-p, --password <password>", "Password")
 const realmOption = new Option("-r, --realm <realm>", "Realm. If not specified, the root realm '/' is assumed. \
@@ -34,14 +38,14 @@ const deploymentOption = new Option("-m, --type <type>", "Override auto-detected
 [ForgeOps] - A ForgeOps CDK or CDM deployment. \
 The detected or provided deployment type controls certain behavior like obtaining an Identity \
 Management admin token or not and whether to export/import referenced email templates or how \
-to walk through the tenant admin login flow of Identity Cloud and skip MFA").choices(['Classic', 'Cloud', 'ForgeOps']);
+to walk through the tenant admin login flow of Identity Cloud and handle MFA").choices(['Classic', 'Cloud', 'ForgeOps']);
 const deploymentOptionM = new Option("-m, --type <type>", "Override auto-detected deployment type. Valid values for type: \
 [Classic] - A classic Access Management-only deployment with custom layout and configuration. \
 [Cloud] - A ForgeRock Identity Cloud environment. \
 [ForgeOps] - A ForgeOps CDK or CDM deployment. \
 The detected or provided deployment type controls certain behavior like obtaining an Identity \
 Management admin token or not and whether to export/import referenced email templates or how \
-to walk through the tenant admin login flow of Identity Cloud and skip MFA").choices(['Classic', 'Cloud', 'ForgeOps']);
+to walk through the tenant admin login flow of Identity Cloud and handle MFA").choices(['Classic', 'Cloud', 'ForgeOps']);
 const noReUUIDOption = new Option("-n", "No Re-UUID, i.e., import does not generate new UUIDs \
 for (inner)nodes. Used to update existing trees/nodes instead of cloning them.");
 const noReUUIDOptionM = new Option("-n", "No Re-UUID, i.e., import does not generate new UUIDs \
@@ -58,12 +62,21 @@ const nameOption = new Option("-N, --name <name>", "Config entity name to be exp
 managed, sync, provisioner-xxxx, etc.");
 const nameOptionM = new Option("-N, --name <name>", "Config entity name to be exported or imported/updated. Examples are \
 managed, sync, provisioner-xxxx, etc.")
+const managedNameOption = new Option("-N, --name <name>", "Managed object name to be operated on. Examples are \
+user, role, alpha_user, alpha_role etc.");
+const managedNameOptionM = new Option("-N, --name <name>", "Managed object name to be operated on. Examples are \
+user, role, alpha_user, alpha_role etc.")
 const dirOption = new Option("-D, --directory <directory>", "Directory for exporting all configuration entities to");
 const dirOptionM = new Option("-D, --directory <directory>", "Directory for exporting all configuration entities to");
 const entitiesFileOption = new Option("-E, --entitiesFile <file>", "JSON file that specifies the config entities to export/import.");
 const entitiesFileOptionM = new Option("-E, --entitiesFile <file>", "JSON file that specifies the config entities to export/import.");
 const envFileOption = new Option("-e, --envFile <file>", "File that defines environment specific variables for replacement during configuration export/import.");
 const envFileOptionM = new Option("-e, --envFile <file>", "File that defines environment specific variables for replacement during configuration export/import.");
+const apiKeyOption = new Option("-k, --key <key>", "API key for logging API (ForgeRock ID Cloud only)");
+const apiKeyOptionM = new Option("-k, --key <key>", "API key for logging API (ForgeRock ID Cloud only)");
+const apiSecretOption = new Option("-s, --secret <secret>", "API secret for logging API (ForgeRock ID Cloud only)");
+const apiSecretOptionM = new Option("-s, --secret <secret>", "API secret for logging API (ForgeRock ID Cloud only)");
+const sourcesOption = new Option("-c, --sources <sources>", "Comma separated list of log sources");
 
 hostOptionM.makeOptionMandatory();
 userOptionM.makeOptionMandatory();
@@ -78,6 +91,10 @@ nameOptionM.makeOptionMandatory();
 dirOptionM.makeOptionMandatory();
 entitiesFileOptionM.makeOptionMandatory();
 envFileOptionM.makeOptionMandatory();
+managedNameOptionM.makeOptionMandatory();
+apiKeyOptionM.makeOptionMandatory();
+apiSecretOptionM.makeOptionMandatory();
+sourcesOption.makeOptionMandatory();
 
 module.exports = {
     hostOption,
@@ -105,5 +122,12 @@ module.exports = {
     entitiesFileOption,
     entitiesFileOptionM,
     envFileOption,
-    envFileOptionM
+    envFileOptionM,
+    managedNameOption,
+    managedNameOptionM,
+    apiKeyOption,
+    apiKeyOptionM,
+    apiSecretOption,
+    apiSecretOptionM,
+    sourcesOption
 }
