@@ -1,5 +1,11 @@
 const crypto = require('crypto');
-const axios = require('axios');
+const axios = require('axios').default;
+const axiosRetry = require('axios-retry');
+axiosRetry(axios, {
+  retries: 3,
+  shouldResetTimeout: true,
+  retryCondition: (_error) => true // retry no matter what
+});
 const util = require('util');
 const utils = require('../../utils.js')
 const { v4: uuidv4 } = require('uuid');
@@ -34,7 +40,6 @@ function GetOrigin(tenant, realm) {
 }
 
 async function IsCustom(frToken, journey) {
-
     let ootbNodeTypes = [];
     const nodeList = journey["nodes"]
     // console.log(nodeList);
@@ -98,15 +103,17 @@ async function IsCustom(frToken, journey) {
 }
 
 async function GetAllJourneyData(frToken) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
-
     try {
         const jURL = util.format(queryAllTreesURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm))
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("GetAllJourneyData ERROR: get all journeys call returned %d, possible cause: invalid credentials", response.status);
             return null;
@@ -123,15 +130,17 @@ async function GetAllJourneyData(frToken) {
 }
 
 async function GetAllNodesData(frToken) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
-
     try {
         const jURL = util.format(queryAllNodesURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm))
-        const response = await axios.post(jURL, {}, {headers: headers});
+        const response = await axios.post(jURL, {}, options);
         if(response.status < 200 || response.status > 399) {
             console.error("GetAllNodesData ERROR: get all nodes call returned %d, possible cause: invalid credentials", response.status);
             return null;
@@ -147,15 +156,17 @@ async function GetAllNodesData(frToken) {
 }
 
 async function ListJourneys(frToken) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
-
     try {
         const jURL = util.format(queryAllTreesURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm))
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("ListJourneys ERROR: list journeys call returned %d, possible cause: invalid credentials", response.status);
             return null;
@@ -177,14 +188,17 @@ async function ListJourneys(frToken) {
 }
 
 async function GetNodeData(frToken, id, nodeType) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(nodeURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), nodeType, id);
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("GetNodeData ERROR: get node call returned %d, possible cause: node not found", response.status);
             return null;
@@ -217,38 +231,40 @@ async function DeleteNode(frToken, id, nodeType) {
 }
 
 async function GetJourneyStructureData(frToken, name) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(journeyURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), name);
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("\nGetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found", response.status);
             return null;
         }
         return response.data;
     } catch(e) {
-        if(e.response.status == 404) {
-            console.error("\nGetJourneyStructureData ERROR: journey %s not found", name);
-        } else {
-            console.error("\nGetJourneyStructureData ERROR: get journey structure error - ", e.message);
-        }
+        console.error("\nGetJourneyStructureData ERROR: get journey structure error - ", e.message);
         return null;
     }
 }
 
 async function GetScriptData(frToken, id) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(scriptURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), id);
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("GetScriptData ERROR: get script structure call returned %d, possible cause: script not found", response.status);
             return null;
@@ -261,13 +277,16 @@ async function GetScriptData(frToken, id) {
 }
 
 async function GetEmailTemplateData(frToken, id) {
-    const headers = {
-        "Authorization": "Bearer " + frToken.bearerToken
+    const options = {
+        headers: {
+            "Authorization": "Bearer " + frToken.bearerToken
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(emailTemplateURLTemplate, utils.GetTenantURL(frToken.tenant), id);
         // console.log(jURL)
-        const response = await axios.get(jURL, {headers: headers});
+        const response = await axios.get(jURL, options);
         if(response.status < 200 || response.status > 399) {
             console.error("GetEmailTemplateData ERROR: get email template data call returned %d, possible cause: email template not found", response.status);
             return null;
@@ -281,6 +300,8 @@ async function GetEmailTemplateData(frToken, id) {
 
 
 async function GetJourneyData(frToken, journey) {
+    process.stdout.write(`${journey}`);
+
     const journeyMap = {};
     const nodesMap = {};
     const scriptsMap = {};
@@ -290,8 +311,6 @@ async function GetJourneyData(frToken, journey) {
     journeyMap["origin"] = GetOrigin(frToken.tenant, frToken.realm);
 
     // read tree object
-    process.stdout.write(`Exporting ${journey}`);
-
     const journeyStructureData = await GetJourneyStructureData(frToken, journey);
     // console.log(journeyStructureData);
     if (journeyStructureData != null) {
@@ -300,21 +319,23 @@ async function GetJourneyData(frToken, journey) {
 
         // iterate over every node in tree
         for (const [nodeId, nodeInfo] of Object.entries(journeyStructureData["nodes"])) {
-            process.stdout.write(".");
             // console.log(nodeInfo["nodeType"]);
             const nodeData = await GetNodeData(frToken, nodeId, nodeInfo["nodeType"]);
             delete nodeData["_rev"];
             nodesMap[nodeId] = nodeData;
+            process.stdout.write(".");
             
             // console.log(nodeData);
             
             if(scriptedNodes.includes(nodeInfo.nodeType)) {
                 scriptsMap[nodeData.script] = await GetScriptData(frToken, nodeData.script);
+                process.stdout.write(".");
             }
 
             if(frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps") {
                 if(emailTemplateNodes.includes(nodeInfo.nodeType)) {
                     emailTemplatesMap[nodeData.emailTemplateName] = await GetEmailTemplateData(frToken, nodeData.emailTemplateName);
+                    process.stdout.write(".");
                 }
             }
 
@@ -326,11 +347,13 @@ async function GetJourneyData(frToken, journey) {
 
                     if(scriptedNodes.includes(inPageNode.nodeType)) {
                         scriptsMap[inPageNodeData.script] = await GetScriptData(frToken, inPageNodeData.script);
+                        process.stdout.write(".");
                     }
 
                     if(frToken.deploymentType == "Cloud" || frToken.deploymentType == "ForgeOps") {
                         if(emailTemplateNodes.includes(inPageNode.nodeType)) {
                             emailTemplatesMap[inPageNodeData.emailTemplateName] = await GetEmailTemplateData(frToken, inPageNodeData.emailTemplateName);
+                            process.stdout.write(".");
                         }
                     }
                 }
@@ -342,7 +365,7 @@ async function GetJourneyData(frToken, journey) {
     journeyMap["emailTemplates"] = emailTemplatesMap;
     journeyMap["nodes"] = nodesMap;
     journeyMap["tree"] = journeyStructureData
-    console.log("done.");
+    console.log(".");
     return journeyMap;
 }
 
@@ -376,15 +399,18 @@ function DescribeTree(journeyData) {
 }
 
 async function PutNodeData(frToken, id, nodeType, data) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Content-Type": "application/json",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Content-Type": "application/json",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(nodeURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), nodeType, id);
-        const response = await axios.put(jURL, data, {headers: headers});
+        const response = await axios.put(jURL, data, options);
         if(response.status < 200 || response.status > 399) {
             console.error(`PutNodeData ERROR: put script call returned ${response.status}, details: ${response}`);
             return null;
@@ -401,15 +427,18 @@ async function PutNodeData(frToken, id, nodeType, data) {
 }
 
 async function PutScriptData(frToken, id, data) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Content-Type": "application/json",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Content-Type": "application/json",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(scriptURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), id);
-        const response = await axios.put(jURL, data, {headers: headers});
+        const response = await axios.put(jURL, data, options);
         if(response.status < 200 || response.status > 399) {
             console.error(`PutScriptData ERROR: put script call returned ${response.status}, details: ${response}`);
             return null;
@@ -435,16 +464,19 @@ async function PutScriptData(frToken, id, data) {
 }
 
 async function PutEmailTemplateData(frToken, id, longid, data) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${frToken.bearerToken}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${frToken.bearerToken}`
+        },
+        timeout: utils.timeout
     };
 
     try {
         const jURL = util.format(emailTemplateURLTemplate, utils.GetTenantURL(frToken.tenant), id);
-        const response = await axios.put(jURL, data, {headers: headers});
+        const response = await axios.put(jURL, data, options);
         if(response.status < 200 || response.status > 399) {
             console.error(`PutEmailTemplateData ERROR: put template call returned ${response.status}, details: ${response}`);
             return null;
@@ -470,15 +502,18 @@ async function PutEmailTemplateData(frToken, id, longid, data) {
 }
 
 async function PutJourneyStructureData(frToken, id, data) {
-    const headers = {
-        "Accept-API-Version": utils.amApiVersion,
-        "X-Requested-With": "XmlHttpRequest",
-        "Content-Type": "application/json",
-        "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+    const options = {
+        headers: {
+            "Accept-API-Version": utils.amApiVersion,
+            "X-Requested-With": "XmlHttpRequest",
+            "Content-Type": "application/json",
+            "Cookie": `${frToken.cookieName}=${frToken.cookieValue}`
+        },
+        timeout: utils.timeout
     };
     try {
         const jURL = util.format(journeyURLTemplate, frToken.tenant, utils.GetRealmUrl(frToken.realm), id);
-        const response = await axios.put(jURL, data, {headers: headers});
+        const response = await axios.put(jURL, data, options);
         if(response.status < 200 || response.status > 399) {
             console.error(`PutJourneyStructureData ERROR: put journey structure call returned ${response.status}, details: ${response}`);
             return null;

@@ -144,7 +144,7 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("exportAll")
         .helpOption("-l, --help", "Help")
-        .addOption(common.fileOption)
+        .addOption(common.fileOptionM)
         .description("Export all the journeys/trees in a realm.")
         .action(async (options, command) => {
             // console.log('exportAll command called');
@@ -154,27 +154,24 @@ describe the journey/tree export file indicated by -f.")
             frToken.tenant = command.parent.opts().host;
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
-            let fileName = "all-journeys-"+command.opts().file;
-            if (command.opts().file && fs.existsSync(fileName)) {
-                console.error("File %s already exists, please specify a different name!", fileName);
-            } else {
-                if(await GetTokens(frToken)) {
-                    const journeysMap = {};
-                    const topLevelMap = {};
-                    const journeyList = await ListJourneys(frToken);
-                    for (const item of journeyList) {
-                        journeysMap[item.name] = await GetJourneyData(frToken, item.name);
-                    }
-                    topLevelMap.trees = journeysMap;    
-                    if (command.opts().file) {
-                        fs.writeFile(fileName, JSON.stringify(topLevelMap, null, 2), function (err, data) {
-                            if (err) {
-                                return console.error("ERROR - can't save journeys to file");
-                            }
-                        });
-                    } else {
-                        console.log(JSON.stringify(topLevelMap, null, 2));
-                    }
+            let fileName = command.opts().file;
+            if(await GetTokens(frToken)) {
+                console.log('Exporting all journeys to a single file...');
+                const journeysMap = {};
+                const topLevelMap = {};
+                const journeyList = await ListJourneys(frToken);
+                for (const item of journeyList) {
+                    journeysMap[item.name] = await GetJourneyData(frToken, item.name);
+                }
+                topLevelMap.trees = journeysMap;    
+                if (command.opts().file) {
+                    fs.writeFile(fileName, JSON.stringify(topLevelMap, null, 2), function (err, data) {
+                        if (err) {
+                            return console.error("ERROR - can't save journeys to file");
+                        }
+                    });
+                } else {
+                    console.log(JSON.stringify(topLevelMap, null, 2));
                 }
             }
         });
@@ -182,11 +179,10 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("exportAllSeparate")
         .helpOption("-l, --help", "Help")
-        .addOption(common.treeOptionM)
+        .addOption(common.treeOption)
         .description("Export all the journeys/trees in a realm as separate files of the \
 format <journey/tree name>.json.")
         .action(async (options, command) => {
-            // console.log('exportAllSeparate command called');
             const frToken = {};
             frToken.username = command.parent.opts().user;
             frToken.password = command.parent.opts().password;
@@ -194,28 +190,27 @@ format <journey/tree name>.json.")
             frToken.deploymentType = command.parent.opts().type;
             frToken.realm = command.parent.opts().realm;
             if(await GetTokens(frToken)) {
+                console.log('Exporting all journeys to separate files...');
                 const journeyList = await ListJourneys(frToken);
-                let proceed = true;
-                for (const item of journeyList) {
-                    let fileName = `./journey-${item}.json`;
-                    if (fs.existsSync(fileName)) {
-                        proceed = false;
-                        console.error("File %s already exists, please move/rename existing file to prevent losing already exported journeys!", fileName);
-                    }
-                }
-                if(proceed) {
+                // let proceed = true;
+                // for (const item of journeyList) {
+                //     let fileName = `./journey-${item.name}.json`;
+                //     if (fs.existsSync(fileName)) {
+                //         proceed = false;
+                //         console.error("File %s already exists, please move/rename existing file to prevent losing already exported journeys!", fileName);
+                //     }
+                // }
+                // if(proceed) {
                     for (const item of journeyList) {
                         const journeyData = await GetJourneyData(frToken, item.name);
-                        let fileName = `./journey-${item}.json`;
+                        let fileName = `./${item.name}.json`;
                         fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
                             if (err) {
-                                return console.error(`ERROR - can't save journey ${item} to file`);
+                                return console.error(`ERROR - can't save journey ${item.name} to file`);
                             }
                         });
                     }
-                    topLevelMap.trees = journeysMap;
-                    console.log(JSON.stringify(topLevelMap, null, 2));
-                }
+                // }
             }
         });
 

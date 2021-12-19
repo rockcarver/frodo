@@ -4,8 +4,9 @@ const os = require('os');
 const { UV_FS_O_FILEMAP } = require('constants');
 // var _ = require('underscore');
 
-const realmPathTemplate = "/realms/%s"
-const amApiVersion = "resource=1.0"
+const realmPathTemplate = "/realms/%s";
+const amApiVersion = "resource=1.0";
+const timeout = 10000;
 
 const connFile = {
     "name": "./connections.json",
@@ -398,6 +399,7 @@ module.exports.ListConnections = ListConnections;
 module.exports.GetConnectionFileName = GetConnectionFileName;
 
 module.exports.amApiVersion = amApiVersion;
+module.exports.timeout = timeout;
 module.exports.ootbnodetypes_6 = ootbnodetypes_6;
 module.exports.ootbnodetypes_6_5 = ootbnodetypes_6_5;
 module.exports.ootbnodetypes_7 = ootbnodetypes_7;
