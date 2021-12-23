@@ -27,6 +27,7 @@ const scriptedNodes = [
     "ConfigProviderNode",
     "ScriptedDecisionNode",
     "ClientScriptNode",
+    "SocialProviderHandlerNode",
     "CustomScriptNode"
 ];
 
