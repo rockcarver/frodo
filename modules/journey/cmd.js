@@ -32,6 +32,7 @@ function Setup() {
     journey
         .command("list")
         .helpOption("-l, --help", "Help")
+        .addOption(new Option("-a, --analyze", "Analyze journeys for custom nodes."))
         .description("List all the journeys/trees in a realm.")
         .action(async (options, command) => {
             // console.log('list command called');
@@ -43,12 +44,19 @@ function Setup() {
             frToken.realm = command.parent.opts().realm;
             // console.log(frToken);
             if(await GetTokens(frToken)) {
-                const journeyList = await ListJourneys(frToken);
-                console.log(`List of journeys in realm ${frToken.realm}`);
-                journeyList.forEach((item, index) => {
-                    console.log(`- ${item.name} ${item.custom?"*":""}`);
-                })
-                console.log("(*) Tree contains custom node(s).");    
+                console.log(`Listing journeys in realm ${frToken.realm}...`);
+                const journeyList = await ListJourneys(frToken, command.opts().analyze);
+                if (command.opts().analyze) {
+                    journeyList.forEach((item, index) => {
+                        console.log(`${item.name} ${item.custom?"(*)":""}`);
+                    })
+                    console.log("(*) Tree contains custom node(s).");
+                }
+                else {
+                    journeyList.forEach((item, index) => {
+                        console.log(`${item.name}`);
+                    })
+                }
             }
         });
 
@@ -83,7 +91,7 @@ describe the journey/tree export file indicated by -f.")
             } else {
                 if(await GetTokens(frToken)) {
                     if (typeof command.opts().tree == 'undefined') {
-                        const journeyList = await ListJourneys(frToken);
+                        const journeyList = await ListJourneys(frToken, false);
                         for (const item of journeyList) {
                             const journeyData = await GetJourneyData(frToken, item.name);
                             treeDescription.push(DescribeTree(journeyData));
@@ -146,7 +154,7 @@ describe the journey/tree export file indicated by -f.")
                     let fileName = "allJourneys.json";
                     const journeysMap = {};
                     const topLevelMap = {};
-                    const journeyList = await ListJourneys(frToken);
+                    const journeyList = await ListJourneys(frToken, false);
                     for (const item of journeyList) {
                         journeysMap[item.name] = await GetJourneyData(frToken, item.name);
                     }
@@ -163,7 +171,7 @@ describe the journey/tree export file indicated by -f.")
                 // exportAllSeparate -A
                 else if (command.opts().allSeparate) {
                     console.log('Exporting all journeys to separate files...');
-                    const journeyList = await ListJourneys(frToken);
+                    const journeyList = await ListJourneys(frToken, false);
                     for (const item of journeyList) {
                         const journeyData = await GetJourneyData(frToken, item.name);
                         let fileName = `./${item.name}.json`;

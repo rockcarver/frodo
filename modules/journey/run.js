@@ -155,7 +155,7 @@ async function GetAllNodesData(frToken) {
     }
 }
 
-async function ListJourneys(frToken) {
+async function ListJourneys(frToken, analyze) {
     const options = {
         headers: {
             "Accept-API-Version": utils.amApiVersion,
@@ -175,7 +175,10 @@ async function ListJourneys(frToken) {
         if("result" in response.data) {
             const journeys = response.data.result;
             for(const journey of journeys) {
-                let customTree = await IsCustom(frToken, journey);
+                let customTree = false;
+                if (analyze) {
+                    customTree = await IsCustom(frToken, journey);
+                }
                 journeyList.push({name: journey._id, custom: customTree});
             }
         }
