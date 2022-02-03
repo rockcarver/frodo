@@ -1,20 +1,14 @@
-const replaceall = require("replaceall");
-const fs = require("fs");
-const fse = require("fs-extra");
-const propertiesReader = require('properties-reader');
-const {
-    Command
-} = require("commander");
+import replaceall from 'replaceall';
+import fs from 'fs';
+import fse from 'fs-extra';
+import propertiesReader from 'properties-reader';
+import { Command } from 'commander';
+import common from '../cmd_common.js';
+import { getTokens } from '../../api/AuthApi.js';
+import { getAllConfigEntities, getConfigEntity, getCount } from '../../api/IdmConfigApi.js';
+import storage from '../../storage/SessionStorage.js';
 
-const common = require("../cmd_common.js");
-
-const {
-    GetTokens
-} = require("../../auth.js")
-
-const run = require("./run.js");
-
-function Setup() {
+export function setup() {
     const idm = new Command("idm"); 
     idm
         .helpOption("-l, --help", "Help")
@@ -27,17 +21,15 @@ function Setup() {
     idm
         .command("list")
         .helpOption("-l, --help", "Help")
-        .description("List all IDM configuration objects")
+        .description("List all IDM configuration objects.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-                const configEntities = await run.GetAllConfigEntities(frToken);
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log("Listing all IDM configuration objects...");
+            if(await getTokens()) {
+                const configEntities = await getAllConfigEntities();
                 if("configurations" in configEntities) {
                     configEntities.configurations.forEach(x => {
                         console.log(`- ${x._id}`);
@@ -52,17 +44,15 @@ function Setup() {
         .addOption(common.nameOptionM)
         .addOption(common.fileOption)
         // .addOption(common.fileOption.makeOptionMandatory())
-        .description("Export an IDM configuration object from a deployment")
+        .description("Export an IDM configuration object.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            // console.log(command.opts());
-            if(await GetTokens(frToken)) {
-                const configEntity = await run.GetConfigEntity(frToken, command.opts().name);
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log("Exporting an IDM configuration object...");
+            if(await getTokens()) {
+                const configEntity = await getConfigEntity(command.opts().name);
                 if (command.opts().file) {
                     fs.writeFile(command.opts().file, JSON.stringify(configEntity, null, 2), function (err, data) {
                         if (err) {
@@ -79,25 +69,22 @@ function Setup() {
         .command("exportAllRaw")
         .helpOption("-l, --help", "Help")
         .addOption(common.dirOptionM)
-        .description("Export all IDM configuration objects from a deployment into separate JSON files in a directory specified by <directory>")
+        .description("Export all IDM configuration objects into separate JSON files in a directory specified by <directory>")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-                const configEntities = await run.GetAllConfigEntities(frToken);
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log(`Exporting all IDM configuration objects into separate JSON files in ${command.opts().directory}...`);
+            if(await getTokens()) {
+                const configEntities = await getAllConfigEntities();
                 if("configurations" in configEntities) {
                     if (!fs.existsSync(command.opts().directory)){
                         fs.mkdirSync(command.opts().directory);
                     }
                     configEntities.configurations.forEach(async x => {
                         // console.log(`- ${x._id}`);
-                        const configEntity = await run.GetConfigEntity(frToken, x._id);
+                        const configEntity = await getConfigEntity(x._id);
                         fse.outputFile(`${command.opts().directory}/${x._id}.json`, JSON.stringify(configEntity, null, 2), function (err, data) { 
                             if (err) {
                                 return console.error(`ERROR - can't save config ${x._id} to file`, err);
@@ -114,17 +101,14 @@ function Setup() {
         .addOption(common.dirOptionM)
         .addOption(common.entitiesFileOptionM)
         .addOption(common.envFileOptionM)
-        .description("Export all IDM configuration objects from a deployment")
+        .description("Export all IDM configuration objects.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log("Exporting all IDM configuration objects...");
+            if(await getTokens()) {
                 let entriesToExport = [];
                 const envFileData = {};
                 // read list of entities to export
@@ -137,7 +121,7 @@ function Setup() {
                     // read list of configs to parameterize for environment specific values
                     var envParams = propertiesReader(command.opts().envFile);
                     
-                    const configEntities = await run.GetAllConfigEntities(frToken);
+                    const configEntities = await getAllConfigEntities();
                     if("configurations" in configEntities) {
                         // create export directory if not exist
                         if (!fs.existsSync(command.opts().directory)){
@@ -147,7 +131,7 @@ function Setup() {
                             // console(x)
                             if(entriesToExport.includes(x._id)) {
                                 // if entity is in the list of entities to export
-                                const configEntity = await run.GetConfigEntity(frToken, x._id);
+                                const configEntity = await getConfigEntity(x._id);
                                 let configEntityString = JSON.stringify(configEntity, null, 2);
                                 envParams.each((key, value) => {
                                     configEntityString = replaceall(value, "${"+key+"}", configEntityString);
@@ -167,46 +151,30 @@ function Setup() {
     idm
         .command("import")
         .helpOption("-l, --help", "Help")
-        .description("Import an IDM configuration object into a deployment")
+        .description("Import an IDM configuration object.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-            // const journeyList = await ListJourneys(frToken);
-            // console.log(`List of journeys in realm ${frToken.realm}`);
-            // journeyList.forEach((item, index) => {
-            //     console.log(`- ${item.name} ${item.custom?"*":""}`);
-            // })
-            // console.log("(*) Tree contains custom node(s).");
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log("Importing an IDM configuration object...");
+            if(await getTokens()) {
+                // implement
             }
         });
 
     idm
         .command("importAll")
         .helpOption("-l, --help", "Help")
-        .description("Import all IDM configuration objects into a deployment")
+        .description("Import all IDM configuration objects.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-            // const journeyList = await ListJourneys(frToken);
-            // console.log(`List of journeys in realm ${frToken.realm}`);
-            // journeyList.forEach((item, index) => {
-            //     console.log(`- ${item.name} ${item.custom?"*":""}`);
-            // })
-            // console.log("(*) Tree contains custom node(s).");
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log("Importing all IDM configuration objects...");
+            if(await getTokens()) {
+                // implement
             }
         });
 
@@ -214,22 +182,18 @@ function Setup() {
         .command("count")
         .helpOption("-l, --help", "Help")
         .addOption(common.managedNameOptionM)
-        .description("Count number of managed objects of a given type in an IDM instance")
+        .description("Count number of managed objects of a given type.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-                console.log(`Total count of [${command.opts().name}] objects : ${await run.GetCount(frToken, command.opts().name)}`);
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            console.log(`Counting managed ${command.opts().name} objects...`);
+            if(await getTokens()) {
+                console.log(`Total count of [${command.opts().name}] objects : ${await getCount(command.opts().name)}`);
             }
         });
 
     idm.showHelpAfterError();
     return idm;
 }
-module.exports.Setup = Setup;

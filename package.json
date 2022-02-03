@@ -1,28 +1,48 @@
 {
   "name": "frodo",
   "version": "0.0.1",
+  "type": "module",
   "description": "ForgeROckDO - the one ForgeRock cli to rule them all",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "sandeep.chaturvedi@forgerock.com",
+  "contributors": [
+    {
+      "name": "Sandeep Chaturvedi",
+      "email": "sandeep.chaturvedi@forgerock.com"
+    },
+    {
+      "name": "Volker Scheuber",
+      "email": "volker.scheuber@forgerock.com"
+    }
+  ],
   "license": "MIT",
   "bin": "app.js",
   "pkg": {
-    "scripts": "modules/**/*.js"
+    "scripts": [
+      "storage/**/*.js",
+      "api/**/*.js",
+      "modules/**/*.js"
+    ],
+    "options": [
+      "experimental-modules"
+    ]
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.25.0",
     "axios-retry": "^3.2.4",
-    "commander": "^8.2.0",
+    "caxa": "^2.1.0",
+    "commander": "^9.0.0",
     "fs-extra": "^10.0.0",
-    "pkg": "^5.4.1",
     "properties-reader": "^2.2.0",
     "readline-sync": "^1.4.10",
     "replaceall": "^0.1.6",
-    "underscore": "^1.13.1",
+    "underscore": "^1.13.2",
     "uuid": "^8.3.2",
     "yesno": "^0.3.1"
+  },
+  "devDependencies": {
+    "pkg": "^5.5.2"
   }
 }

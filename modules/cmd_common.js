@@ -1,6 +1,4 @@
-const {
-    Option
-} = require('commander');
+import { Option } from 'commander';
 
 const hostOption = new Option("-h, --host <host>", "Access Management host URL, e.g.: https://login.example.com/openam. \
 If using a saved connection, just specifying the host or even a unique substring of host is sufficient (no credential \
@@ -96,7 +94,7 @@ apiKeyOptionM.makeOptionMandatory();
 apiSecretOptionM.makeOptionMandatory();
 sourcesOption.makeOptionMandatory();
 
-module.exports = {
+export default {
     hostOption,
     hostOptionM,
     userOption,
@@ -130,4 +128,4 @@ module.exports = {
     apiSecretOption,
     apiSecretOptionM,
     sourcesOption
-}
+};

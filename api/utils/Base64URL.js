@@ -8,5 +8,4 @@ if (Buffer.isEncoding('base64url')) {
 
 const decode = (input) => Buffer.from(input, 'base64');
 
-module.exports.decode = decode;
-module.exports.encode = encode;
+export { decode, encode };
