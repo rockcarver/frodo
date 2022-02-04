@@ -1,6 +1,6 @@
 import { getConnection, saveConnection } from '../../api/AuthApi.js';
 import { Command } from 'commander';
-import common from '../cmd_common.js';
+import * as common from '../cmd_common.js';
 import { getSources, tailLogs } from '../../api/LogApi.js';
 import storage from '../../storage/SessionStorage.js';
 

@@ -3,7 +3,7 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import propertiesReader from 'properties-reader';
 import { Command } from 'commander';
-import common from '../cmd_common.js';
+import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import { getAllConfigEntities, getConfigEntity, getCount } from '../../api/IdmConfigApi.js';
 import storage from '../../storage/SessionStorage.js';

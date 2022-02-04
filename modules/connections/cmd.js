@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { listConnections, saveConnection, getConnectionFileName } from '../../api/AuthApi.js';
 import { Command } from 'commander';
-import common from '../cmd_common.js';
+import * as common from '../cmd_common.js';
 
 export function setup() {
     const connections = new Command("connections"); 

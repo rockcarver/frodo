@@ -34,6 +34,7 @@
     "axios-retry": "^3.2.4",
     "caxa": "^2.1.0",
     "commander": "^9.0.0",
+    "esbuild": "^0.14.18",
     "fs-extra": "^10.0.0",
     "properties-reader": "^2.2.0",
     "readline-sync": "^1.4.10",

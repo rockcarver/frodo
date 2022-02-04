@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import common from '../cmd_common.js';
+import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import storage from '../../storage/SessionStorage.js';
 
