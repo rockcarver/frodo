@@ -10,7 +10,7 @@ import fs from 'fs';
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const program = new Command(pkg.name)
-    .version(`frodo ${pkg.version} [node ${process.versions.node}]`, '-v, --version');
+    .version(`v${pkg.version} [${process.version}]`, '-v, --version');
 
 (async () => {
     try {
