@@ -16,7 +16,7 @@ export function setup() {
         .addOption(common.userOption)
         .addOption(common.passwordOption)
         .addOption(common.deploymentOption)
-        .description("IDM related operations")
+        .description("Manage IDM configuration.")
 
     idm
         .command("list")

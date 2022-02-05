@@ -44,6 +44,7 @@
   "devDependencies": {
     "caxa": "^2.1.0",
     "esbuild": "^0.14.18",
+    "nexe": "^4.0.0-beta.19",
     "pkg": "^5.5.2"
   }
 }

@@ -11,7 +11,7 @@ export function setup() {
         .addOption(common.userOption)
         .addOption(common.passwordOption)
         .addOption(common.deploymentOption)
-        .description("Login, print versions and tokens, then exit")
+        .description("Print versions and tokens.")
         .action(async (options, command) => {
             storage.session.setUsername(command.opts().user);
             storage.session.setPassword(command.opts().password);

@@ -7,13 +7,13 @@ export function setup() {
     const connections = new Command("connections"); 
     connections
         .helpOption("-l, --help", "Help")
-        .description("Manage ForgeRock connection profiles")
+        .description("Manage connection profiles.")
 
     connections
         .command("list")
         .showHelpAfterError()
         .helpOption("-l, --help", "Help")
-        .description("List configured ForgeRock connections")
+        .description("List configured connections.")
         .action(async (options, command) => {
             // console.log('list command called');
             listConnections();
@@ -28,8 +28,8 @@ export function setup() {
         .addOption(common.apiKeyOption)
         .addOption(common.apiSecretOption)
         .helpOption("-l, --help", "Help")
-        .description("Add a new ForgeRock connection. You have to specify a URL, username and password at a minimum.\n" +
-                    "Optionally, for ForgeRock ID Cloud, you can also add a log API key and secret")
+        .description("Add a new connection. You have to specify a URL, username and password at a minimum.\n" +
+                    "Optionally, for Identity Cloud, you can also add a log API key and secret.")
         .action(async (options, command) => {
             // console.log('list command called');
             saveConnection({
@@ -46,7 +46,7 @@ export function setup() {
         .showHelpAfterError()
         .addOption(common.hostOptionM)
         .helpOption("-l, --help", "Help")
-        .description("Delete an existing ForgeRock connection (can also be done by editing '$HOME/.frodorc' in a text editor)")
+        .description("Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor).")
         .action(async (options, command) => {
             // console.log('list command called');
             const filename = getConnectionFileName();

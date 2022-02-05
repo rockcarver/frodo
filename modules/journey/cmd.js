@@ -14,6 +14,7 @@ export function setup() {
         .addOption(common.passwordOption)
         .addOption(common.realmOptionM)
         .addOption(common.deploymentOption)
+        .description("Manage journeys/trees.")
 
     journey
         .command("list")

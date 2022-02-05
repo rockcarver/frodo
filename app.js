@@ -5,12 +5,12 @@ import * as idm from './modules/idm/cmd.js';
 import * as info from './modules/info/cmd.js';
 import * as journey from './modules/journey/cmd.js';
 import * as logging from './modules/logging/cmd.js';
-import { readFile } from 'fs/promises';
+import fs from 'fs';
 
-const pkg = JSON.parse(await readFile(new URL('./package.json', import.meta.url)));
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const program = new Command(pkg.name)
-    .version(pkg.version, '-v, --version');
+    .version(`frodo ${pkg.version} [node ${process.versions.node}]`, '-v, --version');
 
 (async () => {
     try {

@@ -11,7 +11,7 @@ export function setup() {
         .addOption(common.hostOptionM)
         .addOption(common.apiKeyOption)
         .addOption(common.apiSecretOption)
-        .description("Get/display/save ForgeRock ID Cloud logs")
+        .description("View Identity Cloud logs.")
 
     logs
         .command("list")
