@@ -1,10 +1,12 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import { initConnections } from './api/AuthApi.js';
-import * as connections from './modules/connections/cmd.js';
-import * as idm from './modules/idm/cmd.js';
-import * as info from './modules/info/cmd.js';
-import * as journey from './modules/journey/cmd.js';
-import * as logging from './modules/logging/cmd.js';
+import * as connections from './commands/connections/cmd.js';
+import * as idm from './commands/idm/cmd.js';
+import * as info from './commands/info/cmd.js';
+import * as journey from './commands/journey/cmd.js';
+import * as logging from './commands/logging/cmd.js';
 import fs from 'fs';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
