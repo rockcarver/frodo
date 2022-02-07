@@ -1,6 +1,8 @@
-const axios = require('axios');
-const util = require('util');
-const utils = require('../../utils.js')
+import { getTenantURL } from './utils/ApiUtils.js';
+import { saveConnection } from './AuthApi.js';
+import storage from '../storage/SessionStorage.js';
+import axios from 'axios';
+import util from 'util';
 
 const misc_noise = [
     'text/plain',
@@ -128,21 +130,18 @@ const noise = misc_noise.concat(saml_noise).concat(journeys_noise)
 
 const logsTailURLTemplate = "%s/monitoring/logs/tail?source=%s";
 const logsSourcesURLTemplate = "%s/monitoring/logs/sources";
-const logsFetchURLTemplate = "%s/openidm/config/%s";
 
-
-async function tail(apiToken, source, cookie) {
+async function tail(source, cookie) {
     const headers = {
-        "x-api-key": apiToken.key,
-        "x-api-secret": apiToken.secret
+        "x-api-key": storage.session.getLogApiKey(),
+        "x-api-secret": storage.session.getLogApiSecret()
     };
     try {
-        let jURL = util.format(logsTailURLTemplate, utils.GetTenantURL(apiToken.tenant), encodeURIComponent(source));
+        let urlString = util.format(logsTailURLTemplate, getTenantURL(storage.session.getTenant()), encodeURIComponent(source));
         if (cookie) {
-            jURL += `&_pagedResultsCookie=${encodeURIComponent(cookie)}`;
+            urlString += `&_pagedResultsCookie=${encodeURIComponent(cookie)}`;
         }
-        // console.log(jURL)
-        const response = await axios.get(jURL, {
+        const response = await axios.get(urlString, {
             headers: headers
         });
         if (response.status < 200 || response.status > 399) {
@@ -162,41 +161,37 @@ async function tail(apiToken, source, cookie) {
     }
 }
 
-async function TailLogs(apiToken, source, cookie) {
-    const result = await tail(apiToken, source, cookie);
+export async function tailLogs(source, cookie) {
+    const result = await tail(source, cookie);
     if(!cookie && result.result) {
-        await utils.SaveConnection(apiToken);
+        await saveConnection();
     }
     result.result.forEach(e => {
         console.log(JSON.stringify(e.payload));
     });
     setTimeout(function () {
-        TailLogs(apiToken, source, result.pagedResultsCookie)
+        tailLogs(source, result.pagedResultsCookie)
     }, 5000);
 }
 
-async function GetSources(apiToken) {
+export async function getSources() {
     const headers = {
-        "x-api-key": apiToken.key,
-        "x-api-secret": apiToken.secret
+        "x-api-key": storage.session.getLogApiKey(),
+        "x-api-secret": storage.session.getLogApiSecret()
     };
     try {
-        const jURL = util.format(logsSourcesURLTemplate, utils.GetTenantURL(apiToken.tenant));
-        // console.log(jURL)
-        const response = await axios.get(jURL, {
+        const urlString = util.format(logsSourcesURLTemplate, getTenantURL(storage.session.getTenant()));
+        const response = await axios.get(urlString, {
             headers: headers
         });
         if (response.status < 200 || response.status > 399) {
             console.error("getSources ERROR: get log sources call returned %d", response.status);
             return null;
         }
-        // await utils.SaveConnection(apiToken);
+        // await saveConnection();
         return response.data;
     } catch (e) {
         console.error("getSources ERROR: get log sources data error - ", e.message);
         return null;
     }
 }
-
-module.exports.GetSources = GetSources;
-module.exports.TailLogs = TailLogs;

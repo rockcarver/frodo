@@ -1,30 +1,22 @@
-const fs = require("fs")
-const utils = require('../../utils.js')
+import fs from 'fs';
+import { listConnections, saveConnection, getConnectionFileName } from '../../api/AuthApi.js';
+import { Command } from 'commander';
+import * as common from '../cmd_common.js';
 
-const {
-    Command
-} = require("commander");
-
-const common = require("../cmd_common.js");
-
-const {
-    GetTokens
-} = require("../../auth.js")
-
-function Setup() {
+export function setup() {
     const connections = new Command("connections"); 
     connections
         .helpOption("-l, --help", "Help")
-        .description("Manage ForgeRock connection profiles")
+        .description("Manage connection profiles.")
 
     connections
         .command("list")
         .showHelpAfterError()
         .helpOption("-l, --help", "Help")
-        .description("List configured ForgeRock connections")
+        .description("List configured connections.")
         .action(async (options, command) => {
             // console.log('list command called');
-            utils.ListConnections();
+            listConnections();
         });
 
     connections
@@ -36,11 +28,11 @@ function Setup() {
         .addOption(common.apiKeyOption)
         .addOption(common.apiSecretOption)
         .helpOption("-l, --help", "Help")
-        .description("Add a new ForgeRock connection. You have to specify a URL, username and password at a minimum.\n" +
-                    "Optionally, for ForgeRock ID Cloud, you can also add a log API key and secret")
+        .description("Add a new connection. You have to specify a URL, username and password at a minimum.\n" +
+                    "Optionally, for Identity Cloud, you can also add a log API key and secret.")
         .action(async (options, command) => {
             // console.log('list command called');
-            utils.SaveConnection({
+            saveConnection({
                 tenant: command.opts().host,
                 username: command.opts().user,
                 password: command.opts().password,
@@ -54,10 +46,10 @@ function Setup() {
         .showHelpAfterError()
         .addOption(common.hostOptionM)
         .helpOption("-l, --help", "Help")
-        .description("Delete an existing ForgeRock connection (can also be done by editing '$HOME/.frodorc' in a text editor)")
+        .description("Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor).")
         .action(async (options, command) => {
             // console.log('list command called');
-            const filename = utils.GetConnectionFileName();
+            const filename = getConnectionFileName();
             let connectionsData = {};
             fs.stat(filename, function(err, stat) {
                 if(err == null) {
@@ -81,4 +73,3 @@ function Setup() {
     connections.showHelpAfterError();
     return connections;
 }
-module.exports.Setup = Setup;

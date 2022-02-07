@@ -1,26 +1,12 @@
-const fs = require("fs")
-const yesno = require('yesno');
-const {
-    Command,
-    Option
-} = require("commander");
+import fs from 'fs';
+import yesno from 'yesno';
+import { Command, Option } from 'commander';
+import * as common from '../cmd_common.js';
+import { getTokens } from '../../api/AuthApi.js';
+import { listJourneys, getJourneyData, describeTree, importJourney, findOrphanedNodes, removeOrphanedNodes } from '../../api/TreeApi.js';
+import storage from '../../storage/SessionStorage.js';
 
-const common = require("../cmd_common.js");
-const {
-    GetTokens
-} = require("../../auth.js")
-
-const {
-    ListJourneys,
-    GetJourneyData,
-    DescribeTree,
-    ImportJourney,
-    FindOrphanedNodes,
-    RemoveOrphanedNodes
-} = require("./run.js");
-const { error } = require("console");
-
-function Setup() {
+export function setup() {
     const journey = new Command("journey")
         .helpOption("-l, --help", "Help")
         .addOption(common.hostOptionM)
@@ -28,6 +14,7 @@ function Setup() {
         .addOption(common.passwordOption)
         .addOption(common.realmOptionM)
         .addOption(common.deploymentOption)
+        .description("Manage journeys/trees.")
 
     journey
         .command("list")
@@ -35,17 +22,15 @@ function Setup() {
         .addOption(new Option("-a, --analyze", "Analyze journeys for custom nodes."))
         .description("List all the journeys/trees in a realm.")
         .action(async (options, command) => {
-            // console.log('list command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            // console.log(frToken);
-            if(await GetTokens(frToken)) {
-                console.log(`Listing journeys in realm ${frToken.realm}...`);
-                const journeyList = await ListJourneys(frToken, command.opts().analyze);
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
+            console.log(`Listing journeys in realm ${storage.session.getRealm()}...`);
+            if(await getTokens()) {
+                var journeyList = await listJourneys(command.opts().analyze);
+                journeyList.sort((a, b) => a.name.localeCompare(b.name));
                 if (command.opts().analyze) {
                     journeyList.forEach((item, index) => {
                         console.log(`${item.name} ${item.custom?"(*)":""}`);
@@ -70,50 +55,56 @@ function Setup() {
 all journeys/trees in the realm if no -t is supplied, otherwise \
 describe the journey/tree export file indicated by -f.")
         .action(async (options, command) => {
-            // console.log('describe command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
             const treeDescription = [];
-            if (typeof command.opts().host == 'undefined') {
+            if (typeof command.parent.opts().host == 'undefined' || typeof command.opts().file != 'undefined') {
                 if (typeof command.opts().file == 'undefined') {
                     console.error("You either need -h or -f when using describe");
                     return;
                 }
-                fs.readFile(command.opts().file, 'utf8', function (err, data) {
-                    if (err) throw err;
+                console.log(`Describing local journey file ${command.opts().file}...`);
+                try {
+                    var data = fs.readFileSync(command.opts().file, 'utf8');
                     const journeyData = JSON.parse(data);
-                    treeDescription.push(DescribeTree(journeyData));
-                });
+                    treeDescription.push(describeTree(journeyData));
+                }
+                catch (err) {
+                    console.error(err);
+                }
             } else {
-                if(await GetTokens(frToken)) {
+                console.log(`Describing journey(s) in realm ${storage.session.getRealm()}...`);
+                if(await getTokens()) {
                     if (typeof command.opts().tree == 'undefined') {
-                        const journeyList = await ListJourneys(frToken, false);
+                        const journeyList = await listJourneys(false);
                         for (const item of journeyList) {
-                            const journeyData = await GetJourneyData(frToken, item.name);
-                            treeDescription.push(DescribeTree(journeyData));
+                            const journeyData = await getJourneyData(item.name);
+                            treeDescription.push(describeTree(journeyData));
                         }
                     } else {
-                        const journeyData = await GetJourneyData(frToken, command.opts().tree);
-                        treeDescription.push(DescribeTree(journeyData));
+                        const journeyData = await getJourneyData(command.opts().tree);
+                        treeDescription.push(describeTree(journeyData));
                     }
                 }
             }
             for (const item of treeDescription) {
-                console.log("\n==========");
-                console.log(`Tree name: ${item.treeName}`);
-                console.log("Nodes:");
+                console.log(`\nJourney: ${item.treeName}`);
+                console.log("========");
+                console.log("\nNodes:");
                 for (const [name, count] of Object.entries(item.nodeTypes)) {
-                    console.log(`\t- ${name}: ${count}`);
+                    console.log(`- ${name}: ${count}`);
                 }
-                console.log("Scripts (Name: Description):");
+                console.log("\nScripts:");
                 for (const [name, desc] of Object.entries(item.scripts)) {
-                    console.log(`\t- ${name}: ${desc}`);
+                    console.log(`- ${name}: ${desc}`);
                 }
-                console.log("==========");
+                console.log("\nEmail Templates:");
+                for (const [id, displayName] of Object.entries(item.emailTemplates)) {
+                    console.log(`- ${id}`);
+                }
             }
         });
 
@@ -126,14 +117,12 @@ describe the journey/tree export file indicated by -f.")
         .addOption(new Option("-A, --allSeparate", "Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a."))
         .description("Export journeys/trees.")
         .action(async (options, command) => {
-            // console.log('export command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            if(await GetTokens(frToken)) {
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
+            if(await getTokens()) {
                 // export
                 if (command.opts().tree) {
                     console.log('Exporting journey...');
@@ -141,7 +130,7 @@ describe the journey/tree export file indicated by -f.")
                     if (command.opts().file) {
                         fileName = command.opts().file;
                     }
-                    const journeyData = await GetJourneyData(frToken, command.opts().tree);
+                    const journeyData = await getJourneyData(command.opts().tree);
                     fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
                         if (err) {
                             return console.error("ERROR - can't save journey to file");
@@ -154,9 +143,9 @@ describe the journey/tree export file indicated by -f.")
                     let fileName = "allJourneys.json";
                     const journeysMap = {};
                     const topLevelMap = {};
-                    const journeyList = await ListJourneys(frToken, false);
+                    const journeyList = await listJourneys(false);
                     for (const item of journeyList) {
-                        journeysMap[item.name] = await GetJourneyData(frToken, item.name);
+                        journeysMap[item.name] = await getJourneyData(item.name);
                     }
                     topLevelMap.trees = journeysMap;    
                     if (command.opts().file) {
@@ -171,9 +160,9 @@ describe the journey/tree export file indicated by -f.")
                 // exportAllSeparate -A
                 else if (command.opts().allSeparate) {
                     console.log('Exporting all journeys to separate files...');
-                    const journeyList = await ListJourneys(frToken, false);
+                    const journeyList = await listJourneys(false);
                     for (const item of journeyList) {
-                        const journeyData = await GetJourneyData(frToken, item.name);
+                        const journeyData = await getJourneyData(item.name);
                         let fileName = `./${item.name}.json`;
                         fs.writeFile(fileName, JSON.stringify(journeyData, null, 2), function (err, data) {
                             if (err) {
@@ -196,20 +185,19 @@ describe the journey/tree export file indicated by -f.")
         .addOption(common.treeOptionM)
         .addOption(common.fileOptionM)
         .addOption(common.noReUUIDOption)
-        .description("Import an authentication tree")
+        .description("Import journey/tree.")
         .action(async (options, command) => {
-            // console.log('import command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            if(await GetTokens(frToken)) {
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
+            console.log("Importing journey/tree...");
+            if(await getTokens()) {
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
                     if (err) throw err;
                     const journeyData = JSON.parse(data);
-                    ImportJourney(frToken, command.opts().tree, journeyData, command.opts().noReUUIDOption, true).then(result=>{
+                    importJourney(command.opts().tree, journeyData, command.opts().noReUUIDOption, true).then(result=>{
                         if(!result == null)
                             console.log("Import done.");
                     });
@@ -224,18 +212,17 @@ describe the journey/tree export file indicated by -f.")
         .addOption(common.noReUUIDOption)
         .description("Import all the trees in a realm.")
         .action(async (options, command) => {
-            // console.log('import all command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            if(await GetTokens(frToken)) {
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
+            console.log("Importing journey/tree...");
+            if(await getTokens()) {
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
                     if (err) throw err;
                     const journeyData = JSON.parse(data);
-                    ImportAllJourneys(frToken, journeyData, command.opts().noReUUIDOption, false).then(result=>{
+                    ImportAllJourneys(journeyData, command.opts().noReUUIDOption, false).then(result=>{
                         if(!result == null)
                             console.log("Import all done.");
                     });
@@ -248,18 +235,17 @@ describe the journey/tree export file indicated by -f.")
         .helpOption("-l, --help", "Help")
         .description("Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.")
         .action(async (options, command) => {
-            // console.log('prune command called');
-            const frToken = {};
-            frToken.username = command.parent.opts().user;
-            frToken.password = command.parent.opts().password;
-            frToken.tenant = command.parent.opts().host;
-            frToken.deploymentType = command.parent.opts().type;
-            frToken.realm = command.parent.opts().realm;
-            if(await GetTokens(frToken)) {
+            storage.session.setUsername(command.parent.opts().user);
+            storage.session.setPassword(command.parent.opts().password);
+            storage.session.setTenant(command.parent.opts().host);
+            storage.session.setDeploymentType(command.parent.opts().type);
+            storage.session.setRealm(command.parent.opts().realm);
+            console.log("Pruning orphaned configuration artifacts...");
+            if(await getTokens()) {
                 const allNodes = [];
                 const orphanedNodes = [];
                 console.log("Analyzing authentication nodes configuration artifacts...");
-                await FindOrphanedNodes(frToken, allNodes, orphanedNodes);
+                await findOrphanedNodes(allNodes, orphanedNodes);
                 console.log(`Total nodes:       ${allNodes.length}`);
                 console.log(`Orphaned nodes:    ${orphanedNodes.length}`);
                 // console.log(orphanedNodes);
@@ -268,7 +254,7 @@ describe the journey/tree export file indicated by -f.")
                 });
                 if(ok) {
                     process.stdout.write("Pruning.");
-                    RemoveOrphanedNodes(frToken, allNodes, orphanedNodes);
+                    removeOrphanedNodes(allNodes, orphanedNodes);
                 }
                 process.stdout.write("done");
                 console.log("");
@@ -277,4 +263,3 @@ describe the journey/tree export file indicated by -f.")
     journey.showHelpAfterError();
     return journey;
 }
-module.exports.Setup = Setup;
