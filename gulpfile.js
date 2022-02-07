@@ -1,14 +1,14 @@
-var gulp = require('gulp'); 
-    babel = require('gulp-babel'),
-    del = require('del');
+import gulp from 'gulp';
+import babel from 'gulp-babel';
+import del from 'del';
 
 gulp.task('clean', function(){
   return del(['dest']);
 });
 
 gulp.task('transpile', function(){
-  // return gulp.src(['src/*.js','src/**/*.js'])
-  return gulp.src(['app.js','modules/**/*.js'])
+  return gulp.src(['src/*.js','src/**/*.js'])
+  // return gulp.src(['app.js','modules/**/*.js'])
     .pipe(babel({
       "plugins": [
         ["@babel/plugin-transform-modules-commonjs", {
@@ -16,5 +16,5 @@ gulp.task('transpile', function(){
         }]
       ]
     }))  
-    .pipe(gulp.dest('dest/temp'));
+    .pipe(gulp.dest('bin/src'));
 });
