@@ -8,25 +8,25 @@ import storage from '../../storage/SessionStorage.js';
 
 export function setup() {
     const journey = new Command("journey")
-        .helpOption("-l, --help", "Help")
-        .addOption(common.hostOptionM)
-        .addOption(common.userOption)
-        .addOption(common.passwordOption)
-        .addOption(common.realmOptionM)
-        .addOption(common.deploymentOption)
-        .description("Manage journeys/trees.")
+        .helpOption("-h, --help", "Help")
+        .description("Manage journeys/trees.");
 
     journey
         .command("list")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.realmArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .addOption(new Option("-a, --analyze", "Analyze journeys for custom nodes."))
         .description("List all the journeys/trees in a realm.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             console.log(`Listing journeys in realm ${storage.session.getRealm()}...`);
             if(await getTokens()) {
                 var journeyList = await listJourneys(command.opts().analyze);
@@ -47,21 +47,27 @@ export function setup() {
 
     journey
         .command("describe")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgument)
+        .addArgument(common.realmArgument)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .addOption(common.treeOption)
         .addOption(common.fileOption)
         .addOption(common.versionOption)
         .description("If -h is supplied, describe the journey/tree indicated by -t, or \
 all journeys/trees in the realm if no -t is supplied, otherwise \
 describe the journey/tree export file indicated by -f.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             const treeDescription = [];
-            if (typeof command.parent.opts().host == 'undefined' || typeof command.opts().file != 'undefined') {
+            // TODO: review checks for arguments
+            if (typeof host == 'undefined' || typeof command.opts().file != 'undefined') {
                 if (typeof command.opts().file == 'undefined') {
                     console.error("You either need -h or -f when using describe");
                     return;
@@ -110,18 +116,23 @@ describe the journey/tree export file indicated by -f.")
 
     journey
         .command("export")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.realmArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .addOption(new Option("-t, --tree <tree>", "Name of a journey/tree. If specified, -a and -A are ignored."))
         .addOption(new Option("-f, --file <file>", "Name of the file to write the exported journey(s) to. Ignored with -A."))
         .addOption(new Option("-a, --all", "Export all the journeys/trees in a realm. Ignored with -t."))
         .addOption(new Option("-A, --allSeparate", "Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a."))
         .description("Export journeys/trees.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             if(await getTokens()) {
                 // export
                 if (command.opts().tree) {
@@ -181,17 +192,22 @@ describe the journey/tree export file indicated by -f.")
 
     journey
         .command("import")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.realmArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .addOption(common.treeOptionM)
         .addOption(common.fileOptionM)
         .addOption(common.noReUUIDOption)
         .description("Import journey/tree.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             console.log("Importing journey/tree...");
             if(await getTokens()) {
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
@@ -207,16 +223,21 @@ describe the journey/tree export file indicated by -f.")
 
     journey
         .command("importAll")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.realmArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .addOption(common.fileOptionM)
         .addOption(common.noReUUIDOption)
         .description("Import all the trees in a realm.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             console.log("Importing journey/tree...");
             if(await getTokens()) {
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
@@ -232,14 +253,19 @@ describe the journey/tree export file indicated by -f.")
 
     journey
         .command("prune")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.realmArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
+        .addOption(common.deploymentOption)
         .description("Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.parent.opts().user);
-            storage.session.setPassword(command.parent.opts().password);
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setDeploymentType(command.parent.opts().type);
-            storage.session.setRealm(command.parent.opts().realm);
+        .action(async (host, realm, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setRealm(realm);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             console.log("Pruning orphaned configuration artifacts...");
             if(await getTokens()) {
                 const allNodes = [];
