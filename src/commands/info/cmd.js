@@ -6,17 +6,17 @@ import storage from '../../storage/SessionStorage.js';
 export function setup() {
     const info = new Command("info"); 
     info
-        .helpOption("-l, --help", "Help")
-        .addOption(common.hostOption.makeOptionMandatory())
-        .addOption(common.userOption)
-        .addOption(common.passwordOption)
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.userArgument)
+        .addArgument(common.passwordArgument)
+        .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
         .description("Print versions and tokens.")
-        .action(async (options, command) => {
-            storage.session.setUsername(command.opts().user);
-            storage.session.setPassword(command.opts().password);
-            storage.session.setTenant(command.opts().host);
-            storage.session.setDeploymentType(command.opts().type);
+        .action(async (host, user, password, options, command) => {
+            storage.session.setTenant(host);
+            storage.session.setUsername(user);
+            storage.session.setPassword(password);
+            storage.session.setDeploymentType(options.type);
             console.log("Printing versions and tokens...");
             if(await getTokens()) {
                 console.log("Cookie name: " + storage.session.getCookieName());

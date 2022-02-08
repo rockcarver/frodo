@@ -12,7 +12,7 @@ export function setup() {
     connections
         .command("list")
         .showHelpAfterError()
-        .helpOption("-l, --help", "Help")
+        .helpOption("-h, --help", "Help")
         .description("List configured connections.")
         .action(async (options, command) => {
             // console.log('list command called');
@@ -21,33 +21,33 @@ export function setup() {
 
     connections
         .command("add")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.userArgumentM)
+        .addArgument(common.passwordArgumentM)
+        .addArgument(common.apiKeyArgument)
+        .addArgument(common.apiSecretArgument)
         .showHelpAfterError()
-        .addOption(common.hostOptionM)
-        .addOption(common.userOptionM)
-        .addOption(common.passwordOptionM)
-        .addOption(common.apiKeyOption)
-        .addOption(common.apiSecretOption)
-        .helpOption("-l, --help", "Help")
+        .helpOption("-h, --help", "Help")
         .description("Add a new connection. You have to specify a URL, username and password at a minimum.\n" +
                     "Optionally, for Identity Cloud, you can also add a log API key and secret.")
-        .action(async (options, command) => {
+        .action(async (host, user, password, key, secret, options, command) => {
             // console.log('list command called');
             saveConnection({
-                tenant: command.opts().host,
-                username: command.opts().user,
-                password: command.opts().password,
-                key: command.opts().key,
-                secret: command.opts().secret
+                tenant: host,
+                username: user,
+                password: password,
+                key: key,
+                secret: secret
             });
         });
 
     connections
         .command("delete")
+        .addArgument(common.hostArgumentM)
         .showHelpAfterError()
-        .addOption(common.hostOptionM)
-        .helpOption("-l, --help", "Help")
+        .helpOption("-h, --help", "Help")
         .description("Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor).")
-        .action(async (options, command) => {
+        .action(async (host, options, command) => {
             // console.log('list command called');
             const filename = getConnectionFileName();
             let connectionsData = {};
@@ -55,17 +55,17 @@ export function setup() {
                 if(err == null) {
                     const data = fs.readFileSync(filename, "utf8");
                     connectionsData = JSON.parse(data);
-                    if(connectionsData[command.opts().host])
-                        console.log(`Deleting existing connection profile ${command.opts().host}`);
+                    if(connectionsData[host])
+                        console.log(`Deleting existing connection profile ${host}`);
                     else
-                        console.log(`Connection profile ${command.opts().host} not found`);
+                        console.log(`Connection profile ${host} not found`);
                 } else if(err.code === 'ENOENT') {
                     console.log(`Connection profile file ${filename} not found`);
                 } else {
                     console.error("Error in deleting connection profile: ", err.code);
                     return;
                 }
-                delete connectionsData[command.opts().host];
+                delete connectionsData[host];
                 fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
                 console.log("done.");
             });

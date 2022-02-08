@@ -7,21 +7,22 @@ import storage from '../../storage/SessionStorage.js';
 export function setup() {
     const logs = new Command("logs");
     logs
-        .helpOption("-l, --help", "Help")
-        .addOption(common.hostOptionM)
-        .addOption(common.apiKeyOption)
-        .addOption(common.apiSecretOption)
+        .addArgument(common.hostArgumentM)
+        .helpOption("-h, --help", "Help")
         .description("View Identity Cloud logs.")
 
     logs
         .command("list")
-        .helpOption("-l, --help", "Help")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.apiKeyArgument)
+        .addArgument(common.apiSecretArgument)
+        .helpOption("-h, --help", "Help")
         .description("List available ID Cloud log sources.")
-        .action(async (options, command) => {
+        .action(async (host, key, secret, options, command) => {
             let credsFromParameters = true;
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setLogApiKey(command.parent.opts().key);
-            storage.session.setLogApiSecret(command.parent.opts().secret);
+            storage.session.setTenant(host);
+            storage.session.setLogApiKey(key);
+            storage.session.setLogApiSecret(secret);
             console.log("Listing available ID Cloud log sources...");
             const conn = getConnection(storage.session.getTenant());
             storage.session.setTenant(conn.tenant);
@@ -49,15 +50,17 @@ export function setup() {
 
     logs
         .command("tail")
+        .addArgument(common.hostArgumentM)
+        .addArgument(common.apiKeyArgument)
+        .addArgument(common.apiSecretArgument)
         .helpOption("-l, --help", "Help")
-        .addOption(common.sourcesOption)
-        // .addOption(common.fileOption.makeOptionMandatory())
-        .description("\"tail\" (similar to the \"tail -f\" command) ID Cloud logs")
-        .action(async (options, command) => {
+        .addOption(common.sourcesOptionM)
+        .description("Tail Identity Cloud logs.")
+        .action(async (host, key, secret, options, command) => {
             let credsFromParameters = true;
-            storage.session.setTenant(command.parent.opts().host);
-            storage.session.setLogApiKey(command.parent.opts().key);
-            storage.session.setLogApiSecret(command.parent.opts().secret);
+            storage.session.setTenant(host);
+            storage.session.setLogApiKey(key);
+            storage.session.setLogApiSecret(secret);
             console.log(`Tailing ID Cloud logs from the following sources: ${command.opts().sources}...`);
             const conn = getConnection(storage.session.getTenant());
             storage.session.setTenant(conn.tenant);
