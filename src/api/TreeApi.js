@@ -365,8 +365,8 @@ async function putNodeData(id, nodeType, data) {
 
 async function putJourneyStructureData(id, data) {
     try {
-        const jURL = util.format(journeyURLTemplate, storage.session.getTenant(), getCurrentRealmPath(storage.session.getRealm()), id);
-        const response = await generateAmApi(getTreeApiConfig()).get(
+        const urlString = util.format(journeyURLTemplate, storage.session.getTenant(), getCurrentRealmPath(storage.session.getRealm()), id);
+        const response = await generateAmApi(getTreeApiConfig()).put(
             urlString,
             data,
             { withCredentials: true },
@@ -476,7 +476,7 @@ export async function importJourney(id, journeyMap, noreuuid, single) {
             journeyText = replaceAll(journeyText, oldId, newId);
         }
     }
-    journeyData = JSON.parse(journeyText);
+    let journeyData = JSON.parse(journeyText);
     if (await putJourneyStructureData(idForUrl, journeyData) == null) {
         console.error(`importJourney ERROR: error importing journey structure ${treeId}`);
         return null;
