@@ -7,6 +7,7 @@ import { createHash, randomBytes } from 'crypto';
 import * as base64url from './utils/Base64URL.js';
 import readlineSync from 'readline-sync';
 import storage from '../storage/SessionStorage.js';
+import * as global from '../storage/StaticStorage.js';
 
 const adminClientPassword = "doesnotmatter"
 const serverInfoURLTemplate = "%s/json/serverinfo/%s"
@@ -193,6 +194,12 @@ async function checkAndHandle2FA(payload) {
     }
 }
 
+function determineDefaultRealm(deploymentType) {
+    if (storage.session.getRealm() === global.DEFAULT_REALM_KEY) {
+        storage.session.setRealm(global.DEPLOYMENT_TYPE_REALM_MAP[deploymentType]);
+    }
+}
+
 async function determineDeployment() {
 	const fidcClientId = "idmAdminClient";
 	const forgeopsClientId = "idm-admin-ui";
@@ -211,14 +218,13 @@ async function determineDeployment() {
     };
     let bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${fidcClientId}&csrf=${storage.session.getCookieValue()}&decision=allow&code_challenge=${challenge}&code_challenge_method=${challengeMethod}`;
    
-    // let oauthClientURL = util.format(oauthClientURLTemplate, storage.session.getTenant(), "/alpha", fidcClientId);
+    let deploymentType = global.CLASSIC_DEPLOYMENT_TYPE_KEY;
     try {
-        // response = await axios.get(oauthClientURL, {headers: headers});
         response = await axios.post(authorizeURL, bodyFormData, {headers: headers, maxRedirects: 0});
     } catch(e) {
         if(e.response.status == 302) {
             console.log("ForgeRock Identity Cloud detected.");
-            return "Cloud";
+            deploymentType = global.CLOUD_DEPLOYMENT_TYPE_KEY;
         } else {
             try {
                 bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${forgeopsClientId}&csrf=${storage.session.getCookieValue()}&decision=allow&code_challenge=${challenge}&code_challenge_method=${challengeMethod}`;            
@@ -227,16 +233,15 @@ async function determineDeployment() {
                 if(ex.response.status == 302) {
                     adminClientId = forgeopsClientId;
                     console.log("ForgeOps deployment detected.");
-                    return "ForgeOps";
+                    deploymentType = global.FORGEOPS_DEPLOYMENT_TYPE_KEY;
                 } else {
                     console.log("Classic deployment detected.");
-                    return "Classic";
                 }
             }
         }
     }
-    console.error("Error determining deployment type, please try again with type override");
-    return "";
+    determineDefaultRealm(deploymentType);
+    return deploymentType;
 }
 
 async function getVersionInfo() {
@@ -358,7 +363,7 @@ async function getAccessToken() {
             "Content-Type": "application/x-www-form-urlencoded"
         };
         let response = null;
-        if(storage.session.getDeploymentType() == "Cloud") {
+        if(storage.session.getDeploymentType() == global.CLOUD_DEPLOYMENT_TYPE_KEY) {
             const auth = {
                 username: adminClientId,
                 password: adminClientPassword
@@ -398,7 +403,7 @@ export async function getTokens() {
     }
     await authenticate();
     // console.log("Session token: " + storage.session.getCookieValue());
-    if(storage.session.getCookieValue() && !storage.session.getBearerToken() && (storage.session.getDeploymentType() == "Cloud" || storage.session.getDeploymentType() == "ForgeOps")) {
+    if(storage.session.getCookieValue() && !storage.session.getBearerToken() && (storage.session.getDeploymentType() == global.CLOUD_DEPLOYMENT_TYPE_KEY || storage.session.getDeploymentType() == global.FORGEOPS_DEPLOYMENT_TYPE_KEY)) {
         await getAccessToken()
         // console.log("Bearer token: " + storage.session.getBearerToken());
     }

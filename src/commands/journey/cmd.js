@@ -14,7 +14,7 @@ export function setup() {
     journey
         .command("list")
         .addArgument(common.hostArgumentM)
-        .addArgument(common.realmArgumentM)
+        .addArgument(common.realmArgument)
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
@@ -27,8 +27,8 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
-            console.log(`Listing journeys in realm ${storage.session.getRealm()}...`);
             if(await getTokens()) {
+                console.log(`Listing journeys in realm "${storage.session.getRealm()}"...`);
                 var journeyList = await listJourneys(command.opts().analyze);
                 journeyList.sort((a, b) => a.name.localeCompare(b.name));
                 if (command.opts().analyze) {
@@ -82,8 +82,8 @@ describe the journey/tree export file indicated by -f.")
                     console.error(err);
                 }
             } else {
-                console.log(`Describing journey(s) in realm ${storage.session.getRealm()}...`);
                 if(await getTokens()) {
+                    console.log(`Describing journey(s) in realm "${storage.session.getRealm()}"...`);
                     if (typeof command.opts().tree == 'undefined') {
                         const journeyList = await listJourneys(false);
                         for (const item of journeyList) {
@@ -117,7 +117,7 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("export")
         .addArgument(common.hostArgumentM)
-        .addArgument(common.realmArgumentM)
+        .addArgument(common.realmArgument)
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
@@ -193,7 +193,7 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("import")
         .addArgument(common.hostArgumentM)
-        .addArgument(common.realmArgumentM)
+        .addArgument(common.realmArgument)
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
@@ -208,8 +208,8 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
-            console.log("Importing journey/tree...");
             if(await getTokens()) {
+                console.log(`Importing journey(s) into realm "${storage.session.getRealm()}"...`);
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
                     if (err) throw err;
                     const journeyData = JSON.parse(data);
@@ -224,7 +224,7 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("importAll")
         .addArgument(common.hostArgumentM)
-        .addArgument(common.realmArgumentM)
+        .addArgument(common.realmArgument)
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
@@ -238,8 +238,8 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
-            console.log("Importing journey/tree...");
             if(await getTokens()) {
+                console.log(`Importing journey(s) into realm "${storage.session.getRealm()}"...`);
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
                     if (err) throw err;
                     const journeyData = JSON.parse(data);
@@ -254,7 +254,7 @@ describe the journey/tree export file indicated by -f.")
     journey
         .command("prune")
         .addArgument(common.hostArgumentM)
-        .addArgument(common.realmArgumentM)
+        .addArgument(common.realmArgument)
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
@@ -266,8 +266,8 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
-            console.log("Pruning orphaned configuration artifacts...");
             if(await getTokens()) {
+                console.log(`Pruning orphaned configuration artifacts in realm "${storage.session.getRealm()}"...`);
                 const allNodes = [];
                 const orphanedNodes = [];
                 console.log("Analyzing authentication nodes configuration artifacts...");
