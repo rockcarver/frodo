@@ -1,11 +1,12 @@
 import { Argument, Option } from 'commander';
+import * as global from '../storage/StaticStorage.js';
 
 const hostArgumentDescription = "Access Management base URL, e.g.: https://cdk.iam.example.com/am. To use a connection profile, just specify a unique substring."
 export const hostArgument = new Argument("[host]", hostArgumentDescription);
 export const hostArgumentM = new Argument("<host>", hostArgumentDescription);
 
-const realmArgumentDescription = "Realm. Specify realm as 'realm' or '/parent/child'."
-export const realmArgument = new Argument("[realm]", realmArgumentDescription);
+const realmArgumentDescription = "Realm. Specify realm as '/' for the root realm or 'realm' or '/parent/child' otherwise."
+export const realmArgument = new Argument("[realm]", realmArgumentDescription).default(global.DEFAULT_REALM_KEY);
 export const realmArgumentM = new Argument("<realm>", realmArgumentDescription);
 
 const userArgumentDescription = "Username to login with. Must be an admin user with appropriate rights to manage authentication journeys/trees.";
@@ -37,8 +38,8 @@ const deploymentOptionDescription = "Override auto-detected deployment type. Val
 The detected or provided deployment type controls certain behavior like obtaining an Identity \
 Management admin token or not and whether to export/import referenced email templates or how \
 to walk through the tenant admin login flow of Identity Cloud and handle MFA";
-export const deploymentOption = new Option("-m, --type <type>", deploymentOptionDescription).choices(['Classic', 'Cloud', 'ForgeOps']);
-export const deploymentOptionM = new Option("-m, --type <type>", deploymentOptionDescription).choices(['Classic', 'Cloud', 'ForgeOps']);
+export const deploymentOption = new Option("-m, --type <type>", deploymentOptionDescription).choices(global.DEPLOYMENT_TYPES);
+export const deploymentOptionM = new Option("-m, --type <type>", deploymentOptionDescription).choices(global.DEPLOYMENT_TYPES);
 
 
 export const noReUUIDOption = new Option("-n", "No Re-UUID, i.e., import does not generate new UUIDs \

@@ -5,7 +5,7 @@ import util from 'util';
 const realmPathTemplate = "/realms/%s";
 
 function getCurrentRealmPath() {
-    let realm = storage.session.getItem("realm");
+    let realm = storage.session.getRealm();
     if (realm.startsWith("/") && realm.length > 1) {
         realm = realm.substring(1);
     }

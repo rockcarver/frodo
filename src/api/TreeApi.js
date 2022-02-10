@@ -175,7 +175,7 @@ export async function listJourneys(analyze) {
         // console.log(journeyList);
         return journeyList;
     } catch (e) {
-        console.error("listJourneys ERROR: error getting journey list - ", e.message);
+        console.error("listJourneys ERROR: error getting journey list - ", e);
         return null;
     }
 }
