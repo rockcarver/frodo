@@ -28,11 +28,11 @@ jobs:
     - name: Transpile to CommonJS
       run: gulp
     - name: Install binary distribution dependencies
+      working-directory: ./dist
       run: npm ci
-      working-directory: ./dist
     - name: Build distribution binaries
-      run: pkg -C Gzip .
       working-directory: ./dist
+      run: pkg -d -C Gzip .
     # - run: npm test
     - name: Release distribution binaries
       uses: softprops/action-gh-release@v0.1.14
