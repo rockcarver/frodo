@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Create binary release
+name: Create binary release (CJS)
 
 on:
   release:
@@ -27,10 +27,10 @@ jobs:
       run: gulp
     - name: Install binary distribution dependencies
       run: npm ci
-        working-directory: ./dist
+      working-directory: ./dist
     - name: Build distribution binaries
       run: pkg -C Gzip .
-        working-directory: ./dist
+      working-directory: ./dist
     # - run: npm test
     - name: Release distribution binaries
       uses: softprops/action-gh-release@v0.1.14
