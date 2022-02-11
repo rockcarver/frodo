@@ -40,6 +40,8 @@ jobs:
         security list-keychain -d user -s $KEYCHAIN_PATH
     - name: Install pkg
       run: npm install -g pkg
+    - name: Install gulp
+      run: npm install -g gulp
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
