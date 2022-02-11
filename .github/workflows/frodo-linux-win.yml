@@ -33,7 +33,7 @@ jobs:
       run: npm ci
     - name: Build distribution binaries
       working-directory: ./dist
-      run: pkg -d -C Gzip -t node16-linux-x64,node16-win-x64 .
+      run: pkg -C Gzip -t node16-linux-x64,node16-win-x64 .
     # - run: npm test
     - name: Release distribution binaries
       uses: softprops/action-gh-release@v0.1.14
