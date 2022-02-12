@@ -20,19 +20,19 @@ jobs:
       #
 
       - name: "Select Xcode 13"
-        uses: devbotsxyz/xcode-select@master
+        uses: devbotsxyz/xcode-select@v1
         with:
           version: "13"
 
       - name: "Import Certificate: Development"
-        uses: devbotsxyz/import-signing-certificate@main
+        uses: devbotsxyz/import-signing-certificate@v1
         with:
           certificate-data: ${{ secrets.DEVELOPMENT_CERTIFICATE_DATA }}
           certificate-passphrase: ${{ secrets.DEVELOPMENT_CERTIFICATE_PASSPHRASE }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
       - name: "Import Certificate: Distribution"
-        uses: devbotsxyz/import-signing-certificate@main
+        uses: devbotsxyz/import-signing-certificate@v1
         with:
           certificate-data: ${{ secrets.DISTRIBUTION_CERTIFICATE_DATA }}
           certificate-passphrase: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSPHRASE }}
@@ -77,9 +77,6 @@ jobs:
       - name: Sign distribution binary
         working-directory: ./dist/bin/macos
         run: codesign -f -s "Rock Carver" frodo --deep
-
-      - name: "Export & Sign Release Build"
-        uses: devbotsxyz/xcode-export-archive@master
 
       #
       # Now send the product to Apple's notarization service and then
@@ -145,7 +142,7 @@ jobs:
         run: pkg -C Gzip -t node16-linux-x64 --out-path ./dist/bin/linux .
 
       - name: Archive distribution binary
-        run: zip -r -Z bzip2 dist/frodo-linux.zip dist/bin/linux/frodo
+        run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
@@ -162,25 +159,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
       - name: Install pkg
         run: npm install -g pkg
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+
       - name: Install root dependencies
         run: npm ci
+
       - name: Transpile to CommonJS
         run: gulp
+
       - name: Install binary distribution dependencies
         working-directory: ./dist
         run: npm ci
+
       - name: Build distribution binary
         working-directory: ./dist
         run: pkg -C Gzip -t node16-win-x64 --out-path ./dist/bin/win .
+
       - name: Archive distribution binary
-        run: zip -r -Z bzip2 dist/frodo-win.zip dist/bin/win/frodo
+        run: zip -r -Z bzip2 dist/frodo-win.zip . -i dist/bin/win/frodo
+
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
