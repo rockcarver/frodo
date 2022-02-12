@@ -76,7 +76,7 @@ jobs:
       #
       - name: Sign distribution binary
         working-directory: ./dist/bin/macos
-        run: codesign -f -s "Apple Distribution: Volker Scheuber (AV6L99G8W9)" frodo --deep
+        run: codesign -f -s 'Apple Distribution: Volker Scheuber (AV6L99G8W9)' frodo --deep
 
       #
       # Now send the product to Apple's notarization service and then
