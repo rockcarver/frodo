@@ -1,44 +1,187 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Create binary release (node16-linux-x64,node16-macos-x64,node16-win-x64)
+name: Binary release (linux, macos, win)
 
 on:
   release:
     types: [ created ]
 
 jobs:
-  build:
+  macos-release:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - name: "Checkout Project"
+        uses: actions/checkout@v2
+
+      #
+      # Setup
+      #
+
+      - name: "Select Xcode 13"
+        uses: devbotsxyz/xcode-select@master
+        with:
+          version: "13"
+
+      - name: "Import Certificate: Development"
+        uses: devbotsxyz/import-signing-certificate@main
+        with:
+          certificate-data: ${{ secrets.DEVELOPMENT_CERTIFICATE_DATA }}
+          certificate-passphrase: ${{ secrets.DEVELOPMENT_CERTIFICATE_PASSPHRASE }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: "Import Certificate: Distribution"
+        uses: devbotsxyz/import-signing-certificate@main
+        with:
+          certificate-data: ${{ secrets.DISTRIBUTION_CERTIFICATE_DATA }}
+          certificate-passphrase: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSPHRASE }}
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Install gulp
+        run: npm install -g gulp
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Transpile to CommonJS
+        run: gulp
+
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node16-macos-x64 --out-path ./dist/bin/macos .
+      #
+      # Fail early on failing tests.
+      # Disabled because this project does not have tests. (TODO Add some example tests)
+      #
+
+      #- name: "Test"
+      #  uses: devbotsxyz/xcode-test@v1
+
+      #
+      # Re-sign the application with the "Developer ID" certificate.
+      #
+      - name: Sign distribution binary
+        working-directory: ./dist/bin/macos
+        run: codesign -f -s "Rock Carver" frodo --deep
+
+      - name: "Export & Sign Release Build"
+        uses: devbotsxyz/xcode-export-archive@master
+
+      #
+      # Now send the product to Apple's notarization service and then
+      # staple it.
+      #
+
+      - name: "Notarize Release Build"
+        uses: devbotsxyz/xcode-notarize@v1
+        with:
+          product-path: "dist/bin/macos/frodo"
+          appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
+          appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
+
+      - name: "Staple Release Build"
+        uses: devbotsxyz/xcode-staple@v1
+        with:
+          product-path: "dist/bin/macos/frodo"
+
+      #
+      # Zip up the app and add it to the GitHub Release as a
+      # downloadable asset.
+      #
+
+      - name: Package for Distribution
+        run: ditto -V -c -k --keepParent "dist/bin/macos/frodo" "dist/frodo-macos.zip"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/frodo-macos.zip
+
+  linux-release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-    - uses: actions/checkout@v2
-    - name: Install pkg
-      run: npm install -g pkg
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install root dependencies
-      run: npm ci
-    - name: Transpile to CommonJS
-      run: gulp
-    - name: Install binary distribution dependencies
-      working-directory: ./dist
-      run: npm ci
-    - name: Build distribution binaries
-      working-directory: ./dist
-      run: pkg -d -C Gzip -t node16-linux-x64,node16-macos-x64,node16-win-x64 .
-    # - run: npm test
-    - name: Release distribution binaries
-      uses: softprops/action-gh-release@v0.1.14
-      with:
-        files: |
-          dist/frodo-linux
-          dist/frodo-macos
-          dist/frodo-win.exe
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Transpile to CommonJS
+        run: gulp
+
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node16-linux-x64 --out-path ./dist/bin/linux .
+
+      - name: Archive distribution binary
+        run: zip -r -Z bzip2 dist/frodo-linux.zip dist/bin/linux/frodo
+
+      - name: Release distribution binaries
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: |
+            dist/frodo-linux
+
+  win-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install pkg
+        run: npm install -g pkg
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install root dependencies
+        run: npm ci
+      - name: Transpile to CommonJS
+        run: gulp
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node16-win-x64 --out-path ./dist/bin/win .
+      - name: Archive distribution binary
+        run: zip -r -Z bzip2 dist/frodo-win.zip dist/bin/win/frodo
+      - name: Release distribution binaries
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: dist/frodo-win.exe
