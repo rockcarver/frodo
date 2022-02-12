@@ -184,7 +184,7 @@ jobs:
         run: pkg -C Gzip -t node16-win-x64 --out-path bin/win .
 
       - name: Archive distribution binary
-        run: zip -r -Z bzip2 dist/frodo-win.zip . -i dist/bin/win/frodo
+        run: zip -r -Z bzip2 dist/frodo-win.zip . -i dist/bin/win/frodo.exe
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
