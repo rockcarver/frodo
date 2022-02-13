@@ -90,6 +90,7 @@ jobs:
           appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
           appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
           primary-bundle-id: "frodo"
+          verbose: "true"
 
       - name: "Staple Release Build"
         uses: devbotsxyz/xcode-staple@v1
