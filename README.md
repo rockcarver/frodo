@@ -29,7 +29,10 @@ Depending on your OS, you can invoke `frodo-linux`, `frodo-macos` or `frodo-wind
 `frodo` uses commands and sub-commands to provide the functionality stated above. All commands support the help argument as such
 
 ```shell
-frodo journey -h 
+frodo journey -h
+```
+
+```shell
 Usage: frodo journey [options] [command]
 
 Manage journeys/trees.
@@ -68,7 +71,7 @@ Any unique substring of a saved host can be used as the value for host parameter
 The command below lists all journeys in the specified realm, but the main idea here is when you supply the host, username, and password frodo will automatically save the connection in the **`frodorc`** file
 
 ```shell
-frodo journey list https://<tenant-name>/am <realm> <username> <password>
+frodo journey list https://<tenant-url>/am <realm> <username> <password>
 ```
 
 One the connection is saved, you don't need to include the host, username, and password in your future commands. You'll simply use a substring in your tenant/forgerock deployment domain name to define the connection. For example, my tenant name is `https://demo-uniqueValue.forgeblocks.com/am`
@@ -76,7 +79,7 @@ One the connection is saved, you don't need to include the host, username, and p
 **`uniqueValue`** is a unique substring in my tenant url, and it's unique across my saved connections; this enables me to execute the same command from above as such
 
 ```shell
-frodo journey list uniqueValue
+frodo journey list <unique-connection-string>
 ```
 
 **`frodo`** will automatically parse this unique string, and check your saved connections for a match. It will then use the connection details to authenticate and list journeys.
@@ -90,13 +93,13 @@ This command is all about IDM configurations. It supports list, export, and impo
 List IDM configuration objects. You'll notice that we don't need to specific the realm here and we're reading from existing connection info
 
 ```shell
-frodo idm list uniqueValue
+frodo idm list <unique-connection-string>
 ```
 
 Or by supplying the host, username, and password
 
 ```shell
-frodo idm list https://<tenant-name>/am <username> <password>
+frodo idm list https://<tenant-url>/am <username> <password>
 ```
 
 ###### Sample output
@@ -113,23 +116,48 @@ Connected to ForgeRock Access Management 7.2.0-2021-11-SNAPSHOT Build 978ae0d483
 - emailTemplate/baselineEmailVerification
 ```
 
-Export IDM configuration to a file. If you don't specify the file option then the configuration will be printed to `STDOUT`. The export is in JSON format. The `-N` options is the name of the configuration object
+Exports IDM configuration in JSON format to a file or `STDOUT` if you don't specify the file option. The `-N` option is the name of the configuration object
 
 ```shell
-frodo idm export ali -N sync -f idm-sync.json
+frodo idm export <unique-connection-string> -N <configuration-name> -f <file-name.json>
+```
+
+```shell
+frodo idm export https://<tenant-url>/am <username> <password> -N <configuration-name> -f <file-name.json>
 ```
 
 #### Info
 
-#### Journey
+`info` prints version information, session token, access token, and tokenId to `STDOUT`.
 
-This will export a journey named `Registration` in `alpha` realm and save the contents in a file called `journey-Registration.json`. If the `-f <filename>` is omitted, the journey JSON data is dumped to STDOUT.
+##### Examples
 
 ```shell
-./frodo-linux journey -h https://<forgerock-cloud-tenant>/am -u <tenant.admin@tenant.com> -p my_5up3rs3cr3tp@ssw0rd import -t ImportTest -r alpha -f journey-ImportTest.json
+frodo info <unique-connection-string>
 ```
 
-The above will import the same journey.
+```shell
+frodo info <https://idc.iam.example.com/am> <username> <password>
+```
+
+##### Sample output
+
+```shell
+Printing versions and tokens...
+ForgeRock Identity Cloud detected.
+Connected to ForgeRock Access Management 7.2.0-2021-11-SNAPSHOT Build 978ae0d483aa2da07826b3bdff286c60ccb41a4e (2022-February-09 11:40)
+Cookie name: <tenant-cookie-name>
+Session token: <your-session-token>
+Bearer token: <your-bearer-token>
+```
+
+#### Journey
+
+Todo
+
+#### Logging
+
+Todo
 
 ## Developing
 
