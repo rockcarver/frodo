@@ -38,7 +38,7 @@ jobs:
 
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$DEVELOPMENT_CERTIFICATE_PASSPHRASE" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security import $CERTIFICATE_PATH -P "$DEVELOPMENT_CERTIFICATE_PASSPHRASE" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          #security import $INTERMEDIATE_CERTIFICATE_PATH -P "$DEVELOPMENT_CERTIFICATE_PASSPHRASE" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
       - name: Install pkg
@@ -171,7 +171,7 @@ jobs:
         run: pkg -C Gzip -t node16-win-x64 --out-path bin/win .
 
       - name: Archive distribution binary
-        run: zip -r -Z bzip2 dist/frodo-win.zip . -i dist/bin/win/frodo.exe
+        run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
