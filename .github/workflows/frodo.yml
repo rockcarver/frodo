@@ -31,12 +31,12 @@ jobs:
           certificate-passphrase: ${{ secrets.DEVELOPMENT_CERTIFICATE_PASSPHRASE }}
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-      - name: "Import Certificate: Distribution"
-        uses: devbotsxyz/import-signing-certificate@v1
-        with:
-          certificate-data: ${{ secrets.DISTRIBUTION_CERTIFICATE_DATA }}
-          certificate-passphrase: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSPHRASE }}
-          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+      # - name: "Import Certificate: Distribution"
+      #   uses: devbotsxyz/import-signing-certificate@v1
+      #   with:
+      #     certificate-data: ${{ secrets.DISTRIBUTION_CERTIFICATE_DATA }}
+      #     certificate-passphrase: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSPHRASE }}
+      #     keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
 
       - name: Install pkg
         run: npm install -g pkg
@@ -76,26 +76,26 @@ jobs:
       #
       - name: Sign distribution binary
         working-directory: ./dist/bin/macos
-        run: "codesign -f -s 'Apple Distribution: Volker Scheuber (AV6L99G8W9)' --timestamp --deep frodo"
+        run: "codesign -f -s 'Developer ID Application: Volker Scheuber (AV6L99G8W9)' --timestamp --deep frodo"
 
       #
       # Now send the product to Apple's notarization service and then
       # staple it.
       #
 
-      - name: "Notarize Release Build"
-        uses: devbotsxyz/xcode-notarize@v1
-        with:
-          product-path: "dist/bin/macos/frodo"
-          appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
-          appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
-          primary-bundle-id: "frodo"
-          verbose: "true"
+      # - name: "Notarize Release Build"
+      #   uses: devbotsxyz/xcode-notarize@v1
+      #   with:
+      #     product-path: "dist/bin/macos/frodo"
+      #     appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
+      #     appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
+      #     primary-bundle-id: "frodo"
+      #     verbose: "true"
 
-      - name: "Staple Release Build"
-        uses: devbotsxyz/xcode-staple@v1
-        with:
-          product-path: "dist/bin/macos/frodo"
+      # - name: "Staple Release Build"
+      #   uses: devbotsxyz/xcode-staple@v1
+      #   with:
+      #     product-path: "dist/bin/macos/frodo"
 
       #
       # Zip up the app and add it to the GitHub Release as a
