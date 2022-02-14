@@ -6,7 +6,7 @@ import * as common from '../cmd_common.js';
 export function setup() {
     const connections = new Command("connections"); 
     connections
-        .helpOption("-l, --help", "Help")
+        .helpOption("-h, --help", "Help")
         .description("Manage connection profiles.")
 
     connections
