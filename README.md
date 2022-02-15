@@ -68,18 +68,18 @@ The command displays the connections found in the **`frodorc`** file, located in
 Any unique substring of a saved host can be used as the value for host parameter in all commands
 ```
 
-The command below lists all journeys in the specified realm, but the main idea here is when you supply the host, username, and password frodo will automatically save the connection in the **`frodorc`** file
+The command below lists all journeys in the specified realm, but the main idea here is when you supply the host, username, and `password` frodo will automatically save the connection in the **`frodorc`** file. The `password` value will be encrypted with `AES-256`
 
 ```shell
 frodo journey list https://<tenant-url>/am <realm> <username> <password>
 ```
 
-One the connection is saved, you don't need to include the host, username, and password in your future commands. You'll simply use a substring in your tenant/forgerock deployment domain name to define the connection. For example, my tenant name is `https://demo-uniqueValue.forgeblocks.com/am`
+One the connection is saved, you don't need to include the `host`, `username`, and `password` in your future commands. You'll simply use a substring in your tenant/forgerock deployment domain name to define the connection. For example, if your tenant name is `https://login.acme.forgeblocks.com/am`
 
-**`uniqueValue`** is a unique substring in my tenant url, and it's unique across my saved connections; this enables me to execute the same command from above as such
+**`acme`** is a unique substring in your tenant url, and if it's unique across your saved connections then this enables frodo to execute the same command from above like:
 
 ```shell
-frodo journey list <unique-connection-string>
+frodo journey list acme
 ```
 
 **`frodo`** will automatically parse this unique string, and check your saved connections for a match. It will then use the connection details to authenticate and list journeys.
@@ -153,7 +153,29 @@ Bearer token: <your-bearer-token>
 
 #### Journey
 
-Todo
+The journey command can list, export, import, prune and describe journeys in a specific realm. You can view all options and argument by using the `help` command. This command can export all journey in a given `realm`, specific journeys, or even all journeys as separate `JSON` files.
+
+#### Examples
+
+These examples assume a saved connection
+
+List all Journeys in a realm
+
+```shell
+frodo journey list <unique-connection-string> <realm-name>
+```
+
+Export a specific journey
+
+```shell
+frodo journey export <unique-connection-string> <realm-name> -t <journey-name>
+```
+
+Import a Journey from a `JSON` file
+
+```shell
+frodo journey import <unique-connection-name> <realm-name> -t <journey-name> -f <file-name>
+```
 
 #### Logging
 
@@ -173,6 +195,16 @@ Todo
 cd $HOME # or any other directory you wish to clone to
 git clone git@github.com:rockcarver/frodo.git
 ```
+
+- Install via NPM
+
+```shell
+cd $HOME/frodo
+npm install
+npm i -g
+```
+
+frodo will be installed as a global npm package. This method is helpful when developing and testing.
 
 - Build
 
