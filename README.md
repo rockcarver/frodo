@@ -29,11 +29,17 @@ Links to the executables
 
 ## Usage
 
-Depending on your OS, you can invoke `frodo`, `frodo` or `frodo.exe` binary.
-`frodo` uses commands and sub-commands to provide the functionality stated above. All commands support the help argument as such
+You can invoke `frodo` from the terminal as long as you're in the directory or sourced/added it to the path.
+`frodo` uses commands and options to provide the functionality stated above. All commands support the help argument as such
 
 ```shell
 frodo journey -h
+```
+
+or
+
+```shell
+frodo journey help
 ```
 
 ```shell
