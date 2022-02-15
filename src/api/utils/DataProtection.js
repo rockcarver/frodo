@@ -24,15 +24,15 @@ const _encrypt = new WeakMap();
 
 class DataProtection {
   constructor() {
+    const masterKeyPath = () => `${homedir()}/.frodo/masterkey.key`;
     //Generates a master key in base64 format. This master key will be used to derive the key for encryption. this key should be protected by an HSM or KMS
     _masterKey.set(this, async () => {
       try {
-        if (!fs.existsSync(`${homedir()}/frodo/masterkey.key`)) {
+        if (!fs.existsSync(masterKeyPath())) {
           const masterKey = crypto.randomBytes(32).toString('base64');
-          await fsp.mkdir(`${homedir()}/frodo`, { recursive: true });
-          await fsp.writeFile(`${homedir()}/frodo/masterkey.key`, masterKey);
+          await fsp.writeFile(masterKeyPath(), masterKey);
         }
-        return await fsp.readFile(`${homedir()}/frodo/masterkey.key`, 'utf8');
+        return await fsp.readFile(masterKeyPath(), 'utf8');
       } catch (err) {
         console.error(err.message);
       }

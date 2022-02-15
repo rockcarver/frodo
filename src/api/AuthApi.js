@@ -31,9 +31,11 @@ const connFile = {
     "indentation": 4
 };
 
+const getConnectionFolder = () => `${os.homedir()}/.frodo`;
+
 export function getConnectionFileName() {
-    return (os.homedir() + "/.frodorc");
-}
+    return (os.homedir() + "/.frodo/.frodorc");
+};
 
 function findByWildcard(data, tenant) {
     for(const savedTenant in data) {
@@ -63,9 +65,16 @@ export function listConnections() {
 
 export function initConnections() {
     // create connections.json file if it doesn't exist
+    const folderName = getConnectionFolder()
     const filename = getConnectionFileName();
-    if (!fs.existsSync(filename)) {
-        fs.writeFileSync(filename, JSON.stringify({}, null, connFile.indentation));
+    if(!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName, {recursive:true})
+            if (!fs.existsSync(filename)) {
+              fs.writeFileSync(
+                filename,
+                JSON.stringify({}, null, connFile.indentation)
+              );
+            }
     }
     // encrypt the password from clear text to aes-256-GCM
     else {
