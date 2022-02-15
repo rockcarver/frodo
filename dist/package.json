@@ -1,6 +1,6 @@
 {
   "name": "frodo",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
   "main": "src/app.js",
   "scripts": {
@@ -10,6 +10,10 @@
     {
       "name": "Sandeep Chaturvedi",
       "email": "sandeep.chaturvedi@forgerock.com"
+    },
+    {
+      "name": "Ali Falahi",
+      "email": "ali.falahi@forgerock.com"
     },
     {
       "name": "Volker Scheuber",
