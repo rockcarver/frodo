@@ -23,9 +23,13 @@ This is the ForgeROck DO (frodo) CLI executable. This is a statically linked bin
 
 `frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
 
+## Getting the binaries
+
+Links to the executables
+
 ## Usage
 
-Depending on your OS, you can invoke `frodo-linux`, `frodo-macos` or `frodo-windows.exe` binary.
+Depending on your OS, you can invoke `frodo`, `frodo` or `frodo.exe` binary.
 `frodo` uses commands and sub-commands to provide the functionality stated above. All commands support the help argument as such
 
 ```shell
@@ -68,7 +72,7 @@ The command displays the connections found in the **`frodorc`** file, located in
 Any unique substring of a saved host can be used as the value for host parameter in all commands
 ```
 
-The command below lists all journeys in the specified realm, but the main idea here is when you supply the host, username, and `password` frodo will automatically save the connection in the **`frodorc`** file. The `password` value will be encrypted with `AES-256`
+The command below lists all journeys in the specified realm, but the main idea here is when you supply the `host`, `username`, and `password` frodo will automatically save the connection in the **`$USERHOME/.frodo/.frodorc`** file. The `password` value will be encrypted with `AES-256-GCM`
 
 ```shell
 frodo journey list https://<tenant-url>/am <realm> <username> <password>
@@ -93,7 +97,7 @@ This command is all about IDM configurations. It supports list, export, and impo
 List IDM configuration objects. You'll notice that we don't need to specific the realm here and we're reading from existing connection info
 
 ```shell
-frodo idm list <unique-connection-string>
+frodo idm list acme
 ```
 
 Or by supplying the host, username, and password
@@ -119,7 +123,7 @@ Connected to ForgeRock Access Management 7.2.0-2021-11-SNAPSHOT Build 978ae0d483
 Exports IDM configuration in JSON format to a file or `STDOUT` if you don't specify the file option. The `-N` option is the name of the configuration object
 
 ```shell
-frodo idm export <unique-connection-string> -N <configuration-name> -f <file-name.json>
+frodo idm export acme -N <configuration-name> -f <file-name.json>
 ```
 
 ```shell
@@ -133,7 +137,7 @@ frodo idm export https://<tenant-url>/am <username> <password> -N <configuration
 ##### Examples
 
 ```shell
-frodo info <unique-connection-string>
+frodo info acme
 ```
 
 ```shell
@@ -162,13 +166,13 @@ These examples assume a saved connection
 List all Journeys in a realm
 
 ```shell
-frodo journey list <unique-connection-string> <realm-name>
+frodo journey list acme <realm-name>
 ```
 
 Export a specific journey
 
 ```shell
-frodo journey export <unique-connection-string> <realm-name> -t <journey-name>
+frodo journey export acme <realm-name> -t <journey-name>
 ```
 
 Import a Journey from a `JSON` file
@@ -181,11 +185,15 @@ frodo journey import <unique-connection-name> <realm-name> -t <journey-name> -f 
 
 Todo
 
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what and why you'd like to change.
+
 ## Developing
 
 ### Prerequisites
 
-- Install nodejs (tested on v14.9.0) and npm (included with node)
+- Install nodejs (tested on v14.9.0 and 16.13.0) and npm (included with node)
 
 ### Process
 
@@ -228,5 +236,7 @@ frodo-win.exe
 `frodo` is self contained, statically linked, so no dependencies should be needed. It can be run as:
 
 ```shell
-$HOME/frodo/frodo-linux # or the platform equivalent binary
+$HOME/frodo/frodo # or the platform equivalent binary
 ```
+
+We recommending sourcing or adding it to the path if you're on windows to make it easier to call from your terminal without switching directories
