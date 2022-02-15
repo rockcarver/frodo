@@ -8,7 +8,9 @@ import * as base64url from './utils/Base64URL.js';
 import readlineSync from 'readline-sync';
 import storage from '../storage/SessionStorage.js';
 import * as global from '../storage/StaticStorage.js';
+import DataProtection from './utils/DataProtection.js';
 
+const dataProtection = new DataProtection()
 const adminClientPassword = "doesnotmatter"
 const serverInfoURLTemplate = "%s/json/serverinfo/%s"
 const authorizeURLTemplate = "%s/oauth2%s/authorize"
@@ -29,9 +31,11 @@ const connFile = {
     "indentation": 4
 };
 
+const getConnectionFolder = () => `${os.homedir()}/.frodo`;
+
 export function getConnectionFileName() {
-    return (os.homedir() + "/.frodorc");
-}
+    return (os.homedir() + "/.frodo/.frodorc");
+};
 
 function findByWildcard(data, tenant) {
     for(const savedTenant in data) {
@@ -61,19 +65,26 @@ export function listConnections() {
 
 export function initConnections() {
     // create connections.json file if it doesn't exist
+    const folderName = getConnectionFolder()
     const filename = getConnectionFileName();
-    if (!fs.existsSync(filename)) {
-        fs.writeFileSync(filename, JSON.stringify({}, null, connFile.indentation));
+    if(!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName, {recursive:true})
+            if (!fs.existsSync(filename)) {
+              fs.writeFileSync(
+                filename,
+                JSON.stringify({}, null, connFile.indentation)
+              );
+            }
     }
-    // convert clear text password to base64-encoded
+    // encrypt the password from clear text to aes-256-GCM
     else {
         const data = fs.readFileSync(filename, connFile.options);
         var connectionsData = JSON.parse(data);
         var convert = false;
-        Object.keys(connectionsData).forEach(conn => {
+        Object.keys(connectionsData).forEach(async conn => {
             if (connectionsData[conn].password) {
                 convert = true;
-                connectionsData[conn].encodedPassword = Buffer.from(connectionsData[conn].password).toString('base64');
+                connectionsData[conn].encodedPassword = await dataProtection.encrypt(connectionsData[conn].password) //Buffer.from(connectionsData[conn].password).toString('base64');
                 delete connectionsData[conn].password;
             }
         });
@@ -83,7 +94,7 @@ export function initConnections() {
     }
 }
 
-export function getConnection() {
+export async function getConnection() {
     try {
         const filename = getConnectionFileName();
         const data = fs.readFileSync(filename, connFile.options);
@@ -95,8 +106,8 @@ export function getConnection() {
         }
         return {
             tenant: tenantData.tenant,
-            username: tenantData.username?tenantData.username:null,
-            password: tenantData.encodedPassword?Buffer.from(tenantData.encodedPassword, 'base64').toString(connFile.options):null,
+            username: tenantData.username ? tenantData.username : null,
+            password: tenantData.encodedPassword ? await dataProtection.decrypt(tenantData.encodedPassword) : null,
             key: tenantData.logApiKey?tenantData.logApiKey:null,
             secret: tenantData.logApiSecret?tenantData.logApiSecret:null
         }    
@@ -124,7 +135,7 @@ export async function saveConnection() {
         console.log(`Creating connection profile file ${filename} with ${storage.session.getTenant()}`);
     }
     if (storage.session.getUsername()) existingData.username = storage.session.getUsername();
-    if (storage.session.getPassword()) existingData.encodedPassword = Buffer.from(storage.session.getPassword()).toString('base64');
+    if (storage.session.getPassword()) existingData.encodedPassword = await dataProtection.encrypt(storage.session.getPassword()) //Buffer.from(storage.session.getPassword()).toString('base64');
     if (storage.session.getLogApiKey()) existingData.logApiKey = storage.session.getLogApiKey();
     if (storage.session.getLogApiSecret()) existingData.logApiSecret = storage.session.getLogApiSecret();
     connectionsData[storage.session.getTenant()] = existingData;
@@ -396,7 +407,7 @@ export async function getTokens() {
     // if username/password on cli are empty, try to read from connections.json
     if(storage.session.getUsername() == null && storage.session.getPassword() == null) {
         credsFromParameters = false;
-        const conn = getConnection();
+        const conn = await getConnection();
         storage.session.setTenant(conn.tenant);
         storage.session.setUsername(conn.username);
         storage.session.setPassword(conn.password);

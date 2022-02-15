@@ -1,7 +1,4 @@
-*.cer
-*.p12
-*.developerprofile
-
+src
 frodo-linux
 frodo-macos
 frodo-win.exe
