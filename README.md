@@ -222,11 +222,23 @@ frodo will be installed as a global npm package. This method is helpful when dev
 
 - Build
 
+To build locally we need to do a couple of extra steps due to a limitation with the `pkg` module we're using to distribute binaries. `pkg` [doesn't support ES6](https://github.com/vercel/pkg/issues/1291) modules as of yet, so we have to transpile to commonJS then build.
+
+There should be a `dist` folder when you cloned the repo from Github, the binaries will get pushed there. We're using a `gulp` script to transpile ES6 module to commonJS and then `pkg` can create the binary for the respective OS. For Mac OS you'll have to sign the binary
+
+For windows and Linux
+
 ```shell
 cd $HOME/frodo
 npm install
-npm install -g pkg
-pkg -C GZip .
+npm install -g pkg gulp
+gulp
+cd ./dist
+npm i
+#For Windows
+pkg -C Gzip -t node16-win-x64 --out-path bin/win .
+#For Linux
+pkg -C Gzip -t node16-linux-x64 --out-path bin/linux .
 ```
 
 This will build `frodo` in local directory. There are three binaries created
