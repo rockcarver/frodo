@@ -91,6 +91,32 @@ Commands:
   help [command]                                        display help for command
   ```
 
+```sh
+frodo journey help export
+```
+
+```console
+Usage: frodo journey export [options] <host> [realm] [user] [password]
+
+Export journeys/trees.
+
+Arguments:
+  host               Access Management base URL, e.g.: https://cdk.iam.example.com/am. To use a connection profile, just specify a unique substring.
+  realm              Realm. Specify realm as '/' for the root realm or 'realm' or '/parent/child' otherwise. (default: "__default__realm__")
+  user               Username to login with. Must be an admin user with appropriate rights to manage authentication journeys/trees.
+  password           Password.
+
+Options:
+  -m, --type <type>  Override auto-detected deployment type. Valid values for type: [Classic] - A classic Access Management-only deployment with custom layout and configuration. [Cloud] - A ForgeRock Identity Cloud
+                     environment. [ForgeOps] - A ForgeOps CDK or CDM deployment. The detected or provided deployment type controls certain behavior like obtaining an Identity Management admin token or not and whether to        
+                     export/import referenced email templates or how to walk through the tenant admin login flow of Identity Cloud and handle MFA (choices: "classic", "cloud", "forgeops")
+  -t, --tree <tree>  Name of a journey/tree. If specified, -a and -A are ignored.
+  -f, --file <file>  Name of the file to write the exported journey(s) to. Ignored with -A.
+  -a, --all          Export all the journeys/trees in a realm. Ignored with -t.
+  -A, --allSeparate  Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.
+  -h, --help         Help
+  ```
+  
 ### Commands
 
 - [connections](#connections)
@@ -272,7 +298,7 @@ pkg -C Gzip -t node16-linux-x64 --out-path bin/linux .
 
 ##### For MacOS
 
-For MacOS we need to sign the binaries with an Apple Developer Cert. 
+For MacOS we need to sign the binaries with an Apple Developer Cert.
 
 ```sh
 # create variables
@@ -312,7 +338,7 @@ codesign -f -s 'DEV_ID' --timestamp --deep frodo
 
 This will build `frodo` in each local directory respective to the OS target you chose
 
-```sh
+```console
 ./dist/bin/linux/frodo
 ./dist/bin/macos/frodo
 ./dist/bin/win/frodo
@@ -326,4 +352,4 @@ This will build `frodo` in each local directory respective to the OS target you 
 $HOME/frodo/frodo # or the platform equivalent binary
 ```
 
-We recommending sourcing or adding it to the path if you're on windows to make it easier to call from your terminal without switching directories
+We recommend sourcing, or adding it to the path if you're on windows, to make it easier to call from your terminal without switching directories
