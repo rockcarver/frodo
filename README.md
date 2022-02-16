@@ -33,19 +33,19 @@ You can invoke `frodo` from the terminal as long as you're in the directory or s
 
 To get started run the command below to get tenant info. This command will also create a connection file and stores it on disk, more on connections later.
 
-```sh
+```console
 frodo info https://login.acme.forgeblocks.io/am <username> <password>
 ```
 
 Once `frodo` saves a connection, you don't have to provide the `host`, `username`, and `password` arguments. You can reference your connection using any unique substring from your host
 
-```sh
+```console
 frodo info acme
 ```
 
 You interact with `frodo` using commands and options. You can see the list of options by using the `help` command
 
-```sh
+```console
 frodo help
 ```
 
@@ -68,7 +68,7 @@ Commands:
 
 Or to view options for a specific command
 
-```sh
+```console
 frodo help journey
 ```
 
@@ -91,7 +91,7 @@ Commands:
   help [command]                                        display help for command
   ```
 
-```sh
+```console
 frodo journey help export
 ```
 
@@ -116,7 +116,7 @@ Options:
   -A, --allSeparate  Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.
   -h, --help         Help
   ```
-  
+
 ### Commands
 
 - [connections](#connections)
@@ -133,7 +133,7 @@ Use this command to list, add, or delete your connections. `frodo` saves connect
 
 List saved connections
 
-```sh
+```console
 frodo connections list
 ```
 
@@ -157,13 +157,13 @@ This command is all about IDM configurations. It supports list, export, and impo
 
 List IDM configuration objects. You'll notice that we don't need to specific the realm here and we're reading from existing connection info
 
-```sh
+```console
 frodo idm list acme
 ```
 
 Or by supplying the host, username, and password
 
-```sh
+```console
 frodo idm list https://login.acme.forgeblocks.io/am <username> <password>
 ```
 
@@ -183,11 +183,11 @@ Connected to ForgeRock Access Management 7.2.0-2021-11-SNAPSHOT Build 978ae0d483
 
 Exports IDM configuration in JSON format to a file or `STDOUT` if you don't specify the file option. The `-N` option is the name of the configuration object
 
-```sh
+```console
 frodo idm export acme -N <configuration-name> -f <file-name.json>
 ```
 
-```sh
+```console
 frodo idm export https://login.acme.forgeblocks.io/am <username> <password> -N <configuration-name> -f <file-name.json>
 ```
 
@@ -197,11 +197,11 @@ frodo idm export https://login.acme.forgeblocks.io/am <username> <password> -N <
 
 ##### Examples
 
-```sh
+```console
 frodo info acme
 ```
 
-```sh
+```console
 frodo info <https://login.acme.forgeblocks.io/am> <username> <password>
 ```
 
@@ -226,19 +226,19 @@ These examples assume a saved connection
 
 List all Journeys in a realm
 
-```sh
+```console
 frodo journey list acme <realm-name>
 ```
 
 Export a specific journey
 
-```sh
+```console
 frodo journey export acme <realm-name> -t <journey-name>
 ```
 
 Import a Journey from a `JSON` file
 
-```sh
+```console
 frodo journey import acme <realm-name> -t <journey-name> -f <file-name>
 ```
 
@@ -260,14 +260,14 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 #### Clone this repo
 
-```sh
+```console
 cd $HOME # or any other directory you wish to clone to
 git clone git@github.com:rockcarver/frodo.git
 ```
 
 #### Install via NPM
 
-```sh
+```console
 cd $HOME/frodo
 npm install
 npm i -g
@@ -283,7 +283,7 @@ There should be a `dist` folder when you cloned the repo from Github, the binari
 
 ##### For windows and Linux
 
-```sh
+```console
 cd $HOME/frodo
 npm install
 npm install -g pkg gulp
@@ -300,7 +300,7 @@ pkg -C Gzip -t node16-linux-x64 --out-path bin/linux .
 
 For MacOS we need to sign the binaries with an Apple Developer Cert.
 
-```sh
+```console
 # create variables
 CERTIFICATE_PATH=<YOUR_CERTIFICATE_PATH>
 INTERMEDIATE_CERTIFICATE_PATH=<YOUR_INTERMEDIATE_CERTIFICATE_PATH>
@@ -348,7 +348,7 @@ This will build `frodo` in each local directory respective to the OS target you 
 
 `frodo` is self contained, statically linked, so no dependencies should be needed. It can be run as:
 
-```sh
+```console
 $HOME/frodo/frodo # or the platform equivalent binary
 ```
 
