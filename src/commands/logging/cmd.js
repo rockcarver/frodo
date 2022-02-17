@@ -24,7 +24,7 @@ export function setup() {
             storage.session.setLogApiKey(key);
             storage.session.setLogApiSecret(secret);
             console.log("Listing available ID Cloud log sources...");
-            const conn = await getConnection(storage.session.getTenant());
+            const conn = await getConnection();
             storage.session.setTenant(conn.tenant);
             if (!storage.session.getLogApiKey() && !storage.session.getLogApiSecret()) {
                 credsFromParameters = false;
@@ -62,7 +62,7 @@ export function setup() {
             storage.session.setLogApiKey(key);
             storage.session.setLogApiSecret(secret);
             console.log(`Tailing ID Cloud logs from the following sources: ${command.opts().sources}...`);
-            const conn = getConnection(storage.session.getTenant());
+            const conn = await getConnection();
             storage.session.setTenant(conn.tenant);
             if (!storage.session.getLogApiKey() && !storage.session.getLogApiSecret()) {
                 credsFromParameters = false;
