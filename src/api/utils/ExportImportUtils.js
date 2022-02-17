@@ -1,6 +1,7 @@
 import fs from 'fs';
 import _ from 'underscore';
 import storage from '../../storage/SessionStorage.js';
+import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
 
 function getCurrentTimestamp() {
     const ts = new Date();
@@ -9,11 +10,11 @@ function getCurrentTimestamp() {
 
 function getMetadata() {
     const metadata = {
-        origin: storage.session.getItem("tenant"),
-        exportedBy: storage.session.getItem("username"),
+        origin: storage.session.getTenant(),
+        exportedBy: storage.session.getUsername(),
         exportDate: getCurrentTimestamp(),
-        exportTool: "frodo",
-        exportToolVersion: storage.session.getItem("version"),
+        exportTool: FRODO_METADATA_ID,
+        exportToolVersion: storage.session.getFrodoVersion(),
     };
     return metadata;
 }
