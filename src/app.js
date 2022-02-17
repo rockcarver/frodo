@@ -10,7 +10,7 @@ import * as logging from './commands/logging/cmd.js';
 import * as script from './commands/script/cmd.js';
 import * as emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
-import pkg from '../package.json' assert {type: "json"};
+import pkg from '../package.json';
 
 // import fs from 'fs';
 // const pkg = JSON.parse(fs.readFileSync('../package.json', 'utf8'));
