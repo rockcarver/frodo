@@ -97,11 +97,10 @@ export function initConnections() {
 export async function getConnection() {
     try {
         const filename = getConnectionFileName();
-        const data = fs.readFileSync(filename, connFile.options);
-        const connectionsData = JSON.parse(data);
-        const tenantData = findByWildcard(connectionsData, storage.session.getItem("tenant"));
+        const connectionsData = JSON.parse(fs.readFileSync(filename, connFile.options));
+        const tenantData = findByWildcard(connectionsData, storage.session.getTenant());
         if(!tenantData) {
-            console.error(`No saved credentials for tenant ${storage.session.getItem("tenant")}. Please specify credentials on command line`);
+            console.error(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`);
             return null;
         }
         return {

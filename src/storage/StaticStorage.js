@@ -8,3 +8,4 @@ export const DEPLOYMENT_TYPE_REALM_MAP = {
     [CLOUD_DEPLOYMENT_TYPE_KEY]: 'alpha',
     [FORGEOPS_DEPLOYMENT_TYPE_KEY]: '/'
 }
+export const FRODO_METADATA_ID = 'frodo';
