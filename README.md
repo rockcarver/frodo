@@ -147,8 +147,6 @@ The command displays the connections found in the **`frodorc`** file, located in
 Any unique substring of a saved host can be used as the value for host parameter in all commands
 ```
 
-**`frodo`** will automatically parse this unique string, and check your saved connections for a match. It will then use the connection details to authenticate and list journeys.
-
 #### IDM
 
 This command is all about IDM configurations. It supports list, export, and import of IDM entities as well as additional commands available via the help argument. The command supports the same connection persistance we discussed above.
@@ -230,7 +228,7 @@ List all Journeys in a realm
 frodo journey list acme <realm-name>
 ```
 
-Export a specific journey
+Export a specific journey. If you don't supply the `-f` options `frodo` will generate a filename based on the journey name
 
 ```console
 frodo journey export acme <realm-name> -t <journey-name>
@@ -344,7 +342,7 @@ This will build `frodo` in each local directory respective to the OS target you 
 ./dist/bin/win/frodo
 ```
 
-### Run
+#### Run
 
 `frodo` is self contained, statically linked, so no dependencies should be needed. It can be run as:
 
