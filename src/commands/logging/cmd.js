@@ -53,7 +53,7 @@ export function setup() {
         .addArgument(common.hostArgumentM)
         .addArgument(common.apiKeyArgument)
         .addArgument(common.apiSecretArgument)
-        .helpOption("-l, --help", "Help")
+        .helpOption("-h, --help", "Help")
         .addOption(common.sourcesOptionM)
         .description("Tail Identity Cloud logs.")
         .action(async (host, key, secret, options, command) => {
