@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-json-modules --no-warnings --enable-source-maps
+#!/usr/bin/env -S node --experimental-json-modules --no-warnings --enable-source-maps
 
 import { Command } from 'commander';
 import { initConnections } from './api/AuthApi.js';
@@ -8,8 +8,9 @@ import * as info from './commands/info/cmd.js';
 import * as journey from './commands/journey/cmd.js';
 import * as logging from './commands/logging/cmd.js';
 import * as script from './commands/script/cmd.js';
+import * as emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert {type: "json"};
 
 // import fs from 'fs';
 // const pkg = JSON.parse(fs.readFileSync('../package.json', 'utf8'));
@@ -27,6 +28,7 @@ storage.session.setItem("version", `v${pkg.version} [${process.version}]`);
         program.addCommand(info.setup());
         program.addCommand(journey.setup());
         program.addCommand(script.setup());
+        program.addCommand(emailTemplate.setup());
         program.addCommand(idm.setup());
         program.addCommand(logging.setup());
         
