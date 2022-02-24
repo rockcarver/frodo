@@ -31,15 +31,18 @@ const fileOptionDescription = "File name.";
 export const fileOption = new Option("-f, --file <file>", fileOptionDescription);
 export const fileOptionM = new Option("-f, --file <file>", fileOptionDescription);
 
-const deploymentOptionDescription = "Override auto-detected deployment type. Valid values for type: \
-[Classic] - A classic Access Management-only deployment with custom layout and configuration. \
-[Cloud] - A ForgeRock Identity Cloud environment. \
-[ForgeOps] - A ForgeOps CDK or CDM deployment. \
+const deploymentOptionDescription = "Override auto-detected deployment type. Valid values for type: \n\
+classic:  A classic Access Management-only deployment with custom layout and configuration. \n\
+cloud:    A ForgeRock Identity Cloud environment. \n\
+forgeops: A ForgeOps CDK or CDM deployment. \n\
 The detected or provided deployment type controls certain behavior like obtaining an Identity \
 Management admin token or not and whether to export/import referenced email templates or how \
 to walk through the tenant admin login flow of Identity Cloud and handle MFA";
 export const deploymentOption = new Option("-m, --type <type>", deploymentOptionDescription).choices(global.DEPLOYMENT_TYPES);
 export const deploymentOptionM = new Option("-m, --type <type>", deploymentOptionDescription).choices(global.DEPLOYMENT_TYPES);
+
+
+export const insecureOption = new Option("-k, --insecure", "Allow insecure connections when using SSL/TLS").default(false, "Don't allow insecure connections");
 
 
 export const noReUUIDOption = new Option("-n", "No Re-UUID, i.e., import does not generate new UUIDs \

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+import * as https from 'https';
 import storage from '../storage/SessionStorage.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 axiosRetry(axios, {
@@ -37,11 +38,47 @@ export function generateAmApi(resource, requestOverride = {}) {
         timeout: timeout,
         ...requestOverride,
         headers,
+        httpsAgent: new https.Agent({  
+            rejectUnauthorized: !storage.session.getAllowInsecureConnection()
+          })
     };
 
     const request = axios.create(requestDetails);
 
-    // console.log("generateAmApi: " + requestDetails.baseURL);
+    return request;
+}
+
+/**
+  * Generates an OAuth2 Axios API instance
+  * @param {object} resource Takes an object takes a resource object. example:
+  * @param {object} requestOverride Takes an object of AXIOS parameters that can be used to either
+  * add on extra information or override default properties https://github.com/axios/axios#request-config
+  *
+  * @returns {AxiosInstance}
+  */
+export function generateOauth2Api(resource, requestOverride = {}) {
+    let headers = {
+        'accept-api-version': resource.apiVersion,
+        'Cookie': `${storage.session.raw.cookieName}=${storage.session.raw.cookieValue}`
+    };
+    if (requestOverride.headers) {
+        headers = {
+            ...headers,
+            ...requestOverride.headers,
+        };
+    }
+
+    const requestDetails = {
+        baseURL: `${storage.session.getTenant()}/json${resource.path}`,
+        timeout: timeout,
+        ...requestOverride,
+        headers,
+        httpsAgent: new https.Agent({  
+            rejectUnauthorized: !storage.session.getAllowInsecureConnection()
+          })
+    };
+
+    const request = axios.create(requestDetails);
 
     return request;
 }
@@ -59,6 +96,9 @@ export function generateIdmApi(requestOverride = {}) {
         timeout: timeout,
         headers: {},
         ...requestOverride,
+        httpsAgent: new https.Agent({  
+            rejectUnauthorized: !storage.session.getAllowInsecureConnection()
+          })
     };
 
     if (storage.session.getBearerToken()) {
@@ -67,7 +107,32 @@ export function generateIdmApi(requestOverride = {}) {
 
     const request = axios.create(requestDetails);
 
-    // console.log("generateIdmApi: " + requestDetails.baseURL);
+    return request;
+}
+
+/**
+  * Generates a Log API Axios instance
+  * @param {object} requestOverride Takes an object of AXIOS parameters that can be used to either add
+  * on extra information or override default properties https://github.com/axios/axios#request-config
+  *
+  * @returns {AxiosInstance}
+  */
+export function generateLogApi(requestOverride = {}) {
+    let headers = {
+        "x-api-key": storage.session.getLogApiKey(),
+        "x-api-secret": storage.session.getLogApiSecret()
+    };
+    const requestDetails = {
+        baseURL: getTenantURL(storage.session.getTenant()),
+        timeout: timeout,
+        headers,
+        ...requestOverride,
+        httpsAgent: new https.Agent({  
+            rejectUnauthorized: !storage.session.getAllowInsecureConnection()
+          })
+    };
+
+    const request = axios.create(requestDetails);
 
     return request;
 }
