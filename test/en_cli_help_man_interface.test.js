@@ -3,7 +3,7 @@ import { promisify } from 'util';
 
 const exec = promisify(cp.exec);
 const CMD = 'frodo --help';
-const { stdout } = await exec('frodo --help');
+const { stdout } = await exec(CMD);
 
 test("CLI man page 'connections' description should be expected english", async () => {
     // Arrange
