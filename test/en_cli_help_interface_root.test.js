@@ -5,7 +5,7 @@ const exec = promisify(cp.exec);
 const CMD = 'frodo --help';
 const { stdout } = await exec(CMD);
 
-test("CLI man page 'connections' description should be expected english", async () => {
+test("CLI help interface 'connections' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         connections                              Manage connection profiles.
@@ -19,7 +19,7 @@ test("CLI man page 'connections' description should be expected english", async 
     expect(connectionsEntry).toBe(expectedDescription);
 });
 
-test("CLI man page 'info' description should be expected english", async () => {
+test("CLI help interface 'info' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         info [options] <host> [user] [password]  Print versions and tokens.
@@ -33,7 +33,7 @@ test("CLI man page 'info' description should be expected english", async () => {
     expect(connectionsEntry).toBe(expectedDescription);
 });
 
-test("CLI man page 'journey' description should be expected english", async () => {
+test("CLI help interface 'journey' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         journey                                  Manage journeys/trees.
@@ -47,7 +47,7 @@ test("CLI man page 'journey' description should be expected english", async () =
     expect(connectionsEntry).toBe(expectedDescription);
 });
 
-test("CLI man page 'script' description should be expected english", async () => {
+test("CLI help interface 'script' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         script                                   Manage scripts.
@@ -61,7 +61,7 @@ test("CLI man page 'script' description should be expected english", async () =>
     expect(connectionsEntry).toBe(expectedDescription);
 });
 
-test("CLI man page 'idm' description should be expected english", async () => {
+test("CLI help interface 'idm' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         idm                                      Manage IDM configuration.
@@ -76,7 +76,7 @@ test("CLI man page 'idm' description should be expected english", async () => {
 });
 
 
-test("CLI man page 'logs' description should be expected english", async () => {
+test("CLI help interface 'logs' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         logs <host>                              View Identity Cloud logs.
