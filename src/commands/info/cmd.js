@@ -11,12 +11,14 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .description("Print versions and tokens.")
         .action(async (host, user, password, options, command) => {
             storage.session.setTenant(host);
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Printing versions and tokens...");
             if(await getTokens()) {
                 console.log("Cookie name: " + storage.session.getCookieName());

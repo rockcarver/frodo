@@ -17,12 +17,14 @@ export function setup() {
         .addArgument(common.apiKeyArgument)
         .addArgument(common.apiSecretArgument)
         .helpOption("-h, --help", "Help")
+        .addOption(common.insecureOption)
         .description("List available ID Cloud log sources.")
         .action(async (host, key, secret, options, command) => {
             let credsFromParameters = true;
             storage.session.setTenant(host);
             storage.session.setLogApiKey(key);
             storage.session.setLogApiSecret(secret);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Listing available ID Cloud log sources...");
             const conn = await getConnection();
             storage.session.setTenant(conn.tenant);
@@ -54,6 +56,7 @@ export function setup() {
         .addArgument(common.apiKeyArgument)
         .addArgument(common.apiSecretArgument)
         .helpOption("-h, --help", "Help")
+        .addOption(common.insecureOption)
         .addOption(common.sourcesOptionM)
         .description("Tail Identity Cloud logs.")
         .action(async (host, key, secret, options, command) => {
@@ -61,6 +64,7 @@ export function setup() {
             storage.session.setTenant(host);
             storage.session.setLogApiKey(key);
             storage.session.setLogApiSecret(secret);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log(`Tailing ID Cloud logs from the following sources: ${command.opts().sources}...`);
             const conn = await getConnection();
             storage.session.setTenant(conn.tenant);

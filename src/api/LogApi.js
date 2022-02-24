@@ -1,7 +1,7 @@
+import { generateLogApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import { saveConnection } from './AuthApi.js';
 import storage from '../storage/SessionStorage.js';
-import axios from 'axios';
 import util from 'util';
 
 const misc_noise = [
@@ -132,18 +132,12 @@ const logsTailURLTemplate = "%s/monitoring/logs/tail?source=%s";
 const logsSourcesURLTemplate = "%s/monitoring/logs/sources";
 
 async function tail(source, cookie) {
-    const headers = {
-        "x-api-key": storage.session.getLogApiKey(),
-        "x-api-secret": storage.session.getLogApiSecret()
-    };
     try {
         let urlString = util.format(logsTailURLTemplate, getTenantURL(storage.session.getTenant()), encodeURIComponent(source));
         if (cookie) {
             urlString += `&_pagedResultsCookie=${encodeURIComponent(cookie)}`;
         }
-        const response = await axios.get(urlString, {
-            headers: headers
-        });
+        const response = await generateLogApi().get(urlString);
         if (response.status < 200 || response.status > 399) {
             console.error("tail ERROR: tail call returned %d", response.status);
             return null;
@@ -175,15 +169,9 @@ export async function tailLogs(source, cookie) {
 }
 
 export async function getSources() {
-    const headers = {
-        "x-api-key": storage.session.getLogApiKey(),
-        "x-api-secret": storage.session.getLogApiSecret()
-    };
     try {
         const urlString = util.format(logsSourcesURLTemplate, getTenantURL(storage.session.getTenant()));
-        const response = await axios.get(urlString, {
-            headers: headers
-        });
+        const response = await generateLogApi().get(urlString);
         if (response.status < 200 || response.status > 399) {
             console.error("getSources ERROR: get log sources call returned %d", response.status);
             return null;

@@ -21,6 +21,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .description("List all the scripts in a realm.")
         .action(async (host, realm, user, password, options, command) => {
             storage.session.setTenant(host);
@@ -28,6 +29,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Listing scripts in realm "${storage.session.getRealm()}"...`);
                 var scriptList = await listScripts();
@@ -47,6 +49,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(new Option("-s, --script <script>", "Name of a script. If specified, -a and -A are ignored."))
         .addOption(new Option("-f, --file <file>", "Name of the file to write the exported script(s) to. Ignored with -A."))
         .addOption(new Option("-a, --all", "Export all the scripts in a realm. Ignored with -t."))
@@ -58,6 +61,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             let scriptData = null;
             if(await getTokens()) {
                 // export
@@ -132,6 +136,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(common.fileOptionM)
         .description("Import script.")
         .action(async (host, realm, user, password, options, command) => {
@@ -140,6 +145,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             let encodedScript = null;
             if(await getTokens()) {
                 console.log(`Importing script(s) into realm "${storage.session.getRealm()}"...`);

@@ -20,11 +20,13 @@ export function setup() {
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
+        .addOption(common.insecureOption)
         .description("List all IDM configuration objects.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Listing all IDM configuration objects...");
             if(await getTokens()) {
                 const configEntities = await getAllConfigEntities();
@@ -44,13 +46,14 @@ export function setup() {
         .helpOption("-h, --help", "Help")
         .addOption(common.nameOptionM)
         .addOption(common.fileOption)
-        // .addOption(common.fileOption.makeOptionMandatory())
+        .addOption(common.insecureOption)
         .description("Export an IDM configuration object.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Exporting an IDM configuration object...");
             if(await getTokens()) {
                 const configEntity = await getConfigEntity(command.opts().name);
@@ -73,11 +76,13 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.dirOptionM)
+        .addOption(common.insecureOption)
         .description("Export all IDM configuration objects into separate JSON files in a directory specified by <directory>")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log(`Exporting all IDM configuration objects into separate JSON files in ${command.opts().directory}...`);
             if(await getTokens()) {
                 const configEntities = await getAllConfigEntities();
@@ -107,11 +112,13 @@ export function setup() {
         .addOption(common.dirOptionM)
         .addOption(common.entitiesFileOptionM)
         .addOption(common.envFileOptionM)
+        .addOption(common.insecureOption)
         .description("Export all IDM configuration objects.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Exporting all IDM configuration objects...");
             if(await getTokens()) {
                 let entriesToExport = [];
@@ -159,11 +166,13 @@ export function setup() {
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
+        .addOption(common.insecureOption)
         .description("Import an IDM configuration object.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Importing an IDM configuration object...");
             if(await getTokens()) {
                 // implement
@@ -176,11 +185,13 @@ export function setup() {
         .addArgument(common.userArgument)
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
+        .addOption(common.insecureOption)
         .description("Import all IDM configuration objects.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log("Importing all IDM configuration objects...");
             if(await getTokens()) {
                 // implement
@@ -194,11 +205,13 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.managedNameOptionM)
+        .addOption(common.insecureOption)
         .description("Count number of managed objects of a given type.")
         .action(async (host, user, password, options, command) => {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setTenant(host);
+            storage.session.setAllowInsecureConnection(options.insecure);
             console.log(`Counting managed ${options.name} objects...`);
             if(await getTokens()) {
                 console.log(`Total count of [${options.name}] objects : ${await getCount(options.name)}`);

@@ -19,6 +19,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(new Option("-a, --analyze", "Analyze journeys for custom nodes."))
         .description("List all the journeys/trees in a realm.")
         .action(async (host, realm, user, password, options, command) => {
@@ -27,6 +28,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Listing journeys in realm "${storage.session.getRealm()}"...`);
                 var journeyList = await listJourneys(command.opts().analyze);
@@ -56,6 +58,7 @@ export function setup() {
         .addOption(common.treeOption)
         .addOption(common.fileOption)
         .addOption(common.versionOption)
+        .addOption(common.insecureOption)
         .description("If -h is supplied, describe the journey/tree indicated by -t, or \
 all journeys/trees in the realm if no -t is supplied, otherwise \
 describe the journey/tree export file indicated by -f.")
@@ -65,6 +68,7 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             const treeDescription = [];
             // TODO: review checks for arguments
             if (typeof host == 'undefined' || typeof command.opts().file != 'undefined') {
@@ -122,6 +126,7 @@ describe the journey/tree export file indicated by -f.")
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(new Option("-t, --tree <tree>", "Name of a journey/tree. If specified, -a and -A are ignored."))
         .addOption(new Option("-f, --file <file>", "Name of the file to write the exported journey(s) to. Ignored with -A."))
         .addOption(new Option("-a, --all", "Export all the journeys/trees in a realm. Ignored with -t."))
@@ -133,6 +138,7 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 // export
                 if (command.opts().tree) {
@@ -198,6 +204,7 @@ describe the journey/tree export file indicated by -f.")
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(common.treeOptionM)
         .addOption(common.fileOptionM)
         .addOption(common.noReUUIDOption)
@@ -208,6 +215,7 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Importing journey(s) into realm "${storage.session.getRealm()}"...`);
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
@@ -229,6 +237,7 @@ describe the journey/tree export file indicated by -f.")
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(common.fileOptionM)
         .addOption(common.noReUUIDOption)
         .description("Import all the trees in a realm.")
@@ -238,6 +247,7 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Importing journey(s) into realm "${storage.session.getRealm()}"...`);
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
@@ -259,6 +269,7 @@ describe the journey/tree export file indicated by -f.")
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .description("Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.")
         .action(async (host, realm, user, password, options, command) => {
             storage.session.setTenant(host);
@@ -266,6 +277,7 @@ describe the journey/tree export file indicated by -f.")
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Pruning orphaned configuration artifacts in realm "${storage.session.getRealm()}"...`);
                 const allNodes = [];

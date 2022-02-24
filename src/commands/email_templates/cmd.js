@@ -19,12 +19,14 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .description("List all the email templates in the system.")
         .action(async (host, user, password, options, command) => {
             storage.session.setTenant(host);
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Listing email templates ...`);
                 var templateList = await listEmailTemplates();
@@ -43,6 +45,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(new Option("-t, --template <template>", "Name of email template. If specified, -a and -A are ignored."))
         .addOption(new Option("-f, --file <file>", "Name of the file to write the exported email template(s) to. Ignored with -A."))
         .addOption(new Option("-a, --all", "Export all the email templates in the system. Ignored with -t."))
@@ -53,6 +56,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             let templateData = null;
             if(await getTokens()) {
                 // export
@@ -106,6 +110,7 @@ export function setup() {
         .addArgument(common.passwordArgument)
         .helpOption("-h, --help", "Help")
         .addOption(common.deploymentOption)
+        .addOption(common.insecureOption)
         .addOption(common.fileOptionM)
         .description("Import email template.")
         .action(async (host, user, password, options, command) => {
@@ -113,6 +118,7 @@ export function setup() {
             storage.session.setUsername(user);
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
+            storage.session.setAllowInsecureConnection(options.insecure);
             if(await getTokens()) {
                 console.log(`Importing email templates(s) ...`);
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
