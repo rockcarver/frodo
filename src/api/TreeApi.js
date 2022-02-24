@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import storage from '../storage/SessionStorage.js';
 import { getEmailTemplate, putEmailTemplate } from './EmailTemplateApi.js';
 import { getScript, putScript } from './ScriptApi.js';
+import * as global from '../storage/StaticStorage.js';
 
 const journeyURLTemplate = "%s/json%s/realm-config/authentication/authenticationtrees/trees/%s"
 const nodeURLTemplate = "%s/json%s/realm-config/authentication/authenticationtrees/nodes/%s/%s"
@@ -267,7 +268,7 @@ export async function getJourneyData(journey) {
                 process.stdout.write(".");
             }
 
-            if (storage.session.getDeploymentType() == "Cloud" || storage.session.getDeploymentType() == "ForgeOps") {
+            if (storage.session.getDeploymentType() == global.CLOUD_DEPLOYMENT_TYPE_KEY || storage.session.getDeploymentType() == global.FORGEOPS_DEPLOYMENT_TYPE_KEY) {
                 if (emailTemplateNodes.includes(nodeInfo.nodeType)) {
                     emailTemplatesMap[nodeData.emailTemplateName] = await getEmailTemplate(nodeData.emailTemplateName);
                     process.stdout.write(".");
@@ -285,7 +286,7 @@ export async function getJourneyData(journey) {
                         process.stdout.write(".");
                     }
 
-                    if (storage.session.getDeploymentType() == "Cloud" || storage.session.getDeploymentType() == "ForgeOps") {
+                    if (storage.session.getDeploymentType() == global.CLOUD_DEPLOYMENT_TYPE_KEY || storage.session.getDeploymentType() == global.FORGEOPS_DEPLOYMENT_TYPE_KEY) {
                         if (emailTemplateNodes.includes(inPageNode.nodeType)) {
                             emailTemplatesMap[inPageNodeData.emailTemplateName] = await getEmailTemplate(inPageNodeData.emailTemplateName);
                             process.stdout.write(".");
