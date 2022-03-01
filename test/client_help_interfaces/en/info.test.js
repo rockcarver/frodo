@@ -1,6 +1,6 @@
 import cp from 'child_process';
 import { promisify } from 'util';
-import { crudeMultilineTakeUntil, collapseWhitespace } from './test_util_interface';
+import { crudeMultilineTakeUntil, collapseWhitespace } from '../../test_util_interface';
 
 const exec = promisify(cp.exec);
 const CMD = 'frodo info --help';
