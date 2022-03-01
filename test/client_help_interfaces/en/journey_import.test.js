@@ -176,7 +176,7 @@ test("CLI help interface 'import option -f, --file <file>' description should be
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'import option -f, --file <file>' description should be expected english multiline", async () => {
+test("CLI help interface 'import option -n' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
         -n                 No Re-UUID, i.e., import does not generate new UUIDs for
