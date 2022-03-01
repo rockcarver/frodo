@@ -11,12 +11,12 @@ test("CLI help interface for 'list' Usage should be expected english", async () 
         Usage: frodo connections list [options]
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('Usage:'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });
 
 test("CLI help interface 'connections List' description at line 2 should be expected english", async () => {
@@ -25,10 +25,10 @@ test("CLI help interface 'connections List' description at line 2 should be expe
         List configured connections.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .map(line => line.trim())
         .at(2)
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });

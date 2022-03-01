@@ -11,12 +11,12 @@ test("CLI help interface 'connections' description should be expected english", 
         connections                              Manage connection profiles.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('connections'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });
 
 test("CLI help interface 'info' description should be expected english", async () => {
@@ -25,12 +25,12 @@ test("CLI help interface 'info' description should be expected english", async (
         info [options] <host> [user] [password]  Print versions and tokens.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('info'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });
 
 test("CLI help interface 'journey' description should be expected english", async () => {
@@ -39,12 +39,12 @@ test("CLI help interface 'journey' description should be expected english", asyn
         journey                                  Manage journeys/trees.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('journey'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });
 
 test("CLI help interface 'script' description should be expected english", async () => {
@@ -53,12 +53,12 @@ test("CLI help interface 'script' description should be expected english", async
         script                                   Manage scripts.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('script'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });
 
 test("CLI help interface 'idm' description should be expected english", async () => {
@@ -67,12 +67,12 @@ test("CLI help interface 'idm' description should be expected english", async ()
         idm                                      Manage IDM configuration.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('idm'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });
 
 
@@ -82,10 +82,10 @@ test("CLI help interface 'logs' description should be expected english", async (
         logs <host>                              View Identity Cloud logs.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('logs'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expectedDescription);
+    expect(testLine).toBe(expectedDescription);
 });

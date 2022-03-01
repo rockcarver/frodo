@@ -11,12 +11,12 @@ test("CLI help interface for 'add' Usage should be expected english", async () =
         Usage: frodo connections add [options] <host> <user> <password> [key] [secret]
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('Usage:'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });
 
 test("CLI help interface 'connections add' description at line 2 should be expected english", async () => {
@@ -25,10 +25,10 @@ test("CLI help interface 'connections add' description at line 2 should be expec
     Add a new connection. You have to specify a URL, username and password at a minimum.
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .map(line => line.trim())
         .at(2)
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });

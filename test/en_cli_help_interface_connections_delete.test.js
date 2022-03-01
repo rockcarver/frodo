@@ -11,12 +11,12 @@ test("CLI help interface for 'delete' Usage should be expected english", async (
         Usage: frodo connections delete [options] <host>
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .find(line => line.trim().startsWith('Usage:'))
         .trim();
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });
 
 test("CLI help interface 'connections delete' description at line 2 should be expected english", async () => {
@@ -25,10 +25,10 @@ test("CLI help interface 'connections delete' description at line 2 should be ex
     Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor).
     `.trim();
     // Act
-    const connectionsEntry = stdout
+    const testLine = stdout
         .split(/\n/)
         .map(line => line.trim())
         .at(2)
     // Assert
-    expect(connectionsEntry).toBe(expected);
+    expect(testLine).toBe(expected);
 });
