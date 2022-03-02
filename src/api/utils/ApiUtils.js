@@ -17,8 +17,7 @@ function getCurrentRealmPath() {
 }
 
 function getTenantURL(tenant) {
-    const parsedUrl = url.parse(tenant);
-    // console.log(parsedUrl);
+    const parsedUrl = new URL(tenant);
     return `${parsedUrl.protocol}//${parsedUrl.host}`;
 }
 

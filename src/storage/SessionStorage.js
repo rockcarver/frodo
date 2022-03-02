@@ -28,5 +28,9 @@ export default {
         getLogApiSecret: () => _sessionStorage["logApiSecret"],
         setAmVersion: (value) => _sessionStorage["amVersion"] = value,
         getAmVersion: () => _sessionStorage["amVersion"],
+        setFrodoVersion: (value) => _sessionStorage["frodoVersion"] = value,
+        getFrodoVersion: () => _sessionStorage["frodoVersion"],
+        setAllowInsecureConnection: (value) => _sessionStorage["insecure"] = value,
+        getAllowInsecureConnection: () => _sessionStorage["insecure"],
     }
 }

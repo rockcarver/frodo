@@ -1,57 +1,69 @@
 {
-  "name": "frodo",
-  "version": "0.6.0",
-  "type": "module",
-  "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
-  "main": "src/app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "contributors": [
-    {
-      "name": "Sandeep Chaturvedi",
-      "email": "sandeep.chaturvedi@forgerock.com"
+    "name": "frodo",
+    "version": "0.6.1",
+    "type": "module",
+    "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
+    "main": "src/app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
-    {
-      "name": "Volker Scheuber",
-      "email": "volker.scheuber@forgerock.com"
-    }
-  ],
-  "license": "MIT",
-  "bin": {
-    "frodo": "./src/app.js"
-  },
-  "pkg": {
-    "options": [
-      "experimental-json-modules",
-      "enable-source-maps",
-      "no-warnings"
+    "contributors": [
+        {
+            "name": "Sandeep Chaturvedi",
+            "email": "sandeep.chaturvedi@forgerock.com"
+        },
+        {
+            "name": "Ali Falahi",
+            "email": "ali.falahi@forgerock.com"
+        },
+        {
+            "name": "Volker Scheuber",
+            "email": "volker.scheuber@forgerock.com"
+        }
     ],
-    "scripts": [
-      "storage/**/*.js",
-      "api/**/*.js",
-      "modules/**/*.js"
-    ]
-  },
-  "dependencies": {
-    "axios": "^0.25.0",
-    "axios-retry": "^3.2.4",
-    "commander": "^9.0.0",
-    "fs-extra": "^10.0.0",
-    "properties-reader": "^2.2.0",
-    "readline-sync": "^1.4.10",
-    "replaceall": "^0.1.6",
-    "underscore": "^1.13.2",
-    "uuid": "^8.3.2",
-    "yesno": "^0.3.1"
-  },
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
-    "cjs-to-es6": "^1.1.1",
-    "del": "^6.0.0",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-sourcemaps": "^3.0.0",
-    "pkg": "^5.5.2"
-  }
+    "license": "MIT",
+    "bin": {
+        "frodo": "./src/app.js"
+    },
+    "pkg": {
+        "options": [
+            "experimental-json-modules",
+            "enable-source-maps",
+            "no-warnings"
+        ],
+        "scripts": [
+            "storage/**/*.js",
+            "api/**/*.js",
+            "modules/**/*.js"
+        ]
+    },
+    "dependencies": {
+        "axios": "^0.25.0",
+        "axios-retry": "^3.2.4",
+        "commander": "^9.0.0",
+        "fs-extra": "^10.0.0",
+        "properties-reader": "^2.2.0",
+        "readline-sync": "^1.4.10",
+        "replaceall": "^0.1.6",
+        "underscore": "^1.13.2",
+        "uuid": "^8.3.2",
+        "yesno": "^0.3.1"
+    },
+    "devDependencies": {
+        "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+        "cjs-to-es6": "^1.1.1",
+        "del": "^6.0.0",
+        "eslint": "^8.10.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-prettier": "^8.4.0",
+        "eslint-plugin-import": "^2.25.4",
+        "eslint-plugin-jsx-a11y": "^6.5.1",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-react": "^7.29.2",
+        "eslint-plugin-react-hooks": "^4.3.0",
+        "gulp": "^4.0.2",
+        "gulp-babel": "^8.0.0",
+        "gulp-sourcemaps": "^3.0.0",
+        "pkg": "^5.5.2"
+    }
 }
