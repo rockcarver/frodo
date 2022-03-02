@@ -245,8 +245,6 @@ export async function getJourneyData(journey) {
           emailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          emailTemplatesMap[nodeData.emailTemplateName] =
-            await getEmailTemplate(nodeData.emailTemplateName);
           process.stdout.write('.');
         }
       }
@@ -264,12 +262,10 @@ export async function getJourneyData(journey) {
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach((item) => {
       scriptsMap[item._id] = item;
-      // console.log(item);
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
       emailTemplatesMap[item._id] = item;
-      // console.log(item);
     });
 
     const innerNodeDataResults = await Promise.all(innerNodeDataPromises);
@@ -281,7 +277,7 @@ export async function getJourneyData(journey) {
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
-        scriptPromises.push(getScript(nodeData.script));
+        innerScriptPromises.push(getScript(nodeData.script));
         process.stdout.write('.');
       }
 
@@ -293,11 +289,9 @@ export async function getJourneyData(journey) {
           global.FORGEOPS_DEPLOYMENT_TYPE_KEY
       ) {
         if (emailTemplateNodes.includes(nodeData._type._id)) {
-          emailTemplatePromises.push(
+          innerEmailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          emailTemplatesMap[nodeData.emailTemplateName] =
-            await getEmailTemplate(nodeData.emailTemplateName);
           process.stdout.write('.');
         }
       }
@@ -305,12 +299,10 @@ export async function getJourneyData(journey) {
     const innerScripts = await Promise.all(innerScriptPromises);
     innerScripts.forEach((item) => {
       scriptsMap[item._id] = item;
-      console.log(item);
     });
     const innerEmailTemplates = await Promise.all(innerEmailTemplatePromises);
     innerEmailTemplates.forEach((item) => {
       emailTemplatesMap[item._id] = item;
-      console.log(item);
     });
 
     // // OLD CODE
@@ -450,20 +442,19 @@ async function putNodeData(id, nodeType, data) {
     );
     if (response.status < 200 || response.status > 399) {
       console.error(
-        `PutNodeData ERROR: put script call returned ${response.status}, details: ${response}`
+        `PutNodeData ERROR: call returned ${response.status}, details: ${response}`
       );
       return null;
     }
     if (response.data._id !== id) {
-      console.error(`PutNodeData ERROR: generic error importing script ${id}`);
+      console.error(
+        `PutNodeData ERROR: generic error creating node ${id} (id mismatch!)`
+      );
       return null;
     }
     return '';
   } catch (e) {
-    console.error(
-      `PutNodeData ERROR: put script error, script ${id} - ${e}`,
-      e
-    );
+    console.error(`PutNodeData ERROR: node ${id} - ${e}`, e.response.data);
     return null;
   }
 }
