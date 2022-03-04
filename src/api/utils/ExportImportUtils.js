@@ -37,6 +37,15 @@ function validateImport(metadata) {
     return true;
 }
 
+function checkTargetCompatibility(type, source, target) {
+    // console.log(`source ${source}, target ${target}`);
+    compatibilityKeys[type].forEach(element => {
+        if(source[element] != target[element]) {
+            console.warn(`${element} in ${type} mismatch between source and target`);
+        }
+    });
+}
+
 function saveToFile(type, data, identifier, filename) {
     let exportData = {};
     exportData.meta = getMetadata();
@@ -55,5 +64,6 @@ export {
     saveToFile,
     convertBase64ScriptToArray,
     convertArrayToBase64Script,
-    validateImport
+    validateImport,
+    checkTargetCompatibility
 };
