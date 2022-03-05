@@ -10,6 +10,7 @@ import logging from './commands/logging/cmd.js';
 import script from './commands/script/cmd.js';
 import emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
+import application from './commands/application/cmd.js';
 import pkg from '../package.json';
 
 const program = new Command(pkg.name).version(
@@ -28,6 +29,7 @@ storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
     program.addCommand(journey());
     program.addCommand(script());
     program.addCommand(emailTemplate());
+    program.addCommand(application());
     program.addCommand(idm());
     program.addCommand(logging());
 
