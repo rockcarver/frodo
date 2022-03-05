@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import { initConnections } from './api/AuthApi.js';
+import admin from './commands/admin/cmd.js';
 import connections from './commands/connections/cmd.js';
 import idm from './commands/idm/cmd.js';
 import info from './commands/info/cmd.js';
@@ -23,6 +24,7 @@ storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
   try {
     initConnections();
 
+    program.addCommand(admin());
     program.addCommand(connections());
     program.addCommand(info());
     program.addCommand(journey());
