@@ -13,21 +13,26 @@
       "email": "sandeep.chaturvedi@forgerock.com"
     },
     {
+      "name": "Adam Crockett",
+      "email": "adam.crockett@forgerock.com"
+    },
+    {
       "name": "Ali Falahi",
       "email": "ali.falahi@forgerock.com"
     },
     {
       "name": "Volker Scheuber",
       "email": "volker.scheuber@forgerock.com"
-    },
-    {
-      "name": "Adam Crockett",
-      "email": "adam.crockett@forgerock.com"
     }
   ],
   "license": "MIT",
   "bin": {
     "frodo": "./src/app.js"
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-syntax-import-assertions"
+    ]
   },
   "pkg": {
     "options": [
@@ -54,12 +59,21 @@
     "yesno": "^0.3.1"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-import-assertions": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "cjs-to-es6": "^1.1.1",
     "del": "^6.0.0",
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.2",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
-    "gulp": "^4.0.2",
     "jest": "27.5.1",
     "pkg": "^5.5.2"
   }

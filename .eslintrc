@@ -1,0 +1,24 @@
+{
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "import/extensions": [
+      "error",
+      {
+        "js": "always",
+        "json": "always"
+      }
+    ],
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "no-restricted-syntax": [
+      "error",
+      // "ForInStatement",
+      // "ForOfStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ],
+    "no-multi-str": "off"
+  }
+}
