@@ -10,6 +10,10 @@ on:
 jobs:
   macos-release:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [17.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     timeout-minutes: 15
     steps:
       - name: "Checkout Project"
@@ -65,7 +69,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node16-macos-x64 --out-path bin/macos .
+        run: pkg -C Gzip -t node17-macos-x64 --out-path bin/macos .
       #
       # Fail early on failing tests.
       # Disabled because this project does not have tests. (TODO Add some example tests)
@@ -99,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [17.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - name: Checkout repository
@@ -126,7 +130,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node16-linux-x64 --out-path bin/linux .
+        run: pkg -C Gzip -t node17-linux-x64 --out-path bin/linux .
 
       - name: Archive distribution binary
         run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
@@ -141,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [17.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - name: Checkout repository
@@ -168,7 +172,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node16-win-x64 --out-path bin/win .
+        run: pkg -C Gzip -t node17-win-x64 --out-path bin/win .
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
