@@ -25,4 +25,8 @@ gulp.task('transpile', () =>
     .pipe(gulp.dest('dist/src'))
 );
 
-gulp.task('default', gulp.series('clean', 'transpile'));
+gulp.task('resources', () =>
+  gulp.src(['src/**/*.json'], { base: './' }).pipe(gulp.dest('dist'))
+);
+
+gulp.task('default', gulp.series('clean', 'transpile', 'resources'));
