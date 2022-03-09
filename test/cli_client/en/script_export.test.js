@@ -1,15 +1,15 @@
 import cp from 'child_process';
 import { promisify } from 'util';
-import { crudeMultilineTakeUntil, collapseWhitespace } from '../utils/utils';
+import { crudeMultilineTakeUntil, collapseWhitespace } from '../../client_cli/utils/utils';
 
 const exec = promisify(cp.exec);
-const CMD = 'frodo journey importAll --help';
+const CMD = 'frodo script export --help';
 const { stdout } = await exec(CMD);
 
-test("CLI help interface for 'journey importAll' Usage should be expected english", async () => {
+test("CLI help interface for 'script export' Usage should be expected english", async () => {
     // Arrange
     const expected = `
-        Usage: frodo journey importAll [options] <host> [realm] [user] [password]
+        Usage: frodo script export [options] <host> [realm] [user] [password]
     `.trim();
     // Act
     const testLine = stdout
@@ -20,10 +20,10 @@ test("CLI help interface for 'journey importAll' Usage should be expected englis
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'journey importAll' description at line 2 should be expected english", async () => {
+test("CLI help interface 'script export' description at line 2 should be expected english", async () => {
     // Arrange
     const expected = `
-        Import all the trees in a realm.
+        Export scripts.
     `.trim();
     // Act
     const testLine = stdout
@@ -35,7 +35,7 @@ test("CLI help interface 'journey importAll' description at line 2 should be exp
 });
 
 
-test("CLI help interface 'importAll argument host' description should be expected english multiline", async () => {
+test("CLI help interface 'export argument host' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
     host                Access Management base URL, e.g.:
@@ -54,7 +54,7 @@ test("CLI help interface 'importAll argument host' description should be expecte
 });
 
 
-test("CLI help interface 'importAll argument realm' description should be expected english multiline", async () => {
+test("CLI help interface 'export argument realm' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
         realm              Realm. Specify realm as '/' for the root realm or 'realm'
@@ -71,7 +71,7 @@ test("CLI help interface 'importAll argument realm' description should be expect
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'importAll argument user' description should be expected english multiline", async () => {
+test("CLI help interface 'export argument user' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
         user                     Username to login with. Must be an admin user with appropriate
@@ -88,10 +88,10 @@ test("CLI help interface 'importAll argument user' description should be expecte
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'importAll argument password' description should be expected english", async () => {
+test("CLI help interface 'export argument password' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
-        password           Password.
+        password               Password.
     `.trim();
     // Act
     const testLine = stdout
@@ -102,7 +102,7 @@ test("CLI help interface 'importAll argument password' description should be exp
     expect(testLine).toBe(expectedDescription);
 });
 
-test("CLI help interface 'importAll option -m, --type <type>' description should be expected english multiline", async () => {
+test("CLI help interface 'export option -m, --type <type>' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
     -m, --type <type>  Override auto-detected deployment type. Valid values for
@@ -130,7 +130,7 @@ test("CLI help interface 'importAll option -m, --type <type>' description should
 });
 
 
-test("CLI help interface 'importAll option -k, --insecure' description should be expected english multiline", async () => {
+test("CLI help interface 'export option -k, --insecure' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
         -k, --insecure           Allow insecure connections when using SSL/TLS (default: Don't
@@ -139,41 +139,74 @@ test("CLI help interface 'importAll option -k, --insecure' description should be
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  -k, --insecure     ',
-        '  -f, --file <file>  ',
+        '  -k, --insecure         ',
+        '  -s, --script <script>  ',
     ));
 
     // Assert
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'importAll option -f, --file <file>' description should be expected english", async () => {
+test("CLI help interface 'export option -s, --script <script>' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        -f, --file <file>  File name.
+        -s, --script <script>  Name of a script. If specified, -a and -A are
+                               ignored.
+    `);
+    // Act
+    const testLine = collapseWhitespace(crudeMultilineTakeUntil(
+        stdout,
+        ' -s, --script <script>  ',
+        ' -f, --file <file>  '
+    ));
+
+    // Assert
+    expect(testLine).toBe(expected);
+});
+
+test("CLI help interface 'export option -f, --file <file>' description should be expected english", async () => {
+    // Arrange
+    const expected = collapseWhitespace(`
+        -f, --file <file>  Name of the file to write the exported script(s) to.
+                           Ignored with -A.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
         ' -f, --file <file>  ',
-        '  -n                 '
+        ' -a, --all          '
     ));
     // Assert
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'importAll option -n' description should be expected english multiline", async () => {
+test("CLI help interface 'export option -a, --all' description should be expected english", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        -n                 No Re-UUID, i.e., import does not generate new UUIDs for
-                           (inner)nodes. Used to update existing trees/nodes instead
-                           of cloning them.
+    -a, --all          Export all the scripts in a realm. Ignored with
+                       -t.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  -n                 ',
-        '  -h, --help         '
+        ' -a, --all          ',
+        ' -A, --allSeparate  ',
+    ));
+    // Assert
+    expect(testLine).toBe(expected);
+});
+
+test("CLI help interface 'export option -A, --allSeparate' description should be expected english", async () => {
+    // Arrange
+    const expected = collapseWhitespace(`
+        -A, --allSeparate  Export all the scripts in a realm as separate
+                           files <script>.json. Ignored with -s or -a.
+    `);
+    // Act
+    const testLine = collapseWhitespace(crudeMultilineTakeUntil(
+        stdout,
+        ' -A, --allSeparate  ',
+        '  -h, --help         ',
     ));
     // Assert
     expect(testLine).toBe(expected);
