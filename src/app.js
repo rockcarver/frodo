@@ -12,7 +12,7 @@ import script from './commands/script/cmd.js';
 import emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
 import application from './commands/application/cmd.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 
 const program = new Command(pkg.name).version(
   `v${pkg.version} [${process.version}]`,

@@ -42,7 +42,7 @@ export async function getConfigEntity(id) {
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
       console.error(
-        'getConfigEntity ERROR: get config entities call returned %d, possible cause: email template not found',
+        'getConfigEntity ERROR: get config entities call returned %d',
         response.status
       );
       return null;
@@ -59,6 +59,39 @@ export async function getConfigEntity(id) {
     }
     console.error(
       'getConfigEntity ERROR: get config entities data error - ',
+      e
+    );
+    return null;
+  }
+}
+
+export async function putConfigEntity(id, data) {
+  try {
+    const urlString = util.format(
+      idmConfigURLTemplate,
+      getTenantURL(storage.session.getTenant()),
+      id
+    );
+    const response = await generateIdmApi().put(urlString, data);
+    if (response.status < 200 || response.status > 399) {
+      console.error(
+        'putConfigEntity ERROR: put config entities call returned %d',
+        response.status
+      );
+      return null;
+    }
+    return response.data;
+  } catch (e) {
+    if (
+      e.response.data.code === 403 &&
+      e.response.data.message ===
+        'This operation is not available in ForgeRock Identity Cloud.'
+    ) {
+      // ignore errors related to forbidden responses from ID Cloud
+      return null;
+    }
+    console.error(
+      'putConfigEntity ERROR: put config entities data error - ',
       e
     );
     return null;

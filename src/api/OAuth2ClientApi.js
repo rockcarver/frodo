@@ -8,11 +8,11 @@ const oauth2ClientListURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client?_queryFilter=true';
 const oauth2ClientQueryURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client?_queryFilter=name+eq+%%22%s%%22';
-const apiVersion = 'protocol=2.0,resource=1.0';
+const apiVersion = 'protocol=2.1,resource=1.0';
 const getApiConfig = () => {
   const configPath = getCurrentRealmPath();
   return {
-    path: `${configPath}/authentication/authenticationtrees`,
+    path: `${configPath}/realm-config/agents/OAuth2Client`,
     apiVersion,
   };
 };
@@ -95,6 +95,9 @@ export async function getOAuth2Client(id) {
 }
 
 export async function putOAuth2Client(id, data) {
+  const client = data;
+  delete client._provider;
+  delete client._rev;
   try {
     const urlString = util.format(
       oauth2ClientURLTemplate,
@@ -102,9 +105,13 @@ export async function putOAuth2Client(id, data) {
       getCurrentRealmPath(storage.session.getRealm()),
       id
     );
-    const response = await generateAmApi(getApiConfig()).put(urlString, data, {
-      withCredentials: true,
-    });
+    const response = await generateAmApi(getApiConfig()).put(
+      urlString,
+      client,
+      {
+        withCredentials: true,
+      }
+    );
     if (response.status < 200 || response.status > 399) {
       console.error(
         `putOAuth2Client ERROR: ${response.status}, details: ${response}`
@@ -119,7 +126,10 @@ export async function putOAuth2Client(id, data) {
     }
     return '';
   } catch (e) {
-    console.error(`putOAuth2Client ERROR: OAuth2 Client: ${id} - ${e.message}`);
+    console.error(
+      `putOAuth2Client ERROR: OAuth2 Client: ${id} - ${e.message}`,
+      e.response
+    );
     return null;
   }
 }
