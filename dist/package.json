@@ -4,12 +4,16 @@
   "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
   "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "contributors": [
     {
       "name": "Sandeep Chaturvedi",
       "email": "sandeep.chaturvedi@forgerock.com"
+    },
+    {
+      "name": "Adam Crockett",
+      "email": "adam.crockett@forgerock.com"
     },
     {
       "name": "Ali Falahi",
@@ -24,6 +28,11 @@
   "bin": {
     "frodo": "./src/app.js"
   },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-syntax-import-assertions"
+    ]
+  },
   "pkg": {
     "options": [
       "experimental-json-modules",
@@ -31,9 +40,10 @@
       "no-warnings"
     ],
     "scripts": [
-      "src/**/*.js"
-    ],
-    "assets": "package.json"
+      "storage/**/*.js",
+      "api/**/*.js",
+      "modules/**/*.js"
+    ]
   },
   "dependencies": {
     "axios": "^0.25.0",
@@ -48,6 +58,22 @@
     "yesno": "^0.3.1"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-import-assertions": "^7.16.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "cjs-to-es6": "^1.1.1",
+    "del": "^6.0.0",
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.2",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "jest": "27.5.1",
     "pkg": "^5.5.2"
   }
 }

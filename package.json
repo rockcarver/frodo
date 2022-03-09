@@ -13,16 +13,16 @@
       "email": "sandeep.chaturvedi@forgerock.com"
     },
     {
+      "name": "Adam Crockett",
+      "email": "adam.crockett@forgerock.com"
+    },
+    {
       "name": "Ali Falahi",
       "email": "ali.falahi@forgerock.com"
     },
     {
       "name": "Volker Scheuber",
       "email": "volker.scheuber@forgerock.com"
-    },
-    {
-      "name": "Adam Crockett",
-      "email": "adam.crockett@forgerock.com"
     }
   ],
   "license": "MIT",
