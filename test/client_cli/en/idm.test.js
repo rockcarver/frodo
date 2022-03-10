@@ -94,35 +94,6 @@ test("CLI help interface 'idm commands exportAll' description should be expected
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'idm commands import' description should be expected english", async () => {
-    // Arrange
-    const expected = `
-        import [options] <host> [user] [password]        Import an IDM configuration object.
-    `.trim();
-    // Act
-    const testLine = stdout
-        .split(/\n/)
-        .find(line => line.trim().startsWith('import'))
-        .trim();
-    // Assert
-    expect(testLine).toBe(expected);
-});
-
-
-test("CLI help interface 'idm commands importAll' description should be expected english", async () => {
-    // Arrange
-    const expected = `
-        importAll [options] <host> [user] [password]     Import all IDM configuration objects.
-    `.trim();
-    // Act
-    const testLine = stdout
-        .split(/\n/)
-        .find(line => line.trim().startsWith('importAll'))
-        .trim();
-    // Assert
-    expect(testLine).toBe(expected);
-});
-
 test("CLI help interface 'idm commands count' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
