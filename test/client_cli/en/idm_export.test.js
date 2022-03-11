@@ -3,13 +3,13 @@ import { promisify } from 'util';
 import { crudeMultilineTakeUntil, collapseWhitespace } from '../utils/utils';
 
 const exec = promisify(cp.exec);
-const CMD = 'frodo email_templates list --help';
+const CMD = 'frodo idm export --help';
 const { stdout } = await exec(CMD);
 
-test("CLI help interface for 'email_templates list' Usage should be expected english", async () => {
+test("CLI help interface for 'idm export' Usage should be expected english", async () => {
     // Arrange
     const expected = `
-        Usage: frodo email_templates list [options] <host> [user] [password]
+        Usage: frodo idm export [options] <host> [user] [password]
     `.trim();
     // Act
     const testLine = stdout
@@ -20,10 +20,10 @@ test("CLI help interface for 'email_templates list' Usage should be expected eng
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'email_templates list' description at line 2 should be expected english", async () => {
+test("CLI help interface 'idm export' description at line 2 should be expected english", async () => {
     // Arrange
     const expected = `
-        List all the email templates in the system.
+        Export an IDM configuration object.
     `.trim();
     // Act
     const testLine = stdout
@@ -35,12 +35,12 @@ test("CLI help interface 'email_templates list' description at line 2 should be 
 });
 
 
-test("CLI help interface 'list argument host' description should be expected english multiline", async () => {
+test("CLI help interface 'count argument host' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        host                Access Management base URL, e.g.:
-                            https://cdk.iam.example.com/am. To use a connection
-                            profile, just specify a unique substring.
+    host                Access Management base URL, e.g.:
+                        https://cdk.iam.example.com/am. To use a connection
+                        profile, just specify a unique substring.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
@@ -53,7 +53,8 @@ test("CLI help interface 'list argument host' description should be expected eng
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'list argument user' description should be expected english multiline", async () => {
+
+test("CLI help interface 'count argument user' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
         user                     Username to login with. Must be an admin user with appropriate
@@ -70,7 +71,7 @@ test("CLI help interface 'list argument user' description should be expected eng
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'list argument password' description should be expected english", async () => {
+test("CLI help interface 'count argument password' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
         password           Password.
@@ -84,26 +85,32 @@ test("CLI help interface 'list argument password' description should be expected
     expect(testLine).toBe(expectedDescription);
 });
 
-test("CLI help interface 'list option -m, --type <type>' description should be expected english multiline", async () => {
+test("CLI help interface 'count option -N, --name <name>' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-    -m, --type <type>  Override auto-detected deployment type. Valid values for
-                       type:
-                       classic:  A classic Access Management-only deployment
-                       with custom layout and configuration.
-                       cloud:    A ForgeRock Identity Cloud environment.
-                       forgeops: A ForgeOps CDK or CDM deployment.
-                       The detected or provided deployment type controls certain
-                       behavior like obtaining an Identity Management admin
-                       token or not and whether to export/import referenced
-                       email templates or how to walk through the tenant admin
-                       login flow of Identity Cloud and handle MFA (choices:
-                       "classic", "cloud", "forgeops")
+        -N, --name <name>  Config entity name to be exported or imported/updated.
+                           Examples are managed, sync, provisioner-xxxx, etc.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  -m, --type <type>  ',
+        '  -N, --name <name>  ',
+        '  -f, --file <file>  '
+    ));
+
+    // Assert
+    expect(testLine).toBe(expected);
+});
+
+test("CLI help interface 'count option -f, --file <file>' description should be expected english", async () => {
+    // Arrange
+    const expected = collapseWhitespace(`
+    -f, --file <file>  File name.
+    `);
+    // Act
+    const testLine = collapseWhitespace(crudeMultilineTakeUntil(
+        stdout,
+        '  -f, --file <file>  ',
         '  -k, --insecure     '
     ));
 
@@ -111,12 +118,11 @@ test("CLI help interface 'list option -m, --type <type>' description should be e
     expect(testLine).toBe(expected);
 });
 
-
-test("CLI help interface 'list option -k, --insecure' description should be expected english multiline", async () => {
+test("CLI help interface 'export option -k, --insecure' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        -k, --insecure           Allow insecure connections when using SSL/TLS (default: Don't
-                                 allow insecure connections)
+        -k, --insecure     Allow insecure connections when using SSL/TLS (default:
+                           Don't allow insecure connections)
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(

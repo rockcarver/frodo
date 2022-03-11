@@ -3,13 +3,13 @@ import { promisify } from 'util';
 import { crudeMultilineTakeUntil, collapseWhitespace } from '../utils/utils';
 
 const exec = promisify(cp.exec);
-const CMD = 'frodo email_templates list --help';
+const CMD = 'frodo idm list --help';
 const { stdout } = await exec(CMD);
 
-test("CLI help interface for 'email_templates list' Usage should be expected english", async () => {
+test("CLI help interface for 'idm list' Usage should be expected english", async () => {
     // Arrange
     const expected = `
-        Usage: frodo email_templates list [options] <host> [user] [password]
+        Usage: frodo idm list [options] <host> [user] [password]
     `.trim();
     // Act
     const testLine = stdout
@@ -20,10 +20,10 @@ test("CLI help interface for 'email_templates list' Usage should be expected eng
     expect(testLine).toBe(expected);
 });
 
-test("CLI help interface 'email_templates list' description at line 2 should be expected english", async () => {
+test("CLI help interface 'idm list' description at line 2 should be expected english", async () => {
     // Arrange
     const expected = `
-        List all the email templates in the system.
+        List all IDM configuration objects.
     `.trim();
     // Act
     const testLine = stdout
@@ -45,25 +45,26 @@ test("CLI help interface 'list argument host' description should be expected eng
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  host               ',
-        '  user              '
+        '  host           ',
+        '  user           '
     ));
 
     // Assert
     expect(testLine).toBe(expected);
 });
 
+
 test("CLI help interface 'list argument user' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        user                     Username to login with. Must be an admin user with appropriate
-                                 rights to manage authentication journeys/trees.
+        user            Username to login with. Must be an admin user with
+                        appropriate rights to manage authentication journeys/trees.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  user               ',
-        '  password           '
+        '  user            ',
+        '  password        '
     ));
 
     // Assert
@@ -73,7 +74,7 @@ test("CLI help interface 'list argument user' description should be expected eng
 test("CLI help interface 'list argument password' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
-        password           Password.
+        password        Password.
     `.trim();
     // Act
     const testLine = stdout
@@ -84,45 +85,17 @@ test("CLI help interface 'list argument password' description should be expected
     expect(testLine).toBe(expectedDescription);
 });
 
-test("CLI help interface 'list option -m, --type <type>' description should be expected english multiline", async () => {
-    // Arrange
-    const expected = collapseWhitespace(`
-    -m, --type <type>  Override auto-detected deployment type. Valid values for
-                       type:
-                       classic:  A classic Access Management-only deployment
-                       with custom layout and configuration.
-                       cloud:    A ForgeRock Identity Cloud environment.
-                       forgeops: A ForgeOps CDK or CDM deployment.
-                       The detected or provided deployment type controls certain
-                       behavior like obtaining an Identity Management admin
-                       token or not and whether to export/import referenced
-                       email templates or how to walk through the tenant admin
-                       login flow of Identity Cloud and handle MFA (choices:
-                       "classic", "cloud", "forgeops")
-    `);
-    // Act
-    const testLine = collapseWhitespace(crudeMultilineTakeUntil(
-        stdout,
-        '  -m, --type <type>  ',
-        '  -k, --insecure     '
-    ));
-
-    // Assert
-    expect(testLine).toBe(expected);
-});
-
-
 test("CLI help interface 'list option -k, --insecure' description should be expected english multiline", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        -k, --insecure           Allow insecure connections when using SSL/TLS (default: Don't
-                                 allow insecure connections)
+        -k, --insecure              Allow insecure connections when using SSL/TLS
+                                    (default: Don't allow insecure connections)
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
         stdout,
-        '  -k, --insecure     ',
-        '  -h, --help         ',
+        '  -k, --insecure  ',
+        '  -h, --help      ',
     ));
 
     // Assert
