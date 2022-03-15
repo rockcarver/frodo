@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import yesno from 'yesno';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
@@ -8,6 +9,7 @@ import {
   getJourneyData,
   describeTree,
   importJourney,
+  importAllJourneys,
   findOrphanedNodes,
   removeOrphanedNodes,
 } from '../../api/TreeApi.js';
@@ -262,7 +264,7 @@ describe the journey/tree export file indicated by -f.'
     .addOption(
       new Option(
         '-f, --file <file>',
-        'Name of the file to write the exported journey(s) to. Ignored with -A.'
+        'Name of the file to import the journey(s) from. Ignored with -A.'
       )
     )
     .addOption(
@@ -274,11 +276,9 @@ describe the journey/tree export file indicated by -f.'
     .addOption(
       new Option(
         '-A, --allSeparate',
-        'Import all the journeys/trees from separate files <journey/tree name>.json. Ignored with -t or -a.'
+        'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -t or -a.'
       )
     )
-    // .addOption(common.treeOptionM)
-    // .addOption(common.fileOptionM)
     .addOption(common.noReUUIDOption)
     .description('Import journey/tree.')
     .action(async (host, realm, user, password, options, command) => {
@@ -298,8 +298,7 @@ describe the journey/tree export file indicated by -f.'
             importJourney(
               command.opts().tree,
               journeyData,
-              command.opts().noReUUIDOption,
-              true
+              command.opts().noReUUIDOption
             ).then((result) => {
               if (!result == null) console.log('Import done.');
             });
@@ -307,55 +306,52 @@ describe the journey/tree export file indicated by -f.'
         }
         // importAll -a
         else if (command.opts().all && command.opts().file) {
-          console.log('Importing all journeys from a single file...');
-          const fileName = command.opts().file;
+          console.log(
+            `Importing all journeys from a single file (${
+              command.opts().file
+            })...`
+          );
+          fs.readFile(command.opts().file, 'utf8', (err, data) => {
+            if (err) throw err;
+            const journeyData = JSON.parse(data);
+            importAllJourneys(
+              journeyData.trees,
+              command.opts().noReUUIDOption
+            ).then((result) => {
+              if (!result == null) console.log('done.');
+            });
+          });
         }
         // importAllSeparate -A
         else if (command.opts().allSeparate && !command.opts().file) {
-          console.log('Importing all journeys from separate files...');
+          console.log(
+            'Importing all journeys from separate files in current directory...'
+          );
+          const allJourneysData = { trees: {} };
+          fs.readdir('.', (err1, files) => {
+            const jsonFiles = files.filter(
+              (el) => path.extname(el) === '.json'
+            );
+
+            jsonFiles.forEach((file) => {
+              // console.log(`Importing ${path.parse(file).name}...`);
+              allJourneysData.trees[path.parse(file).name] = JSON.parse(
+                fs.readFileSync(file, 'utf8')
+              );
+            });
+            importAllJourneys(
+              allJourneysData.trees,
+              command.opts().noReUUIDOption
+            ).then((result) => {
+              if (!result == null) console.log('done.');
+            });
+          });
         }
         // unrecognized combination of options or no options
         else {
           console.log('Unrecognized combination of options or no options...');
           command.help();
         }
-      }
-    });
-
-  journey
-    .command('importAll')
-    .addArgument(common.hostArgumentM)
-    .addArgument(common.realmArgument)
-    .addArgument(common.userArgument)
-    .addArgument(common.passwordArgument)
-    .helpOption('-h, --help', 'Help')
-    .addOption(common.deploymentOption)
-    .addOption(common.insecureOption)
-    .addOption(common.fileOptionM)
-    .addOption(common.noReUUIDOption)
-    .description('Import all the trees in a realm.')
-    .action(async (host, realm, user, password, options, command) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
-      if (await getTokens()) {
-        console.log(
-          `Importing journey(s) into realm "${storage.session.getRealm()}"...`
-        );
-        fs.readFile(command.opts().file, 'utf8', (err, data) => {
-          if (err) throw err;
-          const journeyData = JSON.parse(data);
-          importAllJourneys(
-            journeyData,
-            command.opts().noReUUIDOption,
-            false
-          ).then((result) => {
-            if (!result == null) console.log('Import all done.');
-          });
-        });
       }
     });
 
@@ -371,7 +367,7 @@ describe the journey/tree export file indicated by -f.'
     .description(
       'Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.'
     )
-    .action(async (host, realm, user, password, options, command) => {
+    .action(async (host, realm, user, password, options) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
       storage.session.setUsername(user);

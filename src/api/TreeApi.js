@@ -265,7 +265,7 @@ export async function getJourneyData(journey) {
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
-      emailTemplatesMap[item._id] = item;
+      emailTemplatesMap[item._id.split('/')[1]] = item;
     });
 
     const innerNodeDataResults = await Promise.all(innerNodeDataPromises);
@@ -480,7 +480,7 @@ async function putJourneyStructureData(id, data) {
     }
     if (response.data._id !== id) {
       console.error(
-        `putJourneyStructureData ERROR: generic error importing journey structure ${id}`
+        `putJourneyStructureData ERROR: generic error importing journey structure ${id}!=${response.data._id}`
       );
       return null;
     }
@@ -494,7 +494,8 @@ async function putJourneyStructureData(id, data) {
   }
 }
 
-export async function importJourney(id, journeyMap, noreuuid, single) {
+export async function importJourney(id, journeyMap, noreuuid) {
+  process.stdout.write(`- ${id}\n`);
   let newUuid = '';
   const uuidMap = {};
 
@@ -507,57 +508,50 @@ export async function importJourney(id, journeyMap, noreuuid, single) {
 
   if (sourceOrigin === targetOrigin) {
     console.log(
-      `Importing journey ${treeId} to the same environment and realm from where it was exported`
+      `- Importing journey ${treeId} to the same environment and realm from where it was exported`
     );
   }
 
-  process.stdout.write('Importing scripts ');
-  for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-    if (single) {
-      process.stdout.write(`[${scriptData.name}] `);
-    } else {
-      process.stdout.write('.');
-    }
-    if ((await putScript(scriptId, scriptData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing script ${id} in journey ${treeId}`
-      );
-      return null;
-    }
-  }
-  process.stdout.write('done\n');
-
-  process.stdout.write('Importing email templates ');
-  for (const [templateId, templateData] of Object.entries(
-    journeyMap.emailTemplates
-  )) {
-    const templateLongId = templateData._id;
-    if (single) {
-      process.stdout.write(`[${templateId}] `);
-    } else {
-      process.stdout.write('.');
-    }
-    if (
-      (await putEmailTemplate(templateId, templateLongId, templateData)) == null
-    ) {
-      console.error(
-        `importJourney ERROR: error importing template ${id} in journey ${treeId}`
-      );
-      return null;
+  if (Object.entries(journeyMap.scripts).length > 0) {
+    process.stdout.write('  - Scripts:\n');
+    for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
+      process.stdout.write(`    - ${scriptData.name} (${scriptId})`);
+      if ((await putScript(scriptId, scriptData)) == null) {
+        console.error(
+          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`
+        );
+        return null;
+      }
+      process.stdout.write('\n');
     }
   }
-  process.stdout.write('done\n');
 
-  process.stdout.write('Importing inner nodes (nodes inside page nodes) ');
+  if (Object.entries(journeyMap.emailTemplates).length > 0) {
+    process.stdout.write('  - Email templates:\n');
+    for (const [templateId, templateData] of Object.entries(
+      journeyMap.emailTemplates
+    )) {
+      const templateLongId = templateData._id;
+      process.stdout.write(`    - ${templateId}`);
+      if (
+        (await putEmailTemplate(templateId, templateLongId, templateData)) ==
+        null
+      ) {
+        console.error(
+          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`
+        );
+        return null;
+      }
+      process.stdout.write('\n');
+    }
+  }
+
+  process.stdout.write('  - Inner nodes:\n');
   for (const [innerNodeId, innerNodeData] of Object.entries(
     journeyMap.innernodes
   )) {
     const nodeType = innerNodeData._type._id;
-    if (single) {
-      process.stdout.write(`[${innerNodeId}] `);
-    } else {
-      process.stdout.write('.');
-    }
+    process.stdout.write(`    - ${innerNodeId}`);
     if (noreuuid) {
       newUuid = innerNodeId;
     } else {
@@ -572,18 +566,14 @@ export async function importJourney(id, journeyMap, noreuuid, single) {
       );
       return null;
     }
+    process.stdout.write('\n');
   }
-  process.stdout.write('done\n');
 
-  process.stdout.write('Importing nodes ');
+  process.stdout.write('  - Nodes:\n');
   // eslint-disable-next-line prefer-const
   for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
     const nodeType = nodeData._type._id;
-    if (single) {
-      process.stdout.write(`[${nodeId}] `);
-    } else {
-      process.stdout.write('.');
-    }
+    process.stdout.write(`    - ${nodeId}`);
     if (noreuuid) {
       newUuid = nodeId;
     } else {
@@ -610,11 +600,11 @@ export async function importJourney(id, journeyMap, noreuuid, single) {
       );
       return null;
     }
+    process.stdout.write('\n');
   }
-  process.stdout.write('done\n');
 
-  process.stdout.write('Importing journey structure ');
-  const idForUrl = encodeURIComponent(id);
+  process.stdout.write('  - Flow\n');
+  // eslint-disable-next-line no-param-reassign
   journeyMap.tree._id = id;
   let journeyText = JSON.stringify(journeyMap.tree, null, 2);
   if (!noreuuid) {
@@ -623,13 +613,12 @@ export async function importJourney(id, journeyMap, noreuuid, single) {
     }
   }
   const journeyData = JSON.parse(journeyText);
-  if ((await putJourneyStructureData(idForUrl, journeyData)) == null) {
+  if ((await putJourneyStructureData(id, journeyData)) == null) {
     console.error(
       `importJourney ERROR: error importing journey structure ${treeId}`
     );
     return null;
   }
-  process.stdout.write('done\n');
   return '';
 }
 
@@ -643,20 +632,24 @@ async function resolveDependencies(
   let before = -1;
   let trees = [];
   let after = index;
-  if (index == -1) {
-    trees = Object.keys(journeyMap.trees);
+  if (index === -1) {
+    process.stdout.write('Resolving dependencies');
+    trees = Object.keys(journeyMap);
   } else {
     before = index;
     trees = [...unresolvedJourneys];
   }
 
-  for (const tree in trees) {
-    if ({}.hasOwnProperty.call(trees, tree)) {
+  for (const tree in journeyMap) {
+    if ({}.hasOwnProperty.call(journeyMap, tree)) {
+      // console.dir(journeyMap[tree]);
       const dependencies = [];
       process.stdout.write('.');
-      for (const node in trees[tree].nodes) {
-        if (trees[tree].nodes[node]._type._id === 'InnerTreeEvaluatorNode') {
-          dependencies.push(trees[tree].nodes[node].tree);
+      for (const node in journeyMap[tree].nodes) {
+        if (
+          journeyMap[tree].nodes[node]._type._id === 'InnerTreeEvaluatorNode'
+        ) {
+          dependencies.push(journeyMap[tree].nodes[node].tree);
         }
       }
       let allResolved = true;
@@ -690,21 +683,7 @@ async function resolveDependencies(
       after
     );
   }
-}
-
-export async function importAllJourneys(journeyMap, noreuuid, single) {
-  const installedJorneys = (await listJourneys(false)).map((x) => x.name);
-  const unresolvedJourneys = [];
-  const resolvedJourneys = [];
-  resolveDependencies(
-    installedJorneys,
-    journeyMap,
-    unresolvedJourneys,
-    resolvedJourneys
-  );
-  for (const tree of resolvedJourneys) {
-    importJourney(tree, journeyMap[tree], noreuuid, single);
-  }
+  process.stdout.write('\n');
 }
 
 export async function findOrphanedNodes(allNodes, orphanedNodes) {
@@ -1064,5 +1043,20 @@ export async function listJourneys(analyze) {
   } catch (e) {
     console.error('listJourneys ERROR: error getting journey list - ', e);
     return null;
+  }
+}
+
+export async function importAllJourneys(journeyMap, noreuuid) {
+  const installedJorneys = (await listJourneys(false)).map((x) => x.name);
+  const unresolvedJourneys = [];
+  const resolvedJourneys = [];
+  resolveDependencies(
+    installedJorneys,
+    journeyMap,
+    unresolvedJourneys,
+    resolvedJourneys
+  );
+  for (const tree of resolvedJourneys) {
+    await importJourney(tree, journeyMap[tree], noreuuid);
   }
 }
