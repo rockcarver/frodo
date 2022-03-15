@@ -10,6 +10,7 @@ import {
   revokeOAuth2ClientAdminPrivileges,
   hideGenericExtensionAttributes,
   showGenericExtensionAttributes,
+  repairOrgModel,
 } from '../../api/AdminApi.js';
 import storage from '../../storage/SessionStorage.js';
 
@@ -259,6 +260,44 @@ export default function setup() {
           options.includeCustomized,
           options.dryRun
         );
+        console.log('Done.');
+      }
+    });
+
+  journey
+    .command('repair-org-model')
+    .addArgument(common.hostArgumentM)
+    .addArgument(common.realmArgument)
+    .addArgument(common.userArgument)
+    .addArgument(common.passwordArgument)
+    .helpOption('-h, --help', 'Help')
+    .addOption(common.deploymentOption)
+    .addOption(common.insecureOption)
+    .addOption(
+      new Option(
+        '--extend-permissions',
+        'Extend permissions to include custom attributes.'
+      ).default(false, 'false')
+    )
+    .addOption(
+      new Option('--dry-run', 'Dry-run only, do not perform changes.').default(
+        false,
+        'false'
+      )
+    )
+    .description('Repair org model.')
+    .action(async (host, realm, user, password, options) => {
+      storage.session.setTenant(host);
+      storage.session.setRealm(realm);
+      storage.session.setUsername(user);
+      storage.session.setPassword(password);
+      storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
+      if (await getTokens()) {
+        console.log(
+          `Repairing org model in realm "${storage.session.getRealm()}"...`
+        );
+        await repairOrgModel(options.extendPermissions, options.dryRun);
         console.log('Done.');
       }
     });
