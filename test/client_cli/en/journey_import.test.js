@@ -1,6 +1,6 @@
 import cp from 'child_process';
 import { promisify } from 'util';
-import { crudeMultilineTakeUntil, collapseWhitespace } from '../../test_util_interface';
+import { crudeMultilineTakeUntil, collapseWhitespace } from '../utils/utils';
 
 const exec = promisify(cp.exec);
 const CMD = 'frodo journey import --help';
@@ -150,13 +150,14 @@ test("CLI help interface 'import option -k, --insecure' description should be ex
 test("CLI help interface 'describe option -t, --tree <tree>' description should be expected english", async () => {
     // Arrange
     const expectedDescription = `
-        -t, --tree <tree>  Specify the name of an authentication journey/tree.
+        -t, --tree <tree> Name of a journey/tree. If specified, -a and -A are ignored.
     `.trim();
     // Act
-    const testLine = stdout
-        .split(/\n/)
-        .find(line => line.trim().startsWith('-t, --tree <tree>'))
-        .trim();
+    const testLine = collapseWhitespace(crudeMultilineTakeUntil(
+        stdout,
+        '  -t, --tree <tree>  ',
+        '  -f, --file <file>  '
+    ));
     // Assert
     expect(testLine).toBe(expectedDescription);
 });
@@ -164,7 +165,7 @@ test("CLI help interface 'describe option -t, --tree <tree>' description should 
 test("CLI help interface 'import option -f, --file <file>' description should be expected english", async () => {
     // Arrange
     const expected = collapseWhitespace(`
-        -f, --file <file>  File name.
+        -f, --file <file> Name of the file to write the exported journey(s) to. Ignored with -A. -a, --all Import all the journeys/trees from single file. Ignored with -t. -A, --allSeparate Import all the journeys/trees from separate files <journey/tree name>.json. Ignored with -t or -a.
     `);
     // Act
     const testLine = collapseWhitespace(crudeMultilineTakeUntil(
