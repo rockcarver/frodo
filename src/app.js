@@ -26,14 +26,14 @@ storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
     initConnections();
 
     program.addCommand(admin());
+    program.addCommand(application());
     program.addCommand(connections());
+    program.addCommand(emailTemplate());
+    program.addCommand(idm());
     program.addCommand(info());
     program.addCommand(journey());
-    program.addCommand(script());
-    program.addCommand(emailTemplate());
-    program.addCommand(application());
-    program.addCommand(idm());
     program.addCommand(logging());
+    program.addCommand(script());
 
     program.showHelpAfterError();
     program.parse();
