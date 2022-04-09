@@ -5,8 +5,12 @@ import {
 } from './OAuth2ClientApi.js';
 import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/ApiUtils.js';
+import { getRealmManagedOrganization } from './OrganizationApi.js';
 import { getOAuth2Provider } from './AmServiceApi.js';
 import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
+import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
+import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
+import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
 
 const protectedClients = ['ui', 'idm-provisioning'];
 const protectedSubjects = ['amadmin'];
@@ -27,688 +31,6 @@ const adminRoles = [
   'internal/role/openidm-authorized',
   'internal/role/openidm-admin',
 ];
-
-const adminClientTemplate = {
-  coreOAuth2ClientConfig: {
-    userpassword: null,
-    loopbackInterfaceRedirection: {
-      inherited: false,
-      value: false,
-    },
-    defaultScopes: {
-      inherited: false,
-      value: [],
-    },
-    refreshTokenLifetime: {
-      inherited: false,
-      value: 604800,
-    },
-    scopes: {
-      inherited: false,
-      value: adminScopes,
-    },
-    status: {
-      inherited: false,
-      value: 'Active',
-    },
-    accessTokenLifetime: {
-      inherited: false,
-      value: 3600,
-    },
-    redirectionUris: {
-      inherited: false,
-      value: [],
-    },
-    clientName: {
-      inherited: false,
-      value: [],
-    },
-    clientType: {
-      inherited: false,
-      value: 'Confidential',
-    },
-    authorizationCodeLifetime: {
-      inherited: false,
-      value: 120,
-    },
-  },
-  overrideOAuth2ClientConfig: {
-    issueRefreshToken: true,
-    remoteConsentServiceId: null,
-    tokenEncryptionEnabled: false,
-    enableRemoteConsent: false,
-    usePolicyEngineForScope: false,
-    oidcMayActScript: '[Empty]',
-    oidcClaimsScript: '36863ffb-40ec-48b9-94b1-9a99f71cc3b5',
-    overrideableOIDCClaims: [],
-    accessTokenMayActScript: '[Empty]',
-    clientsCanSkipConsent: false,
-    accessTokenModificationScript: 'd22f9a0c-426a-4466-b95e-d0f125b0d5fa',
-    providerOverridesEnabled: false,
-    issueRefreshTokenOnRefreshedToken: true,
-    scopeImplementationClass:
-      'org.forgerock.openam.oauth2.OpenAMScopeValidator',
-    statelessTokensEnabled: false,
-  },
-  advancedOAuth2ClientConfig: {
-    descriptions: {
-      inherited: false,
-      value: [],
-    },
-    requestUris: {
-      inherited: false,
-      value: [],
-    },
-    logoUri: {
-      inherited: false,
-      value: [],
-    },
-    subjectType: {
-      inherited: false,
-      value: 'Public',
-    },
-    clientUri: {
-      inherited: false,
-      value: [],
-    },
-    tokenExchangeAuthLevel: {
-      inherited: false,
-      value: 0,
-    },
-    name: {
-      inherited: false,
-      value: [],
-    },
-    contacts: {
-      inherited: false,
-      value: [],
-    },
-    responseTypes: {
-      inherited: false,
-      value: ['token'],
-    },
-    updateAccessToken: {
-      inherited: false,
-    },
-    mixUpMitigation: {
-      inherited: false,
-      value: false,
-    },
-    customProperties: {
-      inherited: false,
-      value: [],
-    },
-    javascriptOrigins: {
-      inherited: false,
-      value: [],
-    },
-    policyUri: {
-      inherited: false,
-      value: [],
-    },
-    softwareVersion: {
-      inherited: false,
-    },
-    tosURI: {
-      inherited: false,
-      value: [],
-    },
-    sectorIdentifierUri: {
-      inherited: false,
-    },
-    tokenEndpointAuthMethod: {
-      inherited: false,
-      value: 'client_secret_basic',
-    },
-    isConsentImplied: {
-      inherited: false,
-      value: true,
-    },
-    softwareIdentity: {
-      inherited: false,
-    },
-    grantTypes: {
-      inherited: false,
-      value: ['client_credentials'],
-    },
-  },
-  signEncOAuth2ClientConfig: {
-    tokenEndpointAuthSigningAlgorithm: {
-      inherited: false,
-      value: 'RS256',
-    },
-    idTokenEncryptionEnabled: {
-      inherited: false,
-      value: false,
-    },
-    tokenIntrospectionEncryptedResponseEncryptionAlgorithm: {
-      inherited: false,
-      value: 'A128CBC-HS256',
-    },
-    requestParameterSignedAlg: {
-      inherited: false,
-    },
-    clientJwtPublicKey: {
-      inherited: false,
-    },
-    idTokenPublicEncryptionKey: {
-      inherited: false,
-    },
-    mTLSSubjectDN: {
-      inherited: false,
-    },
-    userinfoResponseFormat: {
-      inherited: false,
-      value: 'JSON',
-    },
-    mTLSCertificateBoundAccessTokens: {
-      inherited: false,
-      value: false,
-    },
-    publicKeyLocation: {
-      inherited: false,
-      value: 'jwks_uri',
-    },
-    tokenIntrospectionResponseFormat: {
-      inherited: false,
-      value: 'JSON',
-    },
-    jwkStoreCacheMissCacheTime: {
-      inherited: false,
-      value: 60000,
-    },
-    requestParameterEncryptedEncryptionAlgorithm: {
-      inherited: false,
-      value: 'A128CBC-HS256',
-    },
-    userinfoSignedResponseAlg: {
-      inherited: false,
-    },
-    idTokenEncryptionAlgorithm: {
-      inherited: false,
-      value: 'RSA-OAEP-256',
-    },
-    requestParameterEncryptedAlg: {
-      inherited: false,
-    },
-    mTLSTrustedCert: {
-      inherited: false,
-    },
-    jwkSet: {
-      inherited: false,
-    },
-    idTokenEncryptionMethod: {
-      inherited: false,
-      value: 'A128CBC-HS256',
-    },
-    jwksCacheTimeout: {
-      inherited: false,
-      value: 3600000,
-    },
-    userinfoEncryptedResponseAlg: {
-      inherited: false,
-    },
-    idTokenSignedResponseAlg: {
-      inherited: false,
-      value: 'RS256',
-    },
-    jwksUri: {
-      inherited: false,
-    },
-    tokenIntrospectionSignedResponseAlg: {
-      inherited: false,
-      value: 'RS256',
-    },
-    userinfoEncryptedResponseEncryptionAlgorithm: {
-      inherited: false,
-      value: 'A128CBC-HS256',
-    },
-    tokenIntrospectionEncryptedResponseAlg: {
-      inherited: false,
-      value: 'RSA-OAEP-256',
-    },
-  },
-  coreOpenIDClientConfig: {
-    claims: {
-      inherited: false,
-      value: [],
-    },
-    clientSessionUri: {
-      inherited: false,
-    },
-    backchannel_logout_uri: {
-      inherited: false,
-    },
-    defaultAcrValues: {
-      inherited: false,
-      value: [],
-    },
-    jwtTokenLifetime: {
-      inherited: false,
-      value: 3600,
-    },
-    defaultMaxAgeEnabled: {
-      inherited: false,
-      value: false,
-    },
-    defaultMaxAge: {
-      inherited: false,
-      value: 600,
-    },
-    postLogoutRedirectUri: {
-      inherited: false,
-      value: [],
-    },
-    backchannel_logout_session_required: {
-      inherited: false,
-      value: false,
-    },
-  },
-  coreUmaClientConfig: {
-    claimsRedirectionUris: {
-      inherited: false,
-      value: [],
-    },
-  },
-  _type: {
-    _id: 'OAuth2Client',
-    name: 'OAuth2 Clients',
-    collection: true,
-  },
-};
-
-const genericExtensionAttributesTemplate = {
-  frIndexedDate1: {
-    description: 'Generic Indexed Date 1',
-    isPersonal: false,
-    title: 'Generic Indexed Date 1',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedDate2: {
-    description: 'Generic Indexed Date 2',
-    isPersonal: false,
-    title: 'Generic Indexed Date 2',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedDate3: {
-    description: 'Generic Indexed Date 3',
-    isPersonal: false,
-    title: 'Generic Indexed Date 3',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedDate4: {
-    description: 'Generic Indexed Date 4',
-    isPersonal: false,
-    title: 'Generic Indexed Date 4',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedDate5: {
-    description: 'Generic Indexed Date 5',
-    isPersonal: false,
-    title: 'Generic Indexed Date 5',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedInteger1: {
-    description: 'Generic Indexed Integer 1',
-    isPersonal: false,
-    title: 'Generic Indexed Integer 1',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedInteger2: {
-    description: 'Generic Indexed Integer 2',
-    isPersonal: false,
-    title: 'Generic Indexed Integer 2',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedInteger3: {
-    description: 'Generic Indexed Integer 3',
-    isPersonal: false,
-    title: 'Generic Indexed Integer 3',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedInteger4: {
-    description: 'Generic Indexed Integer 4',
-    isPersonal: false,
-    title: 'Generic Indexed Integer 4',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedInteger5: {
-    description: 'Generic Indexed Integer 5',
-    isPersonal: false,
-    title: 'Generic Indexed Integer 5',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedMultivalued1: {
-    description: 'Generic Indexed Multivalue 1',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Indexed Multivalue 1',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedMultivalued2: {
-    description: 'Generic Indexed Multivalue 2',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Indexed Multivalue 2',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedMultivalued3: {
-    description: 'Generic Indexed Multivalue 3',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Indexed Multivalue 3',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedMultivalued4: {
-    description: 'Generic Indexed Multivalue 4',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Indexed Multivalue 4',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedMultivalued5: {
-    description: 'Generic Indexed Multivalue 5',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Indexed Multivalue 5',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedString1: {
-    description: 'Generic Indexed String 1',
-    isPersonal: false,
-    title: 'Generic Indexed String 1',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedString2: {
-    description: 'Generic Indexed String 2',
-    isPersonal: false,
-    title: 'Generic Indexed String 2',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedString3: {
-    description: 'Generic Indexed String 3',
-    isPersonal: false,
-    title: 'Generic Indexed String 3',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedString4: {
-    description: 'Generic Indexed String 4',
-    isPersonal: false,
-    title: 'Generic Indexed String 4',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frIndexedString5: {
-    description: 'Generic Indexed String 5',
-    isPersonal: false,
-    title: 'Generic Indexed String 5',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedDate1: {
-    description: 'Generic Unindexed Date 1',
-    isPersonal: false,
-    title: 'Generic Unindexed Date 1',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedDate2: {
-    description: 'Generic Unindexed Date 2',
-    isPersonal: false,
-    title: 'Generic Unindexed Date 2',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedDate3: {
-    description: 'Generic Unindexed Date 3',
-    isPersonal: false,
-    title: 'Generic Unindexed Date 3',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedDate4: {
-    description: 'Generic Unindexed Date 4',
-    isPersonal: false,
-    title: 'Generic Unindexed Date 4',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedDate5: {
-    description: 'Generic Unindexed Date 5',
-    isPersonal: false,
-    title: 'Generic Unindexed Date 5',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedInteger1: {
-    description: 'Generic Unindexed Integer 1',
-    isPersonal: false,
-    title: 'Generic Unindexed Integer 1',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedInteger2: {
-    description: 'Generic Unindexed Integer 2',
-    isPersonal: false,
-    title: 'Generic Unindexed Integer 2',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedInteger3: {
-    description: 'Generic Unindexed Integer 3',
-    isPersonal: false,
-    title: 'Generic Unindexed Integer 3',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedInteger4: {
-    description: 'Generic Unindexed Integer 4',
-    isPersonal: false,
-    title: 'Generic Unindexed Integer 4',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedInteger5: {
-    description: 'Generic Unindexed Integer 5',
-    isPersonal: false,
-    title: 'Generic Unindexed Integer 5',
-    type: 'number',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedMultivalued1: {
-    description: 'Generic Unindexed Multivalue 1',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Unindexed Multivalue 1',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedMultivalued2: {
-    description: 'Generic Unindexed Multivalue 2',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Unindexed Multivalue 2',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedMultivalued3: {
-    description: 'Generic Unindexed Multivalue 3',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Unindexed Multivalue 3',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedMultivalued4: {
-    description: 'Generic Unindexed Multivalue 4',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Unindexed Multivalue 4',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedMultivalued5: {
-    description: 'Generic Unindexed Multivalue 5',
-    isPersonal: false,
-    items: {
-      type: 'string',
-    },
-    title: 'Generic Unindexed Multivalue 5',
-    type: 'array',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedString1: {
-    description: 'Generic Unindexed String 1',
-    isPersonal: false,
-    title: 'Generic Unindexed String 1',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedString2: {
-    description: 'Generic Unindexed String 2',
-    isPersonal: false,
-    title: 'Generic Unindexed String 2',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedString3: {
-    description: 'Generic Unindexed String 3',
-    isPersonal: false,
-    title: 'Generic Unindexed String 3',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedString4: {
-    description: 'Generic Unindexed String 4',
-    isPersonal: false,
-    title: 'Generic Unindexed String 4',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-  frUnindexedString5: {
-    description: 'Generic Unindexed String 5',
-    isPersonal: false,
-    title: 'Generic Unindexed String 5',
-    type: 'string',
-    usageDescription: '',
-    userEditable: true,
-    viewable: true,
-  },
-};
 
 /*
  * List all oauth2 clients, which have a corresponding staticUserMapping
@@ -1027,7 +349,8 @@ export async function revokeOAuth2ClientAdminPrivileges(name) {
 }
 
 export async function createOAuth2ClientWithAdminPrivileges(name, password) {
-  const client = adminClientTemplate;
+  const client = OAUTH2_CLIENT;
+  client.coreOAuth2ClientConfig.scopes = adminScopes;
   client.userpassword = password;
   await putOAuth2Client(name, client);
   await addAdminScopes(name);
@@ -1039,7 +362,7 @@ export async function hideGenericExtensionAttributes(
   dryRun
 ) {
   const managed = await getConfigEntity('managed');
-  const propertyNames = Object.keys(genericExtensionAttributesTemplate);
+  const propertyNames = Object.keys(GENERIC_EXTENSION_ATTRIBUTES);
   const updatedObjects = managed.objects.map((object) => {
     // ignore all other objects
     if (object.name !== getRealmManagedUser()) {
@@ -1048,7 +371,7 @@ export async function hideGenericExtensionAttributes(
     propertyNames.forEach((name) => {
       if (
         isEqualJson(
-          genericExtensionAttributesTemplate[name],
+          GENERIC_EXTENSION_ATTRIBUTES[name],
           object.schema.properties[name],
           ['viewable', 'usageDescription']
         ) ||
@@ -1080,7 +403,7 @@ export async function showGenericExtensionAttributes(
   dryRun
 ) {
   const managed = await getConfigEntity('managed');
-  const propertyNames = Object.keys(genericExtensionAttributesTemplate);
+  const propertyNames = Object.keys(GENERIC_EXTENSION_ATTRIBUTES);
   const updatedObjects = managed.objects.map((object) => {
     // ignore all other objects
     if (object.name !== getRealmManagedUser()) {
@@ -1089,7 +412,7 @@ export async function showGenericExtensionAttributes(
     propertyNames.forEach((name) => {
       if (
         isEqualJson(
-          genericExtensionAttributesTemplate[name],
+          GENERIC_EXTENSION_ATTRIBUTES[name],
           object.schema.properties[name],
           ['viewable', 'usageDescription']
         ) ||
@@ -1116,17 +439,92 @@ export async function showGenericExtensionAttributes(
   }
 }
 
-async function repairOrgModelUser() {}
+async function repairOrgModelUser(dryRun) {
+  const managed = await getConfigEntity('managed');
+  const RDVPs = ['memberOfOrgIDs'];
+  let repairData = false;
+  const updatedObjects = managed.objects.map((object) => {
+    // ignore all other objects
+    if (object.name !== getRealmManagedUser()) {
+      return object;
+    }
+    console.log(`${object.name}: checking...`);
+    RDVPs.forEach((name) => {
+      if (!object.schema.properties[name].queryConfig.flattenProperties) {
+        console.log(`- ${name}: repairing - needs flattening`);
+        // eslint-disable-next-line no-param-reassign
+        object.schema.properties[name].queryConfig.flattenProperties = true;
+        repairData = true;
+      } else {
+        console.log(`- ${name}: OK`);
+      }
+    });
+    return object;
+  });
+  managed.objects = updatedObjects;
+  if (!dryRun) {
+    await putConfigEntity('managed', managed);
+  }
+  return repairData;
+}
 
-async function repairOrgModelOrg() {}
+async function repairOrgModelOrg(dryRun) {
+  const managed = await getConfigEntity('managed');
+  const RDVPs = [
+    'adminIDs',
+    'ownerIDs',
+    'parentAdminIDs',
+    'parentOwnerIDs',
+    'parentIDs',
+  ];
+  let repairData = false;
+  const updatedObjects = managed.objects.map((object) => {
+    // ignore all other objects
+    if (object.name !== getRealmManagedOrganization()) {
+      return object;
+    }
+    console.log(`${object.name}: checking...`);
+    RDVPs.forEach((name) => {
+      if (!object.schema.properties[name].queryConfig.flattenProperties) {
+        console.log(`- ${name}: repairing - needs flattening`);
+        // eslint-disable-next-line no-param-reassign
+        object.schema.properties[name].queryConfig.flattenProperties = true;
+        repairData = true;
+      } else {
+        console.log(`- ${name}: OK`);
+      }
+    });
+    return object;
+  });
+  managed.objects = updatedObjects;
+  if (!dryRun) {
+    await putConfigEntity('managed', managed);
+  }
+  return repairData;
+}
 
-async function extendOrgModelPermissins() {}
+async function repairOrgModelData(dryRun) {
+  const rootOrgs = await findRootOrganizations();
+}
 
-export async function repairOrgModel(extendPermissions) {
-  await repairOrgModelUser();
-  await repairOrgModelOrg();
+async function extendOrgModelPermissins(dryRun) {}
+
+export async function repairOrgModel(
+  excludeCustomized,
+  extendPermissions,
+  dryRun
+) {
+  let repairData = false;
+  repairData = repairData || (await repairOrgModelUser(dryRun));
+  repairData = repairData || (await repairOrgModelOrg(dryRun));
+  if (repairData) {
+    await repairOrgModelData(dryRun);
+  }
   if (extendPermissions) {
-    await extendOrgModelPermissins();
+    await extendOrgModelPermissins(dryRun);
+  }
+  if (dryRun) {
+    console.log('Dry-run only. Changes are not saved.');
   }
 }
 
@@ -1137,3 +535,6 @@ export async function addRealmNameToManagedObjectLabels() {}
 
 // suggested by John K.
 export async function cleanUpPostmanArtifacts() {}
+
+// suggested by John K.
+export async function createSampleThemes() {}

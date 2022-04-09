@@ -387,16 +387,20 @@ describe the journey/tree export file indicated by -f.'
         console.log(`Total nodes:       ${allNodes.length}`);
         console.log(`Orphaned nodes:    ${orphanedNodes.length}`);
         // console.log(orphanedNodes);
-        const ok = await yesno({
-          question:
-            'Do you want to prune (permanently delete) all the orphaned node instances?(y|n):',
-        });
-        if (ok) {
-          process.stdout.write('Pruning.');
-          removeOrphanedNodes(allNodes, orphanedNodes);
+        if (orphanedNodes.length > 0) {
+          const ok = await yesno({
+            question:
+              'Do you want to prune (permanently delete) all the orphaned node instances?(y|n):',
+          });
+          if (ok) {
+            process.stdout.write('Pruning.');
+            removeOrphanedNodes(allNodes, orphanedNodes);
+          }
+          process.stdout.write('done');
+          console.log('');
+        } else {
+          console.log('No orphaned nodes found.');
         }
-        process.stdout.write('done');
-        console.log('');
       }
     });
   journey.showHelpAfterError();

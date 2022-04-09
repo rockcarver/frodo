@@ -6,7 +6,7 @@ import storage from '../storage/SessionStorage.js';
 const idmAllConfigURLTemplate = '%s/openidm/config';
 const idmConfigURLTemplate = '%s/openidm/config/%s';
 const idmManagedObjectURLTemplate =
-  '%s/openidm/managed/%s?_queryFilter=true&_fields=_id&_pageSize=10000';
+  '%s/openidm/managed/%s?_queryFilter=true&_pageSize=10000';
 
 export async function getAllConfigEntities() {
   try {
@@ -98,11 +98,13 @@ export async function putConfigEntity(id, data) {
   }
 }
 
-async function queryManagedObject(type, pageCookie) {
+export async function queryManagedObjects(type, fields, pageCookie) {
   try {
+    const fieldsParam =
+      fields.length > 0 ? `&_fields=${fields.join(',')}` : '&_fields=_id';
     const urlTemplate = pageCookie
-      ? `${idmManagedObjectURLTemplate}&_pagedResultsCookie=${pageCookie}`
-      : idmManagedObjectURLTemplate;
+      ? `${idmManagedObjectURLTemplate}${fieldsParam}&_pagedResultsCookie=${pageCookie}`
+      : `${idmManagedObjectURLTemplate}${fieldsParam}`;
     const urlString = util.format(
       urlTemplate,
       getTenantURL(storage.session.getTenant()),
@@ -149,7 +151,7 @@ export async function getCount(type) {
   process.stdout.write('Counting..');
   do {
     // eslint-disable-next-line no-await-in-loop
-    result = await queryManagedObject(type, result.pagedResultsCookie);
+    result = await queryManagedObjects(type, [], result.pagedResultsCookie);
     count += result.resultCount;
     process.stdout.write('.');
     // count.active += result.result.filter(value => (value.accountStatus === 'active' || value.accountStatus === 'Active')).length;
