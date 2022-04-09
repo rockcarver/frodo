@@ -43,118 +43,167 @@ function getOrigin(tenant, realm) {
 }
 
 async function getAllJourneyData() {
-  try {
-    const urlString = util.format(
-      queryAllTreesURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath()
-    );
-    const response = await generateAmApi(getTreeApiConfig()).get(urlString, {
+  const urlString = util.format(
+    queryAllTreesURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath()
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .get(urlString, {
       withCredentials: true,
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
+      return [];
     });
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getAllJourneyData ERROR: get all journeys call returned %d, possible cause: invalid credentials',
-        response.status
-      );
-      return null;
-    }
-    if ('result' in response.data) {
-      return response.data.result;
-    }
-    // console.log(journeyList);
-    return null;
-  } catch (e) {
-    console.error(
-      'getAllJourneyData ERROR: error getting all journey data - ',
-      e.message
-    );
-    return null;
-  }
+  return response.data.result;
 }
 
 async function getAllNodesData() {
-  try {
-    const urlString = util.format(
-      queryAllNodesURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath()
-    );
-    const response = await generateAmApi(getTreeApiConfig()).post(
-      urlString,
-      {},
-      { withCredentials: true }
-    );
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getAllNodesData ERROR: get all nodes call returned %d, possible cause: invalid credentials',
-        response.status
-      );
-      return null;
-    }
-    if ('result' in response.data) {
-      return response.data.result;
-    }
-    return null;
-  } catch (e) {
-    console.error(
-      'getAllNodesData ERROR: error getting all nodes data - ',
-      e.message
-    );
-    return null;
-  }
+  const urlString = util.format(
+    queryAllNodesURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath()
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .post(urlString, {}, { withCredentials: true })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
+      return [];
+    });
+  return response.data.result;
 }
 
 async function getNodeData(id, nodeType) {
-  try {
-    const urlString = util.format(
-      nodeURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(storage.session.getRealm()),
-      nodeType,
-      id
-    );
-    const response = await generateAmApi(getTreeApiConfig()).get(urlString, {
+  const urlString = util.format(
+    nodeURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(storage.session.getRealm()),
+    nodeType,
+    id
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .get(urlString, {
       withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getNodeData ERROR: get node call returned %d, possible cause: node not found',
-        response.status
-      );
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
       return null;
-    }
-    return response.data;
-  } catch (e) {
-    console.error('getNodeData ERROR: error getting node - ', e.message);
-    return null;
-  }
+    });
+  // console.dir(response.data);
+  return response.data;
 }
 
 async function deleteNode(id, nodeType) {
-  try {
-    const urlString = util.format(
-      nodeURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(),
-      nodeType,
-      id
-    );
-    const response = await generateAmApi(getTreeApiConfig()).delete(urlString, {
+  const urlString = util.format(
+    nodeURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    nodeType,
+    id
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .delete(urlString, {
       withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        'deleteNode ERROR: delete node call returned %d, possible cause: node not found',
-        response.status
-      );
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
       return null;
-    }
-    return response.data;
-  } catch (e) {
-    console.error('deleteNode ERROR: error deleting node - ', e.message);
-    return null;
-  }
+    });
+  // console.dir(response.data);
+  return response.data;
 }
 
 async function getJourneyStructureData(name) {
@@ -703,19 +752,18 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
       }
     }
   });
-  // console.log(activeNodes)
-  (await getAllNodesData()).forEach((x) => allNodes.push(x._id));
-  // console.log(allNodes)
+  (await getAllNodesData()).forEach((node) => {
+    allNodes.push(node);
+  });
   // filter nodes which are not present in activeNodes
-  const diff = allNodes.filter((x) => !activeNodes.includes(x));
-  // console.log(activeNodes.length);
+  const diff = allNodes.filter((x) => !activeNodes.includes(x._id));
   diff.forEach((x) => orphanedNodes.push(x));
 }
 
 export async function removeOrphanedNodes(allNodes, orphanedNodes) {
   orphanedNodes.forEach(async (node) => {
     process.stdout.write('.');
-    await deleteNode(node, allNodes.find((x) => x._id === node)._type._id);
+    await deleteNode(node._id, node._type._id);
   });
 }
 
