@@ -14,6 +14,7 @@ import {
   removeOrphanedNodes,
 } from '../../api/TreeApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('journey')
@@ -41,19 +42,19 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
-          `Listing journeys in realm "${storage.session.getRealm()}"...`
-        );
+        printMessage(
+            `Listing journeys in realm "${storage.session.getRealm()}"...`
+          );  
         const journeyList = await listJourneys(command.opts().analyze);
         journeyList.sort((a, b) => a.name.localeCompare(b.name));
         if (command.opts().analyze) {
           journeyList.forEach((item, index) => {
-            console.log(`${item.name} ${item.custom ? '(*)' : ''}`);
+            printMessage(`${item.name} ${item.custom ? '(*)' : ''}`);
           });
-          console.log('(*) Tree contains custom node(s).');
+        printMessage('(*) Tree contains custom node(s).');
         } else {
           journeyList.forEach((item, index) => {
-            console.log(`${item.name}`);
+            printMessage(`${item.name}`);
           });
         }
       }
@@ -90,19 +91,19 @@ describe the journey/tree export file indicated by -f.'
         typeof command.opts().file !== 'undefined'
       ) {
         if (typeof command.opts().file === 'undefined') {
-          console.error('You either need -h or -f when using describe');
+          printMessage('You either need <host> or -f when using describe', 'error');
           return;
         }
-        console.log(`Describing local journey file ${command.opts().file}...`);
+        printMessage(`Describing local journey file ${command.opts().file}...`);
         try {
           const data = fs.readFileSync(command.opts().file, 'utf8');
           const journeyData = JSON.parse(data);
           treeDescription.push(describeTree(journeyData));
         } catch (err) {
-          console.error(err);
+          printMessage(err, 'error');
         }
       } else if (await getTokens()) {
-        console.log(
+        printMessage(
           `Describing journey(s) in realm "${storage.session.getRealm()}"...`
         );
         if (typeof command.opts().tree === 'undefined') {
@@ -117,19 +118,19 @@ describe the journey/tree export file indicated by -f.'
         }
       }
       for (const item of treeDescription) {
-        console.log(`\nJourney: ${item.treeName}`);
-        console.log('========');
-        console.log('\nNodes:');
+        printMessage(`\nJourney: ${item.treeName}`);
+        printMessage('========');
+        printMessage('\nNodes:');
         for (const [name, count] of Object.entries(item.nodeTypes)) {
-          console.log(`- ${name}: ${count}`);
+          printMessage(`- ${name}: ${count}`);
         }
-        console.log('\nScripts:');
+        printMessage('\nScripts:');
         for (const [name, desc] of Object.entries(item.scripts)) {
-          console.log(`- ${name}: ${desc}`);
+          printMessage(`- ${name}: ${desc}`);
         }
-        console.log('\nEmail Templates:');
+        printMessage('\nEmail Templates:');
         for (const [id, displayName] of Object.entries(item.emailTemplates)) {
-          console.log(`- ${id}`);
+          printMessage(`- ${id}`);
         }
       }
     });
@@ -178,7 +179,7 @@ describe the journey/tree export file indicated by -f.'
       if (await getTokens()) {
         // export
         if (command.opts().tree) {
-          console.log('Exporting journey...');
+          printMessage('Exporting journey...');
           let fileName = `${command.opts().tree}.json`;
           if (command.opts().file) {
             fileName = command.opts().file;
@@ -189,14 +190,14 @@ describe the journey/tree export file indicated by -f.'
             JSON.stringify(journeyData, null, 2),
             (err, data) => {
               if (err) {
-                return console.error("ERROR - can't save journey to file");
+                return printMessage("ERROR - can't save journey to file", 'error');
               }
             }
           );
         }
         // exportAll -a
         else if (command.opts().all) {
-          console.log('Exporting all journeys to a single file...');
+          printMessage('Exporting all journeys to a single file...');
           let fileName = 'allJourneys.json';
           const journeysMap = {};
           const topLevelMap = {};
@@ -213,14 +214,14 @@ describe the journey/tree export file indicated by -f.'
             JSON.stringify(topLevelMap, null, 2),
             (err, data) => {
               if (err) {
-                return console.error("ERROR - can't save journeys to file");
+                return printMessage("ERROR - can't save journeys to file", 'error');
               }
             }
           );
         }
         // exportAllSeparate -A
         else if (command.opts().allSeparate) {
-          console.log('Exporting all journeys to separate files...');
+          printMessage('Exporting all journeys to separate files...');
           const journeyList = await listJourneys(false);
           for (const item of journeyList) {
             const journeyData = await getJourneyData(item.name);
@@ -230,8 +231,9 @@ describe the journey/tree export file indicated by -f.'
               JSON.stringify(journeyData, null, 2),
               (err, data) => {
                 if (err) {
-                  return console.error(
-                    `ERROR - can't save journey ${item.name} to file`
+                  return printMessage(
+                    `ERROR - can't save journey ${item.name} to file`,
+                    'error'
                   );
                 }
               }
@@ -240,7 +242,7 @@ describe the journey/tree export file indicated by -f.'
         }
         // unrecognized combination of options or no options
         else {
-          console.log('Unrecognized combination of options or no options...');
+          printMessage('Unrecognized combination of options or no options...');
           command.help();
         }
       }
@@ -291,7 +293,7 @@ describe the journey/tree export file indicated by -f.'
       if (await getTokens()) {
         // import
         if (command.opts().tree) {
-          console.log('Importing journey...');
+          printMessage('Importing journey...');
           fs.readFile(command.opts().file, 'utf8', (err, data) => {
             if (err) throw err;
             const journeyData = JSON.parse(data);
@@ -300,13 +302,13 @@ describe the journey/tree export file indicated by -f.'
               journeyData,
               command.opts().noReUUIDOption
             ).then((result) => {
-              if (!result == null) console.log('Import done.');
+              if (!result == null) printMessage('Import done.');
             });
           });
         }
         // importAll -a
         else if (command.opts().all && command.opts().file) {
-          console.log(
+          printMessage(
             `Importing all journeys from a single file (${
               command.opts().file
             })...`
@@ -318,13 +320,13 @@ describe the journey/tree export file indicated by -f.'
               journeyData.trees,
               command.opts().noReUUIDOption
             ).then((result) => {
-              if (!result == null) console.log('done.');
+              if (!result == null) printMessage('done.');
             });
           });
         }
         // importAllSeparate -A
         else if (command.opts().allSeparate && !command.opts().file) {
-          console.log(
+          printMessage(
             'Importing all journeys from separate files in current directory...'
           );
           const allJourneysData = { trees: {} };
@@ -343,13 +345,13 @@ describe the journey/tree export file indicated by -f.'
               allJourneysData.trees,
               command.opts().noReUUIDOption
             ).then((result) => {
-              if (!result == null) console.log('done.');
+              if (!result == null) printMessage('done.');
             });
           });
         }
         // unrecognized combination of options or no options
         else {
-          console.log('Unrecognized combination of options or no options...');
+          printMessage('Unrecognized combination of options or no options...');
           command.help();
         }
       }
@@ -375,17 +377,17 @@ describe the journey/tree export file indicated by -f.'
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Pruning orphaned configuration artifacts in realm "${storage.session.getRealm()}"...`
         );
         const allNodes = [];
         const orphanedNodes = [];
-        console.log(
+        printMessage(
           'Analyzing authentication nodes configuration artifacts...'
         );
         await findOrphanedNodes(allNodes, orphanedNodes);
-        console.log(`Total nodes:       ${allNodes.length}`);
-        console.log(`Orphaned nodes:    ${orphanedNodes.length}`);
+        printMessage(`Total nodes:       ${allNodes.length}`);
+        printMessage(`Orphaned nodes:    ${orphanedNodes.length}`);
         // console.log(orphanedNodes);
         const ok = await yesno({
           question:
@@ -396,7 +398,7 @@ describe the journey/tree export file indicated by -f.'
           removeOrphanedNodes(allNodes, orphanedNodes);
         }
         process.stdout.write('done');
-        console.log('');
+        printMessage('');
       }
     });
   journey.showHelpAfterError();

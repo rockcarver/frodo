@@ -11,6 +11,7 @@ import {
   getCount,
 } from '../../api/IdmConfigApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const idm = new Command('idm');
@@ -29,12 +30,12 @@ export default function setup() {
       storage.session.setPassword(password);
       storage.session.setTenant(host);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log('Listing all IDM configuration objects...');
+      printMessage('Listing all IDM configuration objects...');
       if (await getTokens()) {
         const configEntities = await getAllConfigEntities();
         if ('configurations' in configEntities) {
           configEntities.configurations.forEach((x) => {
-            console.log(`- ${x._id}`);
+            printMessage(`- ${x._id}`);
           });
         }
       }
@@ -56,7 +57,7 @@ export default function setup() {
       storage.session.setTenant(host);
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log('Exporting an IDM configuration object...');
+      printMessage('Exporting an IDM configuration object...');
       if (await getTokens()) {
         const configEntity = await getConfigEntity(command.opts().name);
         if (command.opts().file) {
@@ -65,14 +66,15 @@ export default function setup() {
             JSON.stringify(configEntity, null, 2),
             (err, data) => {
               if (err) {
-                return console.error(
-                  `ERROR - can't save ${command.opts().name} export to file`
+                return printMessage(
+                  `ERROR - can't save ${command.opts().name} export to file`,
+                  'error'
                 );
               }
             }
           );
         } else {
-          console.log(JSON.stringify(configEntity, null, 2));
+          printMessage(JSON.stringify(configEntity, null, 2));
         }
       }
     });
@@ -93,7 +95,7 @@ export default function setup() {
       storage.session.setPassword(password);
       storage.session.setTenant(host);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log(
+      printMessage(
         `Exporting all IDM configuration objects into separate JSON files in ${
           command.opts().directory
         }...`
@@ -112,9 +114,9 @@ export default function setup() {
               JSON.stringify(configEntity, null, 2),
               (err, data) => {
                 if (err) {
-                  return console.error(
-                    `ERROR - can't save config ${x._id} to file`,
-                    err
+                  return printMessage(
+                    `ERROR - can't save config ${x._id} to file - ${err}`,
+                    'error'
                   );
                 }
               }
@@ -140,7 +142,7 @@ export default function setup() {
       storage.session.setPassword(password);
       storage.session.setTenant(host);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log('Exporting all IDM configuration objects...');
+      printMessage('Exporting all IDM configuration objects...');
       if (await getTokens()) {
         let entriesToExport = [];
         const envFileData = {};
@@ -178,8 +180,9 @@ export default function setup() {
                   configEntityString,
                   (err, data) => {
                     if (err) {
-                      return console.error(
-                        `ERROR - can't save config ${x._id} to file`
+                      return printMessage(
+                        `ERROR - can't save config ${x._id} to file`,
+                        'error'
                       );
                     }
                   }
@@ -243,9 +246,9 @@ export default function setup() {
       storage.session.setPassword(password);
       storage.session.setTenant(host);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log(`Counting managed ${options.name} objects...`);
+      printMessage(`Counting managed ${options.name} objects...`);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Total count of [${options.name}] objects : ${await getCount(
             options.name
           )}`

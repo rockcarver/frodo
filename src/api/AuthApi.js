@@ -9,6 +9,7 @@ import readlineSync from 'readline-sync';
 import storage from '../storage/SessionStorage.js';
 import * as global from '../storage/StaticStorage.js';
 import DataProtection from './utils/DataProtection.js';
+import { printMessage } from './utils/Console.js';
 
 const dataProtection = new DataProtection()
 const adminClientPassword = "doesnotmatter"
@@ -75,13 +76,14 @@ export function listConnections() {
     try {
         const data = fs.readFileSync(filename, "utf8");
         const connectionsData = JSON.parse(data);
-        console.log(`[Host] : [Username]`);
+        printMessage(`[Host] : [Username]`)
         Object.keys(connectionsData).forEach(c => {
-            console.log(`- [${c}] : [${connectionsData[c].username}]${connectionsData[c].logApiKey?" [Log API key present]":""}`);
+            printMessage(`- [${c}] : [${connectionsData[c].username}]${connectionsData[c].logApiKey?" [Log API key present]":""}`);
         });
-        console.log("Any unique substring of a saved host can be used as the value for host parameter in all commands");
+        printMessage("Any unique substring of a saved host can be used as the value for host parameter in all commands");
     } catch (e) {
-        console.error(`No connections found in ${filename} (${e.message})`);
+        // console.error(`No connections found in ${filename} (${e.message})`);
+        printMessage(`No connections found in ${filename} (${e.message})`, 'error');
     }
 }
 
@@ -122,7 +124,8 @@ export async function getConnection() {
         const connectionsData = JSON.parse(fs.readFileSync(filename, connFile.options));
         const tenantData = findByWildcard(connectionsData, storage.session.getTenant());
         if(!tenantData) {
-            console.error(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`);
+            // console.error(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`);
+            printMessage(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`, 'error');
             return null;
         }
         return {
@@ -133,14 +136,15 @@ export async function getConnection() {
             secret: tenantData.logApiSecret?tenantData.logApiSecret:null
         }    
     } catch(e) {
-        console.error("Can not read saved connection info, please specify credentials on command line: " + e)
+        // console.error("Can not read saved connection info, please specify credentials on command line: " + e)
+        printMessage("Can not read saved connection info, please specify credentials on command line: " + e, 'error')
         return null;
     }
 }
 
 export async function saveConnection() {
     const filename = getConnectionFileName();
-    console.log(`Saving creds in ${filename}...`);
+    printMessage(`Saving creds in ${filename}...`);
     let connectionsData = {};
     let existingData = {};
     try {
@@ -149,11 +153,11 @@ export async function saveConnection() {
         connectionsData = JSON.parse(data);
         if (connectionsData[storage.session.getTenant()]) {
             existingData = connectionsData[storage.session.getTenant()];
-            console.log(`Updating existing connection profile ${storage.session.getTenant()}`);
+            printMessage(`Updating existing connection profile ${storage.session.getTenant()}`);
         } else
-            console.log(`Adding connection profile ${storage.session.getTenant()}`);
+            printMessage(`Adding connection profile ${storage.session.getTenant()}`);
     } catch (e) {
-        console.log(`Creating connection profile file ${filename} with ${storage.session.getTenant()}`);
+        printMessage(`Creating connection profile file ${filename} with ${storage.session.getTenant()}`);
     }
     if (storage.session.getUsername()) existingData.username = storage.session.getUsername();
     if (storage.session.getPassword()) existingData.encodedPassword = await dataProtection.encrypt(storage.session.getPassword()) //Buffer.from(storage.session.getPassword()).toString('base64');
@@ -162,7 +166,7 @@ export async function saveConnection() {
     connectionsData[storage.session.getTenant()] = existingData;
 
     fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
-    console.log("done.");
+    printMessage("done.");
 }
 
 function getRealmUrl(realm) {
@@ -182,13 +186,13 @@ async function getCookieName() {
         const serverinfo = await generateAmApi(getServerInfoApiConfig()).get(urlString, {});
         return serverinfo.data.cookieName;
     } catch(e) {
-        console.error("error getting cookie name: " + e)
+        // console.error("error getting cookie name: " + e)
+        printMessage("error getting cookie name: " + e, 'error')
         return null;
     }
 }
 
 async function checkAndHandle2FA(payload) {
-    // console.log(JSON.stringify(payload, null, 2));
     // let skippable = false;
     if("callbacks" in payload) {
         for(const element of payload.callbacks) {
@@ -206,7 +210,7 @@ async function checkAndHandle2FA(payload) {
             if(element.type == "NameCallback") {
                 if(element.output[0].value.includes("code")) {
                     // skippable = false;
-                    console.log("2FA is enabled and required for this user...");
+                    printMessage("2FA is enabled and required for this user...");
                     const code = readlineSync.question(`${element.output[0].value}: `);
                     element.input[0].value = code;
                     return {
@@ -251,7 +255,7 @@ async function determineDeployment() {
         response = await generateOauth2Api(getOauth2ApiConfig()).post(authorizeURL, bodyFormData, {maxRedirects: 0});
     } catch(e) {
         if(e.response && e.response.status == 302) {
-            console.log("ForgeRock Identity Cloud detected.");
+            printMessage("ForgeRock Identity Cloud detected.");
             deploymentType = global.CLOUD_DEPLOYMENT_TYPE_KEY;
         } else {
             try {
@@ -260,10 +264,10 @@ async function determineDeployment() {
             } catch(ex) {
                 if(ex.response.status == 302) {
                     adminClientId = forgeopsClientId;
-                    console.log("ForgeOps deployment detected.");
+                    printMessage("ForgeOps deployment detected.");
                     deploymentType = global.FORGEOPS_DEPLOYMENT_TYPE_KEY;
                 } else {
-                    console.log("Classic deployment detected.");
+                    printMessage("Classic deployment detected.");
                 }
             }
         }
@@ -280,13 +284,15 @@ async function getVersionInfo() {
             let versionString = response.data.version;
             const rx = /([\d]\.[\d]\.[\d](\.[\d])*)/g;
             let version = versionString.match(rx);
-            console.log("Connected to " + response.data.fullVersion);
+            printMessage("Connected to " + response.data.fullVersion);
             return version[0];
         } else {
-            console.error("error getting version info: version not in response data")
+            // console.error("error getting version info: version not in response data")
+            printMessage("error getting version info: version not in response data", 'error')
         }
     } catch(e) {
-        console.error("error getting version info - ", e.message)
+        // console.error("error getting version info - ", e.message)
+        printMessage("error getting version info - ", e.message, 'error')
     }
 }
 
@@ -304,7 +310,6 @@ async function authenticate() {
                 }
             }
         );
-        // console.log(response.data);
         const skip2FA = await checkAndHandle2FA(response.data);
         let response2 = {};
         if(skip2FA.need2fa) {
@@ -316,33 +321,37 @@ async function authenticate() {
         } else {
             response2.data = skip2FA.payload;
         }
-        // console.log(response2.data);
         if("tokenId" in response2.data) {
             storage.session.setCookieValue(response2.data.tokenId);
             if(!storage.session.getDeploymentType()) {
-                // console.log("Detecting deployment type...");
                 storage.session.setDeploymentType(await determineDeployment());
             }
             storage.session.setAmVersion(await getVersionInfo());
             return "";
         } else {
-            console.error("error authenticating - ", e.message);
-            console.error("+++ likely cause, bad credentials!!! +++");
+            // console.error("error authenticating - ", e.message);
+            // console.error("+++ likely cause, bad credentials!!! +++");
+            printMessage("error authenticating - ", e.message, 'error');
+            printMessage("+++ likely cause, bad credentials!!! +++", 'error');
             return null;
         }
     } catch(e) {
-        // console.log(e);
         if(e.response && e.response.status == 401) {
-            console.error("error authenticating - %s", e.message);
-            console.error("+++ likely cause, bad credentials +++");
+            // console.error("error authenticating - %s", e.message);
+            // console.error("+++ likely cause, bad credentials +++");
+            printMessage("error authenticating - %s", e.message, 'error');
+            printMessage("+++ likely cause, bad credentials +++", 'error');
             return null;
         }
         else if (e.message && e.message == "self signed certificate") {
-            console.error("error authenticating - %s", e.message);
-            console.error("+++ use -k, --insecure option to allow +++");
+            // console.error("error authenticating - %s", e.message);
+            // console.error("+++ use -k, --insecure option to allow +++");
+            printMessage("error authenticating - %s", e.message, 'error');
+            printMessage("+++ use -k, --insecure option to allow +++", 'error');
         }
         else {
-            console.error("error authenticating - %s", e.message);
+            // console.error("error authenticating - %s", e.message);
+            printMessage("error authenticating - %s", e.message, 'error');
             return null;
         }
     }
@@ -360,8 +369,10 @@ async function getAuthCode(authorizeURL, redirectURL, codeChallenge, codeChallen
             }
         );
         if(response.status < 200 || response.status > 399) {
-            console.error("error getting auth code");
-            console.error("likely cause: mismatched parameters with OAuth client config");
+            // console.error("error getting auth code");
+            // console.error("likely cause: mismatched parameters with OAuth client config");
+            printMessage("error getting auth code", 'error');
+            printMessage("likely cause: mismatched parameters with OAuth client config", 'error');
             return null;
         }
         const redirectLocationURL = response.request.res.responseUrl;
@@ -369,11 +380,13 @@ async function getAuthCode(authorizeURL, redirectURL, codeChallenge, codeChallen
         if("code" in queryObject) {
             return queryObject.code;
         } else {
-            console.error("auth code not found");
+            // console.error("auth code not found");
+            printMessage("auth code not found", 'error');
             return null;
         }
     } catch(e) {
-        console.error("error getting auth code - ", e.message);
+        // console.error("error getting auth code - ", e.message);
+        printMessage("error getting auth code - ", e.message, 'error');
         return null;
     }
 }
@@ -388,7 +401,8 @@ async function getAccessToken() {
         const redirectURL = url.resolve(storage.session.getTenant(), redirectURLTemplate);
         const authCode = await getAuthCode(authorizeURL, redirectURL, challenge, challengeMethod)
         if(authCode == null) {
-            console.error("error getting auth code");
+            // console.error("error getting auth code");
+            printMessage("error getting auth code", 'error');
             return null;
         }
         let response = null;
@@ -404,18 +418,21 @@ async function getAccessToken() {
             response = await generateOauth2Api(getOauth2ApiConfig()).post(accessTokenURL, bodyFormData);
         }
         if(response.status < 200 || response.status > 399) {
-            console.error("access token call returned " + response.status);
+            // console.error("access token call returned " + response.status);
+            printMessage("access token call returned " + response.status, 'error');
             return null;
         }
         if("access_token" in response.data) {
             storage.session.setBearerToken(response.data.access_token);
             return "";
         } else {
-            console.error("can't get access token");
+            // console.error("can't get access token");
+            printMessage("can't get access token", 'error');
             return null;
         }
     } catch(e) {
-        console.error("error getting access token - ");
+        // console.error("error getting access token - ");
+        printMessage("error getting access token - ", 'error');
         return null;
     }
 }
@@ -431,10 +448,8 @@ export async function getTokens() {
         storage.session.setPassword(conn.password);
     }
     await authenticate();
-    // console.log("Session token: " + storage.session.getCookieValue());
     if(storage.session.getCookieValue() && !storage.session.getBearerToken() && (storage.session.getDeploymentType() == global.CLOUD_DEPLOYMENT_TYPE_KEY || storage.session.getDeploymentType() == global.FORGEOPS_DEPLOYMENT_TYPE_KEY)) {
         await getAccessToken()
-        // console.log("Bearer token: " + storage.session.getBearerToken());
     }
     if(storage.session.getCookieValue() && credsFromParameters) {
         // valid cookie, which means valid username/password combo. Save it in connections.json

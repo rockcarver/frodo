@@ -2,6 +2,7 @@ import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const idmAllConfigURLTemplate = '%s/openidm/config';
 const idmConfigURLTemplate = '%s/openidm/config/%s';
@@ -16,17 +17,17 @@ export async function getAllConfigEntities() {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getAllConfigEntities ERROR: get config entities call returned %d, possible cause: email template not found',
-        response.status
+      printMessage(
+        `getAllConfigEntities ERROR: get config entities call returned ${response.status}, possible cause: email template not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(
-      'getAllConfigEntities ERROR: get config entities data error - ',
-      e.message
+    printMessage(
+      `getAllConfigEntities ERROR: get config entities data error - ${e.message}`,
+      'error'
     );
     return null;
   }
@@ -41,9 +42,9 @@ export async function getConfigEntity(id) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getConfigEntity ERROR: get config entities call returned %d',
-        response.status
+      printMessage(
+        `getConfigEntity ERROR: get config entities call returned ${response.status}`,
+        'error'
       );
       return null;
     }
@@ -57,9 +58,9 @@ export async function getConfigEntity(id) {
       // ignore errors related to forbidden responses from ID Cloud
       return null;
     }
-    console.error(
-      'getConfigEntity ERROR: get config entities data error - ',
-      e
+    printMessage(
+      `getConfigEntity ERROR: get config entities data error - ${e}`,
+      'error'
     );
     return null;
   }
@@ -74,9 +75,9 @@ export async function putConfigEntity(id, data) {
     );
     const response = await generateIdmApi().put(urlString, data);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'putConfigEntity ERROR: put config entities call returned %d',
-        response.status
+      printMessage(
+        `putConfigEntity ERROR: put config entities call returned ${response.status}`,
+        'error'
       );
       return null;
     }
@@ -90,9 +91,9 @@ export async function putConfigEntity(id, data) {
       // ignore errors related to forbidden responses from ID Cloud
       return null;
     }
-    console.error(
-      'putConfigEntity ERROR: put config entities data error - ',
-      e
+    printMessage(
+      `putConfigEntity ERROR: put config entities data error - ${e}`,
+      'error'
     );
     return null;
   }
@@ -110,16 +111,14 @@ async function queryManagedObject(type, pageCookie) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'queryManagedObject ERROR: get config entities call returned %d, possible cause: email template not found',
-        response.status
+      printMessage(
+        `queryManagedObject ERROR: get config entities call returned ${response.status}, possible cause: email template not found`,
+        'error'
       );
       return null;
     }
-    // console.log(response.data)
     return response.data;
   } catch (e) {
-    console.log(e);
     if (
       e.response.data.code === 403 &&
       e.response.data.message ===
@@ -128,9 +127,9 @@ async function queryManagedObject(type, pageCookie) {
       // ignore errors related to forbidden responses from ID Cloud
       return null;
     }
-    console.error(
-      'queryManagedObject ERROR: get config entities data error - ',
-      e
+    printMessage(
+      `queryManagedObject ERROR: get config entities data error - ${e}`,
+      'error'
     );
     return null;
   }
@@ -154,6 +153,6 @@ export async function getCount(type) {
     process.stdout.write('.');
     // count.active += result.result.filter(value => (value.accountStatus === 'active' || value.accountStatus === 'Active')).length;
   } while (result.pagedResultsCookie);
-  console.log('');
+  printMessage('');
   return count;
 }

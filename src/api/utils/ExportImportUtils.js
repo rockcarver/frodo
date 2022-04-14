@@ -2,6 +2,7 @@ import fs from 'fs';
 import _ from 'underscore';
 import storage from '../../storage/SessionStorage.js';
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
+import { printMessage } from './Console.js'
 
 function getCurrentTimestamp() {
   const ts = new Date();
@@ -55,7 +56,7 @@ function saveToFile(type, data, identifier, filename) {
   });
   fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err, data) => {
     if (err) {
-      return console.error(`ERROR - can't save ${type} to file`);
+      return printMessage(`ERROR - can't save ${type} to file`, 'error');
     }
   });
 }

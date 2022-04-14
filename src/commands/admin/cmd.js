@@ -12,6 +12,7 @@ import {
   showGenericExtensionAttributes,
 } from '../../api/AdminApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('admin')
@@ -38,7 +39,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Creating oauth2 client with admin privileges in realm "${storage.session.getRealm()}"...`
         );
         let clientId = uuidv4();
@@ -50,8 +51,8 @@ export default function setup() {
           clientSecret = options.clientSecret;
         }
         await createOAuth2ClientWithAdminPrivileges(clientId, clientSecret);
-        console.log(`Client ID: ${clientId}`);
-        console.log(`Client Secret: ${clientSecret}`);
+        printMessage(`Client ID: ${clientId}`);
+        printMessage(`Client Secret: ${clientSecret}`);
       }
     });
 
@@ -73,13 +74,13 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Listing oauth2 clients with admin privileges in realm "${storage.session.getRealm()}"...`
         );
         const adminClients = await listOAuth2AdminClients();
         adminClients.sort((a, b) => a.localeCompare(b));
         adminClients.forEach((item) => {
-          console.log(`${item}`);
+          printMessage(`${item}`);
         });
       }
     });
@@ -108,13 +109,13 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Granting oauth2 client "${
             options.target
           }" in realm "${storage.session.getRealm()}" admin privileges...`
         );
         await grantOAuth2ClientAdminPrivileges(options.target);
-        console.log('Done.');
+        printMessage('Done.');
       }
     });
 
@@ -142,13 +143,13 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Revoking admin privileges from oauth2 client "${
             options.target
           }" in realm "${storage.session.getRealm()}"...`
         );
         await revokeOAuth2ClientAdminPrivileges(options.target);
-        console.log('Done.');
+        printMessage('Done.');
       }
     });
 
@@ -170,13 +171,13 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Listing oauth2 clients with custom privileges in realm "${storage.session.getRealm()}"...`
         );
         const adminClients = await listOAuth2CustomClients();
         adminClients.sort((a, b) => a.localeCompare(b));
         adminClients.forEach((item) => {
-          console.log(`${item}`);
+          printMessage(`${item}`);
         });
       }
     });
@@ -211,14 +212,14 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Hiding generic extension attributes in realm "${storage.session.getRealm()}"...`
         );
         await hideGenericExtensionAttributes(
           options.includeCustomized,
           options.dryRun
         );
-        console.log('Done.');
+        printMessage('Done.');
       }
     });
 
@@ -252,14 +253,14 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Showing generic extension attributes in realm "${storage.session.getRealm()}"...`
         );
         await showGenericExtensionAttributes(
           options.includeCustomized,
           options.dryRun
         );
-        console.log('Done.');
+        printMessage('Done.');
       }
     });
 

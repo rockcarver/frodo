@@ -3,6 +3,7 @@ import { getTenantURL } from './utils/ApiUtils.js';
 import { saveConnection } from './AuthApi.js';
 import storage from '../storage/SessionStorage.js';
 import util from 'util';
+import { printMessage } from './utils/Console.js';
 
 const misc_noise = [
     'text/plain',
@@ -139,7 +140,7 @@ async function tail(source, cookie) {
         }
         const response = await generateLogApi().get(urlString);
         if (response.status < 200 || response.status > 399) {
-            console.error("tail ERROR: tail call returned %d", response.status);
+            printMessage(`tail ERROR: tail call returned ${response.status}`, 'error');
             return null;
         }
         let logsObject = response.data;
@@ -150,7 +151,7 @@ async function tail(source, cookie) {
         }
         return logsObject;
     } catch (e) {
-        console.error("tail ERROR: tail data error - ", e);
+        printMessage(`tail ERROR: tail data error - ${e}`, 'error');
         return null;
     }
 }
@@ -161,7 +162,7 @@ export async function tailLogs(source, cookie) {
         await saveConnection();
     }
     result.result.forEach(e => {
-        console.log(JSON.stringify(e.payload));
+        printMessage(JSON.stringify(e.payload));
     });
     setTimeout(function () {
         tailLogs(source, result.pagedResultsCookie)
@@ -173,13 +174,13 @@ export async function getSources() {
         const urlString = util.format(logsSourcesURLTemplate, getTenantURL(storage.session.getTenant()));
         const response = await generateLogApi().get(urlString);
         if (response.status < 200 || response.status > 399) {
-            console.error("getSources ERROR: get log sources call returned %d", response.status);
+            printMessage(`getSources ERROR: get log sources call returned ${response.status}`, 'error');
             return null;
         }
         // await saveConnection();
         return response.data;
     } catch (e) {
-        console.error("getSources ERROR: get log sources data error - ", e.message);
+        printMessage(`getSources ERROR: get log sources data error - ${e.message}`, 'error');
         return null;
     }
 }

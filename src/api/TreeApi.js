@@ -7,6 +7,7 @@ import storage from '../storage/SessionStorage.js';
 import { getEmailTemplate, putEmailTemplate } from './EmailTemplateApi.js';
 import { getScript, putScript } from './ScriptApi.js';
 import * as global from '../storage/StaticStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const journeyURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
@@ -53,9 +54,9 @@ async function getAllJourneyData() {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getAllJourneyData ERROR: get all journeys call returned %d, possible cause: invalid credentials',
-        response.status
+      printMessage(
+        `getAllJourneyData ERROR: get all journeys call returned ${response.status}, possible cause: invalid credentials`,
+        'error'
       );
       return null;
     }
@@ -65,9 +66,9 @@ async function getAllJourneyData() {
     // console.log(journeyList);
     return null;
   } catch (e) {
-    console.error(
-      'getAllJourneyData ERROR: error getting all journey data - ',
-      e.message
+    printMessage(
+      `getAllJourneyData ERROR: error getting all journey data - ${e.message}`,
+      'error'
     );
     return null;
   }
@@ -86,9 +87,9 @@ async function getAllNodesData() {
       { withCredentials: true }
     );
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getAllNodesData ERROR: get all nodes call returned %d, possible cause: invalid credentials',
-        response.status
+        printMessage(
+        `getAllNodesData ERROR: get all nodes call returned ${response.status}, possible cause: invalid credentials`,
+        'error'
       );
       return null;
     }
@@ -97,9 +98,9 @@ async function getAllNodesData() {
     }
     return null;
   } catch (e) {
-    console.error(
-      'getAllNodesData ERROR: error getting all nodes data - ',
-      e.message
+    printMessage(
+      `getAllNodesData ERROR: error getting all nodes data - ${e.message}`,
+      'error'
     );
     return null;
   }
@@ -118,15 +119,15 @@ async function getNodeData(id, nodeType) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getNodeData ERROR: get node call returned %d, possible cause: node not found',
-        response.status
+        printMessage(
+        `getNodeData ERROR: get node call returned ${response.status}, possible cause: node not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error('getNodeData ERROR: error getting node - ', e.message);
+    printMessage(`getNodeData ERROR: error getting node - ${e.message}`, 'error');
     return null;
   }
 }
@@ -144,15 +145,15 @@ async function deleteNode(id, nodeType) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'deleteNode ERROR: delete node call returned %d, possible cause: node not found',
-        response.status
+        printMessage(
+        `deleteNode ERROR: delete node call returned ${response.status}, possible cause: node not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error('deleteNode ERROR: error deleting node - ', e.message);
+    printMessage(`deleteNode ERROR: error deleting node - ${e.message}`, 'error');
     return null;
   }
 }
@@ -169,17 +170,16 @@ async function getJourneyStructureData(name) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        '\ngetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found',
-        response.status
+        printMessage(
+        `\ngetJourneyStructureData ERROR: get journey structure call returned ${response.status}, possible cause: journey not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(
-      '\ngetJourneyStructureData ERROR: get journey structure error - ',
-      e.message
+    printMessage(
+      `\ngetJourneyStructureData ERROR: get journey structure error - ${e.message}`, 'error'
     );
     return null;
   }
@@ -261,7 +261,7 @@ export async function getJourneyData(journey) {
     });
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach((item) => {
-      scriptsMap[item._id] = item;
+      if(item) scriptsMap[item._id] = item;
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
@@ -379,8 +379,8 @@ export async function getJourneyData(journey) {
   journeyMap.emailTemplates = emailTemplatesMap;
   journeyMap.nodes = nodesMap;
   journeyMap.tree = journeyStructureData;
-  console.log('.');
-  console.log(
+  printMessage('.');
+  printMessage(
     `Nodes(inner): ${
       Object.keys(nodesMap).length + Object.keys(innerNodesMap).length
     }(${Object.keys(innerNodesMap).length}), Scripts: ${
@@ -441,20 +441,22 @@ async function putNodeData(id, nodeType, data) {
       { withCredentials: true }
     );
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `PutNodeData ERROR: call returned ${response.status}, details: ${response}`
+        printMessage(
+        `PutNodeData ERROR: call returned ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     if (response.data._id !== id) {
-      console.error(
-        `PutNodeData ERROR: generic error creating node ${id} (id mismatch!)`
+        printMessage(
+        `PutNodeData ERROR: generic error creating node ${id} (id mismatch!)`,
+        'error'
       );
       return null;
     }
     return '';
   } catch (e) {
-    console.error(`PutNodeData ERROR: node ${id} - ${e}`, e.response.data);
+    printMessage(`PutNodeData ERROR: node ${id} - ${e} - ${e.response.data}`, 'error');
     return null;
   }
 }
@@ -473,22 +475,24 @@ async function putJourneyStructureData(id, data) {
       { withCredentials: true }
     );
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putJourneyStructureData ERROR: put journey structure call returned ${response.status}, details: ${response}`
+        printMessage(
+        `putJourneyStructureData ERROR: put journey structure call returned ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     if (response.data._id !== id) {
-      console.error(
-        `putJourneyStructureData ERROR: generic error importing journey structure ${id}!=${response.data._id}`
+        printMessage(
+        `putJourneyStructureData ERROR: generic error importing journey structure ${id}!=${response.data._id}`,
+        'error'
       );
       return null;
     }
     return '';
   } catch (e) {
-    console.error(
-      `putJourneyStructureData ERROR: put journey structure error, journey ${id} - ${e.message}`,
-      e
+    printMessage(
+      `putJourneyStructureData ERROR: put journey structure error, journey ${id} - ${e.message} - ${e}`,
+      'error'
     );
     return null;
   }
@@ -507,7 +511,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
   const treeId = journeyMap.tree._id;
 
   if (sourceOrigin === targetOrigin) {
-    console.log(
+    printMessage(
       `- Importing journey ${treeId} to the same environment and realm from where it was exported`
     );
   }
@@ -517,8 +521,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
       process.stdout.write(`    - ${scriptData.name} (${scriptId})`);
       if ((await putScript(scriptId, scriptData)) == null) {
-        console.error(
-          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
+          'error'
         );
         return null;
       }
@@ -537,8 +542,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
         null
       ) {
-        console.error(
-          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`,
+          'error'
         );
         return null;
       }
@@ -561,8 +567,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     innerNodeData._id = newUuid;
 
     if ((await putNodeData(newUuid, nodeType, innerNodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
@@ -595,8 +602,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
 
     if ((await putNodeData(newUuid, nodeType, nodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
@@ -614,8 +622,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
   const journeyData = JSON.parse(journeyText);
   if ((await putJourneyStructureData(id, journeyData)) == null) {
-    console.error(
-      `importJourney ERROR: error importing journey structure ${treeId}`
+    printMessage(
+      `importJourney ERROR: error importing journey structure ${treeId}`,
+      'error'
     );
     return null;
   }
@@ -673,7 +682,7 @@ async function resolveDependencies(
   }
   after = unresolvedJourneys.length;
   if (index !== -1 && after === before) {
-    console.log('Trees with unresolved dependencies: {}', unresolvedJourneys);
+    printMessage('Trees with unresolved dependencies: {}', unresolvedJourneys);
   } else if (after > 0) {
     resolveDependencies(
       installedJorneys,
@@ -994,8 +1003,9 @@ async function isCustom(journey) {
         }
       }
     } else {
-      console.error(
-        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`
+        printMessage(
+        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`,
+        'error'
       );
       custom = false;
     }
@@ -1014,9 +1024,9 @@ export async function listJourneys(analyze) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listJourneys ERROR: list journeys call returned %d, possible cause: invalid credentials',
-        response.status
+        printMessage(
+        `listJourneys ERROR: list journeys call returned ${response.status}, possible cause: invalid credentials`,
+        'error'
       );
       return null;
     }
@@ -1041,7 +1051,7 @@ export async function listJourneys(analyze) {
     // console.log(journeyList);
     return journeyList;
   } catch (e) {
-    console.error('listJourneys ERROR: error getting journey list - ', e);
+    printMessage(`listJourneys ERROR: error getting journey list - ${e}`, 'error');
     return null;
   }
 }

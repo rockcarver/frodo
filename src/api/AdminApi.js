@@ -7,6 +7,7 @@ import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/ApiUtils.js';
 import { getOAuth2Provider } from './AmServiceApi.js';
 import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
+import { printMessage } from './utils/Console.js';
 
 const protectedClients = ['ui', 'idm-provisioning'];
 const protectedSubjects = ['amadmin'];
@@ -838,10 +839,10 @@ async function addAdminScopes(name) {
   }
   client.coreOAuth2ClientConfig.scopes.inherited = false;
   if (addScopes.length > 0) {
-    console.log(`Adding admin scopes to client "${name}"...`);
+    printMessage(`Adding admin scopes to client "${name}"...`);
     await putOAuth2Client(name, client);
   } else {
-    console.log(`Client "${name}" already has admin scopes.`);
+    printMessage(`Client "${name}" already has admin scopes.`);
   }
 }
 
@@ -870,10 +871,10 @@ async function addClientCredentialsGrantType(name) {
   }
   client.advancedOAuth2ClientConfig.grantTypes.inherited = false;
   if (modified) {
-    console.log(`Adding client credentials grant type to client "${name}"...`);
+    printMessage(`Adding client credentials grant type to client "${name}"...`);
     await putOAuth2Client(name, client);
   } else {
-    console.log(`Client "${name}" already has client credentials grant type.`);
+    printMessage(`Client "${name}" already has client credentials grant type.`);
   }
 }
 
@@ -899,7 +900,7 @@ async function addAdminStaticUserMapping(name) {
     return newMapping;
   });
   if (needsAdminMapping) {
-    console.log(`Creating static user mapping for client "${name}"...`);
+    printMessage(`Creating static user mapping for client "${name}"...`);
     mappings.push({
       subject: name,
       localUser: 'internal/user/openidm-admin',
@@ -912,12 +913,12 @@ async function addAdminStaticUserMapping(name) {
   }
   authentication.rsFilter.staticUserMapping = mappings;
   if (addRoles.length > 0 || needsAdminMapping) {
-    console.log(
+    printMessage(
       `Adding admin roles to static user mapping for client "${name}"...`
     );
     await putConfigEntity('authentication', authentication);
   } else {
-    console.log(
+    printMessage(
       `Static user mapping for client "${name}" already has admin roles.`
     );
   }
@@ -947,11 +948,11 @@ async function removeAdminScopes(name) {
     );
   }
   if (client.coreOAuth2ClientConfig.scopes.value.length > finalScopes.length) {
-    console.log(`Removing admin scopes from client "${name}"...`);
+    printMessage(`Removing admin scopes from client "${name}"...`);
     client.coreOAuth2ClientConfig.scopes.value = finalScopes;
     await putOAuth2Client(name, client);
   } else {
-    console.log(`Client "${name}" has no admin scopes.`);
+    printMessage(`Client "${name}" has no admin scopes.`);
   }
 }
 
@@ -974,13 +975,13 @@ async function removeClientCredentialsGrantType(name) {
       finalGrantTypes.length;
   }
   if (modified) {
-    console.log(
+    printMessage(
       `Removing client credentials grant type from client "${name}"...`
     );
     client.advancedOAuth2ClientConfig.grantTypes.value = finalGrantTypes;
     await putOAuth2Client(name, client);
   } else {
-    console.log(
+    printMessage(
       `Client "${name}" does not allow client credentials grant type.`
     );
   }
@@ -1008,15 +1009,15 @@ async function removeAdminStaticUserMapping(name) {
   authentication.rsFilter.staticUserMapping = mappings;
   if (modified || removeMapping) {
     if (removeMapping) {
-      console.log(`Removing static user mapping for client "${name}"...`);
+        printMessage(`Removing static user mapping for client "${name}"...`);
     } else {
-      console.log(
+        printMessage(
         `Removing admin roles from static user mapping for client "${name}"...`
       );
     }
     await putConfigEntity('authentication', authentication);
   } else {
-    console.log(`Static user mapping for client "${name}" has no admin roles.`);
+    printMessage(`Static user mapping for client "${name}" has no admin roles.`);
   }
 }
 
@@ -1055,21 +1056,21 @@ export async function hideGenericExtensionAttributes(
         includeCustomized
       ) {
         if (object.schema.properties[name].viewable) {
-          console.log(`${name}: hide`);
+            printMessage(`${name}: hide`);
           // eslint-disable-next-line no-param-reassign
           object.schema.properties[name].viewable = false;
         } else {
-          console.log(`${name}: ignore (already hidden)`);
+            printMessage(`${name}: ignore (already hidden)`);
         }
       } else {
-        console.log(`${name}: skip (customized)`);
+        printMessage(`${name}: skip (customized)`);
       }
     });
     return object;
   });
   managed.objects = updatedObjects;
   if (dryRun) {
-    console.log('Dry-run only. Changes are not saved.');
+    printMessage('Dry-run only. Changes are not saved.');
   } else {
     await putConfigEntity('managed', managed);
   }
@@ -1096,21 +1097,21 @@ export async function showGenericExtensionAttributes(
         includeCustomized
       ) {
         if (!object.schema.properties[name].viewable) {
-          console.log(`${name}: show`);
+            printMessage(`${name}: show`);
           // eslint-disable-next-line no-param-reassign
           object.schema.properties[name].viewable = true;
         } else {
-          console.log(`${name}: ignore (already showing)`);
+            printMessage(`${name}: ignore (already showing)`);
         }
       } else {
-        console.log(`${name}: skip (customized)`);
+        printMessage(`${name}: skip (customized)`);
       }
     });
     return object;
   });
   managed.objects = updatedObjects;
   if (dryRun) {
-    console.log('Dry-run only. Changes are not saved.');
+    printMessage('Dry-run only. Changes are not saved.');
   } else {
     await putConfigEntity('managed', managed);
   }

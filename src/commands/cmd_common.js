@@ -169,6 +169,11 @@ export const sourcesOptionM = new Option(
   sourcesOptionDescription
 ).default('am-everything,idm-everything', sourcesOptionDefaultValueDescription);
 
+export const scriptFriendlyOption = new Option(
+    '-s, --scriptFriendly',
+    'Output to screen in a script-friendly format (JSON)'
+  ).default(false, "Output as plain text");
+  
 treeOptionM.makeOptionMandatory();
 fileOptionM.makeOptionMandatory();
 deploymentOptionM.makeOptionMandatory();
