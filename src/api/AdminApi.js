@@ -7,13 +7,15 @@ import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/ApiUtils.js';
 import { getRealmManagedOrganization } from './OrganizationApi.js';
 import { getOAuth2Provider } from './AmServiceApi.js';
+import { createSecret } from './SecretsApi.js';
+import { clientCredentialsGrant } from './OAuth2OIDCApi.js';
 import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
 import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
 import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
 
 const protectedClients = ['ui', 'idm-provisioning'];
-const protectedSubjects = ['amadmin'];
+const protectedSubjects = ['amadmin', 'autoid-resource-server'];
 
 const privilegedScopes = [
   'am-introspect-all-tokens',
@@ -27,7 +29,13 @@ const privilegedRoles = [
 ];
 
 const adminScopes = ['fr:idm:*', 'fr:idc:esv:*'];
+const adminDefaultScopes = ['fr:idm:*'];
 const adminRoles = [
+  'internal/role/openidm-authorized',
+  'internal/role/openidm-admin',
+];
+const autoIdRoles = [
+  'internal/role/platform-provisioning',
   'internal/role/openidm-authorized',
   'internal/role/openidm-admin',
 ];
@@ -127,76 +135,160 @@ export async function listOAuth2AdminClients() {
   return adminClients;
 }
 
+/*
+ * List all static user mappings that are not oauth2 clients in authentication.json
+ * and are assigned admin privileges:
+  {
+    "_id": "authentication",
+    "rsFilter": {
+      ...
+        "staticUserMapping": [
+            {
+                "subject": "amadmin",
+                "localUser": "internal/user/openidm-admin",
+                "userRoles": "authzRoles/*",
+                "roles": [
+                    "internal/role/openidm-authorized",
+                    "internal/role/openidm-admin"
+                ]
+            },
+            {
+                "subject": "idm-provisioning",
+                "localUser": "internal/user/idm-provisioning",
+                "roles": [
+                    "internal/role/platform-provisioning"
+                ]
+            },
+            {
+                "subject": "RCSClient",
+                "localUser": "internal/user/idm-provisioning"
+            },
+            {
+                "subject": "autoid-resource-server",
+                "localUser": "internal/user/idm-provisioning",
+                "roles": [
+                    "internal/role/platform-provisioning",
+                    "internal/role/openidm-authorized",
+                    "internal/role/openidm-admin"
+                ]
+            }
+        ]
+    }
+  }
+ */
+export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
+  let clients = await listOAuth2Clients();
+  clients = clients
+    .map((client) => client._id)
+    .filter((client) => !protectedClients.includes(client));
+  const authentication = await getConfigEntity('authentication');
+  let subjects = authentication.rsFilter.staticUserMapping
+    .filter((mapping) => {
+      let isPrivileged = false;
+      if (mapping.roles) {
+        mapping.roles.forEach((role) => {
+          if (privilegedRoles.includes(role)) {
+            isPrivileged = true;
+          }
+        });
+      }
+      return isPrivileged;
+    })
+    .map((mapping) => mapping.subject);
+  if (!showProtected) {
+    subjects = subjects.filter(
+      (subject) => !protectedSubjects.includes(subject)
+    );
+  }
+  const adminSubjects = subjects.filter(
+    (subject) => !clients.includes(subject)
+  );
+  return adminSubjects;
+}
+
 async function getDynamicClientRegistrationScope() {
   const provider = await getOAuth2Provider();
   return provider.clientDynamicRegistrationConfig
     .dynamicClientRegistrationScope;
 }
 
-async function addAdminScopes(name) {
+async function addAdminScopes(clientId, client) {
+  const modClient = client;
   const allAdminScopes = adminScopes.concat([
     await getDynamicClientRegistrationScope(),
   ]);
-  const client = await getOAuth2Client(name);
-  if (!client) {
-    return;
-  }
   let addScopes = [];
   if (
-    client.coreOAuth2ClientConfig.scopes &&
-    client.coreOAuth2ClientConfig.scopes.value
+    modClient.coreOAuth2ClientConfig.scopes &&
+    modClient.coreOAuth2ClientConfig.scopes.value
   ) {
     addScopes = allAdminScopes.filter((scope) => {
       let add = false;
-      if (!client.coreOAuth2ClientConfig.scopes.value.includes(scope)) {
+      if (!modClient.coreOAuth2ClientConfig.scopes.value.includes(scope)) {
         add = true;
       }
       return add;
     });
-    client.coreOAuth2ClientConfig.scopes.value =
-      client.coreOAuth2ClientConfig.scopes.value.concat(addScopes);
+    modClient.coreOAuth2ClientConfig.scopes.value =
+      modClient.coreOAuth2ClientConfig.scopes.value.concat(addScopes);
   } else {
-    client.coreOAuth2ClientConfig.scopes.value = addScopes;
+    modClient.coreOAuth2ClientConfig.scopes.value = allAdminScopes;
   }
-  client.coreOAuth2ClientConfig.scopes.inherited = false;
-  if (addScopes.length > 0) {
-    console.log(`Adding admin scopes to client "${name}"...`);
-    await putOAuth2Client(name, client);
+  let addDefaultScope = false;
+  if (
+    modClient.coreOAuth2ClientConfig.defaultScopes &&
+    modClient.coreOAuth2ClientConfig.defaultScopes.value
+  ) {
+    if (modClient.coreOAuth2ClientConfig.defaultScopes.value.length === 0) {
+      addDefaultScope = true;
+      modClient.coreOAuth2ClientConfig.defaultScopes.value = adminDefaultScopes;
+    } else {
+      console.log(
+        `Client "${clientId}" already has default scopes configured, not adding admin default scope.`
+      );
+    }
+  }
+  if (addScopes.length > 0 || addDefaultScope) {
+    console.log(`Adding admin scopes to client "${clientId}"...`);
   } else {
-    console.log(`Client "${name}" already has admin scopes.`);
+    console.log(`Client "${clientId}" already has admin scopes.`);
   }
+  return modClient;
 }
 
-async function addClientCredentialsGrantType(name) {
-  const client = await getOAuth2Client(name);
-  if (!client) {
-    return;
-  }
+function addClientCredentialsGrantType(clientId, client) {
+  const modClient = client;
   let modified = false;
   if (
-    client.advancedOAuth2ClientConfig.grantTypes &&
-    client.advancedOAuth2ClientConfig.grantTypes.value
+    modClient.advancedOAuth2ClientConfig.grantTypes &&
+    modClient.advancedOAuth2ClientConfig.grantTypes.value
   ) {
     if (
-      !client.advancedOAuth2ClientConfig.grantTypes.value.includes(
+      !modClient.advancedOAuth2ClientConfig.grantTypes.value.includes(
         'client_credentials'
       )
     ) {
       modified = true;
-      client.advancedOAuth2ClientConfig.grantTypes.value.push(
+      modClient.advancedOAuth2ClientConfig.grantTypes.value.push(
         'client_credentials'
       );
     }
   } else {
-    client.advancedOAuth2ClientConfig.grantTypes.value = ['client_credentials'];
+    modClient.advancedOAuth2ClientConfig.grantTypes.value = [
+      'client_credentials',
+    ];
   }
-  client.advancedOAuth2ClientConfig.grantTypes.inherited = false;
+  modClient.advancedOAuth2ClientConfig.grantTypes.inherited = false;
   if (modified) {
-    console.log(`Adding client credentials grant type to client "${name}"...`);
-    await putOAuth2Client(name, client);
+    console.log(
+      `Adding client credentials grant type to client "${clientId}"...`
+    );
   } else {
-    console.log(`Client "${name}" already has client credentials grant type.`);
+    console.log(
+      `Client "${clientId}" already has client credentials grant type.`
+    );
   }
+  return modClient;
 }
 
 async function addAdminStaticUserMapping(name) {
@@ -226,10 +318,7 @@ async function addAdminStaticUserMapping(name) {
       subject: name,
       localUser: 'internal/user/openidm-admin',
       userRoles: 'authzRoles/*',
-      roles: [
-        'internal/role/openidm-authorized',
-        'internal/role/openidm-admin',
-      ],
+      roles: adminRoles,
     });
   }
   authentication.rsFilter.staticUserMapping = mappings;
@@ -245,67 +334,166 @@ async function addAdminStaticUserMapping(name) {
   }
 }
 
-export async function grantOAuth2ClientAdminPrivileges(name) {
-  await addAdminScopes(name);
-  await addClientCredentialsGrantType(name);
-  await addAdminStaticUserMapping(name);
+/*
+ * Add AutoId static user mapping to authentication.json to enable dashboards and other AutoId-based functionality.
+  {
+    "_id": "authentication",
+    "rsFilter": {
+      ...
+        "staticUserMapping": [
+            ...
+            {
+                "subject": "autoid-resource-server",
+                "localUser": "internal/user/idm-provisioning",
+                "roles": [
+                    "internal/role/platform-provisioning",
+                    "internal/role/openidm-authorized",
+                    "internal/role/openidm-admin"
+                ]
+            }
+        ]
+    }
+  }
+ */
+export async function addAutoIdStaticUserMapping() {
+  const name = 'autoid-resource-server';
+  const authentication = await getConfigEntity('authentication');
+  let needsAdminMapping = true;
+  let addRoles = [];
+  const mappings = authentication.rsFilter.staticUserMapping.map((mapping) => {
+    // ignore mappings for other subjects
+    if (mapping.subject !== name) {
+      return mapping;
+    }
+    needsAdminMapping = false;
+    addRoles = autoIdRoles.filter((role) => {
+      let add = false;
+      if (!mapping.roles.includes(role)) {
+        add = true;
+      }
+      return add;
+    });
+    const newMapping = mapping;
+    newMapping.roles = newMapping.roles.concat(addRoles);
+    return newMapping;
+  });
+  if (needsAdminMapping) {
+    console.log(`Creating static user mapping for AutoId client "${name}"...`);
+    mappings.push({
+      subject: name,
+      localUser: 'internal/user/idm-provisioning',
+      userRoles: 'authzRoles/*',
+      roles: autoIdRoles,
+    });
+  }
+  authentication.rsFilter.staticUserMapping = mappings;
+  if (addRoles.length > 0 || needsAdminMapping) {
+    console.log(
+      `Adding required roles to static user mapping for AutoId client "${name}"...`
+    );
+    await putConfigEntity('authentication', authentication);
+  } else {
+    console.log(
+      `Static user mapping for AutoId client "${name}" already has all required roles.`
+    );
+  }
 }
 
-async function removeAdminScopes(name) {
+export async function grantOAuth2ClientAdminPrivileges(clientId) {
+  let client = await getOAuth2Client(clientId);
+  if (client.coreOAuth2ClientConfig.clientName.value.length === 0) {
+    client.coreOAuth2ClientConfig.clientName.value = [clientId];
+  }
+  if (
+    client.advancedOAuth2ClientConfig.descriptions.value.length === 0 ||
+    client.advancedOAuth2ClientConfig.descriptions.value[0].startsWith(
+      'Modified by Frodo'
+    ) ||
+    client.advancedOAuth2ClientConfig.descriptions.value[0].startsWith(
+      'Created by Frodo'
+    )
+  ) {
+    client.advancedOAuth2ClientConfig.descriptions.value = [
+      `Modified by Frodo on ${new Date().toLocaleString()}`,
+    ];
+  }
+  client = await addAdminScopes(clientId, client);
+  client = addClientCredentialsGrantType(clientId, client);
+  await putOAuth2Client(clientId, client);
+  await addAdminStaticUserMapping(clientId);
+}
+
+async function removeAdminScopes(name, client) {
+  const modClient = client;
   const allAdminScopes = adminScopes.concat([
     await getDynamicClientRegistrationScope(),
   ]);
-  const client = await getOAuth2Client(name);
-  if (!client) {
-    return;
-  }
   let finalScopes = [];
   if (
-    client.coreOAuth2ClientConfig.scopes &&
-    client.coreOAuth2ClientConfig.scopes.value
+    modClient.coreOAuth2ClientConfig.scopes &&
+    modClient.coreOAuth2ClientConfig.scopes.value
   ) {
-    finalScopes = client.coreOAuth2ClientConfig.scopes.value.filter(
+    finalScopes = modClient.coreOAuth2ClientConfig.scopes.value.filter(
       (scope) => !allAdminScopes.includes(scope)
     );
   }
-  if (client.coreOAuth2ClientConfig.scopes.value.length > finalScopes.length) {
+  if (
+    modClient.coreOAuth2ClientConfig.scopes.value.length > finalScopes.length
+  ) {
     console.log(`Removing admin scopes from client "${name}"...`);
-    client.coreOAuth2ClientConfig.scopes.value = finalScopes;
-    await putOAuth2Client(name, client);
+    modClient.coreOAuth2ClientConfig.scopes.value = finalScopes;
   } else {
     console.log(`Client "${name}" has no admin scopes.`);
   }
+  let finalDefaultScopes = [];
+  if (
+    modClient.coreOAuth2ClientConfig.defaultScopes &&
+    modClient.coreOAuth2ClientConfig.defaultScopes.value
+  ) {
+    finalDefaultScopes =
+      modClient.coreOAuth2ClientConfig.defaultScopes.value.filter(
+        (scope) => !adminDefaultScopes.includes(scope)
+      );
+  }
+  if (
+    modClient.coreOAuth2ClientConfig.defaultScopes.value.length >
+    finalDefaultScopes.length
+  ) {
+    console.log(`Removing admin default scopes from client "${name}"...`);
+    modClient.coreOAuth2ClientConfig.defaultScopes.value = finalDefaultScopes;
+  } else {
+    console.log(`Client "${name}" has no admin default scopes.`);
+  }
+  return modClient;
 }
 
-async function removeClientCredentialsGrantType(name) {
-  const client = await getOAuth2Client(name);
+function removeClientCredentialsGrantType(clientId, client) {
+  const modClient = client;
   let modified = false;
-  if (!client) {
-    return;
-  }
   let finalGrantTypes = [];
   if (
-    client.advancedOAuth2ClientConfig.grantTypes &&
-    client.advancedOAuth2ClientConfig.grantTypes.value
+    modClient.advancedOAuth2ClientConfig.grantTypes &&
+    modClient.advancedOAuth2ClientConfig.grantTypes.value
   ) {
-    finalGrantTypes = client.advancedOAuth2ClientConfig.grantTypes.value.filter(
-      (grantType) => grantType !== 'client_credentials'
-    );
+    finalGrantTypes =
+      modClient.advancedOAuth2ClientConfig.grantTypes.value.filter(
+        (grantType) => grantType !== 'client_credentials'
+      );
     modified =
-      client.advancedOAuth2ClientConfig.grantTypes.value.length >
+      modClient.advancedOAuth2ClientConfig.grantTypes.value.length >
       finalGrantTypes.length;
   }
   if (modified) {
     console.log(
-      `Removing client credentials grant type from client "${name}"...`
+      `Removing client credentials grant type from client "${clientId}"...`
     );
-    client.advancedOAuth2ClientConfig.grantTypes.value = finalGrantTypes;
-    await putOAuth2Client(name, client);
+    modClient.advancedOAuth2ClientConfig.grantTypes.value = finalGrantTypes;
   } else {
     console.log(
-      `Client "${name}" does not allow client credentials grant type.`
+      `Client "${clientId}" does not allow client credentials grant type.`
     );
   }
+  return modClient;
 }
 
 async function removeAdminStaticUserMapping(name) {
@@ -342,19 +530,73 @@ async function removeAdminStaticUserMapping(name) {
   }
 }
 
-export async function revokeOAuth2ClientAdminPrivileges(name) {
-  await removeAdminScopes(name);
-  await removeClientCredentialsGrantType(name);
-  await removeAdminStaticUserMapping(name);
+export async function revokeOAuth2ClientAdminPrivileges(clientId) {
+  let client = await getOAuth2Client(clientId);
+  if (client.coreOAuth2ClientConfig.clientName.value.length === 0) {
+    client.coreOAuth2ClientConfig.clientName.value = [clientId];
+  }
+  if (
+    client.advancedOAuth2ClientConfig.descriptions.value.length === 0 ||
+    client.advancedOAuth2ClientConfig.descriptions.value[0].startsWith(
+      'Modified by Frodo'
+    ) ||
+    client.advancedOAuth2ClientConfig.descriptions.value[0].startsWith(
+      'Created by Frodo'
+    )
+  ) {
+    client.advancedOAuth2ClientConfig.descriptions.value = [
+      `Modified by Frodo on ${new Date().toLocaleString()}`,
+    ];
+  }
+  client = await removeAdminScopes(clientId, client);
+  client = removeClientCredentialsGrantType(clientId, client);
+  await putOAuth2Client(clientId, client);
+  await removeAdminStaticUserMapping(clientId);
 }
 
-export async function createOAuth2ClientWithAdminPrivileges(name, password) {
-  const client = OAUTH2_CLIENT;
-  client.coreOAuth2ClientConfig.scopes = adminScopes;
-  client.userpassword = password;
-  await putOAuth2Client(name, client);
-  await addAdminScopes(name);
-  await addAdminStaticUserMapping(name);
+export async function createOAuth2ClientWithAdminPrivileges(
+  clientId,
+  clientSecret
+) {
+  let client = OAUTH2_CLIENT;
+  client.userpassword = clientSecret;
+  client.coreOAuth2ClientConfig.clientName.value = [clientId];
+  client.advancedOAuth2ClientConfig.descriptions.value = [
+    `Created by Frodo on ${new Date().toLocaleString()}`,
+  ];
+  client = await addAdminScopes(clientId, client);
+  await putOAuth2Client(clientId, client);
+  await addAdminStaticUserMapping(clientId);
+}
+
+export async function createLongLivedToken(
+  clientId,
+  clientSecret,
+  scope,
+  secret,
+  lifetime
+) {
+  // get oauth2 client
+  const client = await getOAuth2Client(clientId);
+  client.userpassword = clientSecret;
+  // remember current lifetime
+  const rememberedLifetime =
+    client.coreOAuth2ClientConfig.accessTokenLifetime.value || 3600;
+  // set long token lifetime
+  client.coreOAuth2ClientConfig.accessTokenLifetime.value = lifetime;
+  await putOAuth2Client(clientId, client);
+  const response = await clientCredentialsGrant(clientId, clientSecret, scope);
+  response.expires_on = new Date(
+    new Date().getTime() + 1000 * response.expires_in
+  ).toLocaleString();
+  // reset token lifetime
+  client.coreOAuth2ClientConfig.accessTokenLifetime.value = rememberedLifetime;
+  await putOAuth2Client(clientId, client);
+  // create secret with token as value
+  const description = 'Long-lived admin token';
+  await createSecret(secret, response.access_token, description);
+  delete response.access_token;
+  return response;
 }
 
 export async function hideGenericExtensionAttributes(

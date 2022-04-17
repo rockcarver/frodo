@@ -476,71 +476,82 @@ export function describeTree(journeyData) {
 }
 
 async function putNodeData(id, nodeType, data) {
-  try {
-    const urlString = util.format(
-      nodeURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(storage.session.getRealm()),
-      nodeType,
-      id
-    );
-    const response = await generateAmApi(getTreeApiConfig()).put(
-      urlString,
-      data,
-      { withCredentials: true }
-    );
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        `PutNodeData ERROR: call returned ${response.status}, details: ${response}`
-      );
+  const urlString = util.format(
+    nodeURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(storage.session.getRealm()),
+    nodeType,
+    id
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .put(urlString, data, { withCredentials: true })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
       return null;
-    }
-    if (response.data._id !== id) {
-      console.error(
-        `PutNodeData ERROR: generic error creating node ${id} (id mismatch!)`
-      );
-      return null;
-    }
-    return '';
-  } catch (e) {
-    console.error(`PutNodeData ERROR: node ${id} - ${e}`, e.response.data);
-    return null;
-  }
+    });
+  return response.data;
 }
 
 async function putJourneyStructureData(id, data) {
-  try {
-    const urlString = util.format(
-      journeyURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(storage.session.getRealm()),
-      id
-    );
-    const response = await generateAmApi(getTreeApiConfig()).put(
-      urlString,
-      data,
-      { withCredentials: true }
-    );
-    if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putJourneyStructureData ERROR: put journey structure call returned ${response.status}, details: ${response}`
-      );
+  const urlString = util.format(
+    journeyURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(storage.session.getRealm()),
+    id
+  );
+  const response = await generateAmApi(getTreeApiConfig())
+    .put(urlString, data, { withCredentials: true })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(
+          'Error! The request was made and the server responded with a status code!',
+          error.message
+        );
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(
+          'Error! The request was made but no response was received!',
+          error.message
+        );
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error setting up request', error.message);
+      }
+      console.log(error.config);
       return null;
-    }
-    if (response.data._id !== id) {
-      console.error(
-        `putJourneyStructureData ERROR: generic error importing journey structure ${id}!=${response.data._id}`
-      );
-      return null;
-    }
-    return '';
-  } catch (e) {
-    console.error(
-      `putJourneyStructureData ERROR: put journey structure error, journey ${id} - ${e.message}`,
-      e
-    );
-    return null;
-  }
+    });
+  return response.data;
 }
 
 export async function importJourney(id, journeyMap, noreuuid) {
