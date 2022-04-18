@@ -1,31 +1,112 @@
-# Forgerock Do (frodo)
+# Frodo - ForgeROck DO
 
-This is the ForgeROck DO (frodo) CLI. This is a statically linked binary which can be cross compiled for multiple platforms (Linux, MacOS, Windows etc.).
+This is the ForgeROck DO - or short frodo - command line interface, a CLI to manage ForgeRock platform deployments. Frodo supports Identity Cloud tenants, ForgeOps deployments, and classic deployments.
+
+Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheuber/AM-treetool), [fidc-debug-tools](https://github.com/vscheuber/fidc-debug-tools), and ForgeRock-internal utilities.
+
+## Quick Nav
+
+- [Features](#features)
+- [Limitations](#limitations)
+- [CI/CD Mode](#cicd-mode)
+- [Developer Mode](#developer-mode)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Developing](#developing)
 
 ## Features
 
-### Current
+Frodo allows an administrator to easily connect to and manage any number of Identity Cloud tenants, ForgeOps deployment instances, or classic deployment instances from the command line. The following tasks are currently supported:
 
-- Obtain ForgeRock session token and admin access_tokens for a ForgeRock Identity Cloud or platform (ForgeOps) deployment
-- Saving and reading credentials (for multiple ForgeRock deployments) from a configuration file.
-- Export, import and pruning of journeys. Export includes scripts referenced by scripted decision nodes and when used with Identity Cloud or ForgeOps, `frodo` also includes Email Templates referenced by the Email Template or Email Suspend nodes.
-- Export of IDM configuration
-- Configuring a ForgeRock cloud tenant for a specific use case, also called a "recipe"
+- Developer mode
 
-### Future
+  Install and run in developer mode (npm i -g)
 
-- Importing IDM configuration
-- Parameter substitution when exporting and importing IDM configuration
-- Export and import of other ForgeRock ID Cloud configurations, like OAuth clients, SAML entities etc.
-- Export and import of data in ForgeRock ID Cloud
+- CI/CD mode
+
+  Install and run pre-compiled single binaries without any dependencies for MacOS, Windows, and Linux.
+
+- Manage journeys/trees.
+
+  Export, import and pruning of journeys. Frodo handles referenced scripts and email templates.
+
+- Manage applications.
+
+  List, export, and import applications (OAuth2 clients).
+
+- Manage connection profiles.
+
+  Saving and reading credentials (for multiple ForgeRock deployments) from a configuration file.
+
+- Manage email templates.
+
+  List, export, and import email templates.
+
+- Manage IDM configuration.
+
+  Export of IDM configuration. Import is coming.
+
+- Print versions and tokens.
+
+  Obtain ForgeRock session token and admin access_tokens for a ForgeRock Identity Cloud or platform (ForgeOps) deployment
+
+- View Identity Cloud logs.
+
+  List available log sources and tail them.
+
+- Manage realms.
+
+  List realms and show realm details. Allow adding and removing of custom DNS names.
+
+- Manage scripts.
+
+  List, export, and import scripts.
+
+- Manage Identity Cloud secrets.
+
+  List and view details of secrets in Identity Cloud (Note: the nature of secrets does not allow the value to be retrieved, therefore the details only inlude other information about the secret, not the value of the secret).
+
+- Platform admin tasks.
+
+  Common tasks administrators need to perform daily that are tedious and repetitive. Advanced tasks, which used to be involved and potentially dangerous if performed manually, now made easy and safe.
+
+  - Create an oauth2 client with admin privileges.
+  - Get an access token using client credentials grant type.
+  - List oauth2 clients with admin privileges.
+  - Grant an oauth2 client admin privileges.
+  - Revoke admin privileges from an oauth2 client.
+  - List oauth2 clients with custom privileges.
+  - List all subjects of static user mappings that are not oauth2 clients.
+  - Remove a subject's static user mapping.
+  - Add AutoId static user mapping to enable dashboards and other AutoId-based functionality.
+  - Hide generic extension attributes.
+  - Show generic extension attributes.
+  - Repair org model (beta).
 
 ## Limitations
 
 `frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
 
-## Getting the binaries
+## CI/CD Mode
 
-Links to the executables
+Get the latest binaries from the [release page](https://github.com/rockcarver/frodo/releases).
+
+The binaries for Windows and MacOS might require you to grant permission to run, as they are not yet distributed through official channels appropriate for each respective OS.
+
+## Developer Mode
+
+### Clone this repo
+
+```console
+git clone git@github.com:rockcarver/frodo.git
+```
+
+### Install via NPM
+
+```console
+cd frodo
+npm i -g
+```
 
 ## Usage
 
@@ -82,14 +163,14 @@ Options:
 
 Commands:
   list [options] <host> [realm] [user] [password]       List all the journeys/trees in a realm.
-  describe [options] [host] [realm] [user] [password]   If -h is supplied, describe the journey/tree indicated by -t, or all journeys/trees in the realm if no -t is supplied, otherwise describe the journey/tree export file     
+  describe [options] [host] [realm] [user] [password]   If -h is supplied, describe the journey/tree indicated by -t, or all journeys/trees in the realm if no -t is supplied, otherwise describe the journey/tree export file
                                                         indicated by -f.
   export [options] <host> [realm] [user] [password]     Export journeys/trees.
   import [options] <host> [realm] [user] [password]     Import journey/tree.
   importAll [options] <host> [realm] [user] [password]  Import all the trees in a realm.
   prune [options] <host> [realm] [user] [password]      Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.
   help [command]                                        display help for command
-  ```
+```
 
 ```console
 frodo journey help export
@@ -108,14 +189,14 @@ Arguments:
 
 Options:
   -m, --type <type>  Override auto-detected deployment type. Valid values for type: [Classic] - A classic Access Management-only deployment with custom layout and configuration. [Cloud] - A ForgeRock Identity Cloud
-                     environment. [ForgeOps] - A ForgeOps CDK or CDM deployment. The detected or provided deployment type controls certain behavior like obtaining an Identity Management admin token or not and whether to        
+                     environment. [ForgeOps] - A ForgeOps CDK or CDM deployment. The detected or provided deployment type controls certain behavior like obtaining an Identity Management admin token or not and whether to
                      export/import referenced email templates or how to walk through the tenant admin login flow of Identity Cloud and handle MFA (choices: "classic", "cloud", "forgeops")
   -t, --tree <tree>  Name of a journey/tree. If specified, -a and -A are ignored.
   -f, --file <file>  Name of the file to write the exported journey(s) to. Ignored with -A.
   -a, --all          Export all the journeys/trees in a realm. Ignored with -t.
   -A, --allSeparate  Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.
   -h, --help         Help
-  ```
+```
 
 ### Commands
 
@@ -252,7 +333,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ### Prerequisites
 
-- Install nodejs (tested on v14.9.0 and 16.13.0) and npm (included with node)
+Node 17 or newer and npm (included with node)
 
 ### Process
 
@@ -267,7 +348,6 @@ git clone git@github.com:rockcarver/frodo.git
 
 ```console
 cd $HOME/frodo
-npm install
 npm i -g
 ```
 

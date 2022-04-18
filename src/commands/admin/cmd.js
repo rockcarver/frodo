@@ -7,6 +7,7 @@ import { clientCredentialsGrant } from '../../api/OAuth2OIDCApi.js';
 import {
   addAutoIdStaticUserMapping,
   listNonOAuth2AdminStaticUserMappings,
+  removeStaticUserMapping,
   listOAuth2CustomClients,
   listOAuth2AdminClients,
   createOAuth2ClientWithAdminPrivileges,
@@ -326,6 +327,36 @@ export default function setup() {
         subjects.forEach((item) => {
           console.log(`${item}`);
         });
+      }
+    });
+
+  journey
+    .command('remove-static-user-mapping')
+    .addArgument(common.hostArgumentM)
+    .addArgument(common.realmArgument)
+    .addArgument(common.userArgument)
+    .addArgument(common.passwordArgument)
+    .helpOption('-h, --help', 'Help')
+    .addOption(common.deploymentOption)
+    .addOption(common.insecureOption)
+    .addOption(
+      new Option(
+        '--subject <subject>',
+        "Subject who's mapping is to be removed."
+      )
+    )
+    .description("Remove a subject's static user mapping.")
+    .action(async (host, realm, user, password, options) => {
+      storage.session.setTenant(host);
+      storage.session.setRealm(realm);
+      storage.session.setUsername(user);
+      storage.session.setPassword(password);
+      storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
+      if (await getTokens()) {
+        console.log("Removing a subject's static user mapping...");
+        await removeStaticUserMapping(options.subject);
+        console.log('Done.');
       }
     });
 

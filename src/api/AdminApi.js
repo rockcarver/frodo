@@ -599,6 +599,28 @@ export async function createLongLivedToken(
   return response;
 }
 
+export async function removeStaticUserMapping(subject) {
+  const authentication = await getConfigEntity('authentication');
+  let removeMapping = false;
+  const mappings = authentication.rsFilter.staticUserMapping.filter(
+    (mapping) => {
+      // find the subject and flag it
+      if (mapping.subject === subject) {
+        removeMapping = true;
+      }
+      // ignore mappings for other subjects
+      return mapping.subject !== subject;
+    }
+  );
+  authentication.rsFilter.staticUserMapping = mappings;
+  if (removeMapping) {
+    console.log(`Removing static user mapping for subject "${subject}"...`);
+    await putConfigEntity('authentication', authentication);
+  } else {
+    console.log(`No static user mapping for subject "${subject}" found.`);
+  }
+}
+
 export async function hideGenericExtensionAttributes(
   includeCustomized,
   dryRun
