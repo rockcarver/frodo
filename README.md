@@ -110,6 +110,7 @@ git clone git@github.com:rockcarver/frodo.git
 
 ```console
 cd frodo
+npm install
 npm i -g
 ```
 
