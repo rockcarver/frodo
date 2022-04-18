@@ -88,10 +88,6 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
 
 ## Installing
 
-### Prerequisites
-
-Node 17 or newer and npm.
-
 ### CI/CD Mode
 
 Get the latest binaries from the [release page](https://github.com/rockcarver/frodo/releases).
@@ -99,6 +95,10 @@ Get the latest binaries from the [release page](https://github.com/rockcarver/fr
 The binaries for Windows and MacOS might require you to grant permission to run, as they are not yet distributed through official channels appropriate for each respective OS.
 
 ### Developer Mode
+
+#### Prerequisites
+
+Node 17 or newer and npm.
 
 #### Clone this repo
 
