@@ -8,8 +8,7 @@ Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheu
 
 - [Features](#features)
 - [Limitations](#limitations)
-- [CI/CD Mode](#cicd-mode)
-- [Developer Mode](#developer-mode)
+- [Installing](#installing)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [Developing](#developing)
@@ -87,21 +86,27 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
 
 `frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
 
-## CI/CD Mode
+## Installing
+
+### Prerequisites
+
+Node 17 or newer and npm.
+
+### CI/CD Mode
 
 Get the latest binaries from the [release page](https://github.com/rockcarver/frodo/releases).
 
 The binaries for Windows and MacOS might require you to grant permission to run, as they are not yet distributed through official channels appropriate for each respective OS.
 
-## Developer Mode
+### Developer Mode
 
-### Clone this repo
+#### Clone this repo
 
 ```console
 git clone git@github.com:rockcarver/frodo.git
 ```
 
-### Install via NPM
+#### Install via NPM
 
 ```console
 cd frodo
