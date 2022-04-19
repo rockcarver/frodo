@@ -3,6 +3,7 @@ import { getConnection, saveConnection } from '../../api/AuthApi.js';
 import * as common from '../cmd_common.js';
 import { getSources, tailLogs } from '../../api/LogApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const logs = new Command('logs');
@@ -25,7 +26,7 @@ export default function setup() {
       storage.session.setLogApiKey(key);
       storage.session.setLogApiSecret(secret);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log('Listing available ID Cloud log sources...');
+      printMessage('Listing available ID Cloud log sources...');
       const conn = await getConnection();
       storage.session.setTenant(conn.tenant);
       if (
@@ -34,8 +35,9 @@ export default function setup() {
       ) {
         credsFromParameters = false;
         if (conn.key == null && conn.secret == null) {
-          console.log(
-            'API key and secret not specified as parameters and no saved values found!'
+          printMessage(
+            'API key and secret not specified as parameters and no saved values found!',
+            'warn'
           );
           return;
         }
@@ -44,16 +46,17 @@ export default function setup() {
       }
       const sources = await getSources();
       if (!sources) {
-        console.log(
-          "Can't get sources, possible cause - wrong API key or secret"
+        printMessage(
+          "Can't get sources, possible cause - wrong API key or secret",
+          'error'
         );
       } else {
         if (credsFromParameters) await saveConnection(); // save new values if they were specified on CLI
-        console.log('Available log sources:');
+        printMessage('Available log sources:');
         sources.result.forEach((source) => {
-          console.log(`${source}`);
+          printMessage(`${source}`);
         });
-        console.log('You can use any combination of comma separated sources.');
+        printMessage('You can use any combination of comma separated sources.');
       }
     });
 
@@ -71,27 +74,30 @@ export default function setup() {
       storage.session.setLogApiKey(key);
       storage.session.setLogApiSecret(secret);
       storage.session.setAllowInsecureConnection(options.insecure);
-      console.log(
-        `Tailing ID Cloud logs from the following sources: ${
-          command.opts().sources
-        }...`
-      );
       const conn = await getConnection();
-      storage.session.setTenant(conn.tenant);
-      if (
-        !storage.session.getLogApiKey() &&
-        !storage.session.getLogApiSecret()
-      ) {
-        if (conn.key == null && conn.secret == null) {
-          console.log(
-            'API key and secret not specified as parameters and no saved values found!'
+      if(conn) {
+        printMessage(
+            `Tailing ID Cloud logs from the following sources: ${
+              command.opts().sources
+            }...`
           );
-          return;
+        storage.session.setTenant(conn.tenant);
+        if (
+          !storage.session.getLogApiKey() &&
+          !storage.session.getLogApiSecret()
+        ) {
+          if (conn.key == null && conn.secret == null) {
+            printMessage(
+              'API key and secret not specified as parameters and no saved values found!',
+              'error'
+            );
+            return;
+          }
+          storage.session.setLogApiKey(conn.key);
+          storage.session.setLogApiSecret(conn.secret);
         }
-        storage.session.setLogApiKey(conn.key);
-        storage.session.setLogApiSecret(conn.secret);
+        await tailLogs(command.opts().sources, null);          
       }
-      await tailLogs(command.opts().sources, null);
     });
 
   // logs

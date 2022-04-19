@@ -13,6 +13,7 @@ import fs, { promises as fsp } from 'fs';
 import crypto from 'crypto';
 import { homedir } from 'os';
 import { promisify } from 'util';
+import { printMessage } from './Console.js';
 
 const scrypt = promisify(crypto.scrypt);
 //using WeakMaps for added security since  it gets garbage collected
@@ -34,7 +35,7 @@ class DataProtection {
         }
         return await fsp.readFile(masterKeyPath(), 'utf8');
       } catch (err) {
-        console.error(err.message);
+        printMessage(err.message, 'error');
       }
     });
 

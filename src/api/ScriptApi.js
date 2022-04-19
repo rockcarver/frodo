@@ -2,6 +2,7 @@ import { generateAmApi } from './BaseApi.js';
 import { getCurrentRealmPath, applyNameCollisionPolicy } from './utils/ApiUtils.js';
 import util from 'util';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const scriptURLTemplate = "%s/json%s/scripts/%s";
 const scriptListURLTemplate = "%s/json%s/scripts?_queryFilter=true";
@@ -23,12 +24,12 @@ export async function listScripts() {
             { withCredentials: true }
         );
         if (response.status < 200 || response.status > 399) {
-            console.error("listScripts ERROR: list scripts structure call returned %d, possible cause: scripts not found", response.status);
+            printMessage(`listScripts ERROR: list scripts structure call returned ${response.status}, possible cause: scripts not found`, 'error');
             return null;
         }
         return response.data.result;
     } catch (e) {
-        console.error("listScripts ERROR: list script structure error - ", e);
+        printMessage(`listScripts ERROR: list script structure error - ${e}`, 'error');
         return null;
     }
 }
@@ -41,17 +42,20 @@ export async function getScriptByName(name) {
             { withCredentials: true }
         );
         if (response.status < 200 || response.status > 399) {
-            console.error("getScriptByName ERROR: get script structure call returned %d, possible cause: script not found", response.status);
+            printMessage(`getScriptByName ERROR: get script structure call returned ${response.status}, possible cause: script not found`, 'error');
             return null;
         }
         return response.data.result;
     } catch (e) {
-        console.error("getScriptByName ERROR: get script structure error - ", e.message);
+        printMessage(`getScriptByName ERROR: get script structure error - ${e.message}`, 'error');
         return null;
     }
 }
 
 export async function getScript(id) {
+    if(typeof id == 'undefined' || id == '[Empty]') {
+        return null;
+    }
     try {
         const urlString = util.format(scriptURLTemplate, storage.session.getTenant(), getCurrentRealmPath(), id);
         const response = await generateAmApi(getApiConfig()).get(
@@ -59,12 +63,12 @@ export async function getScript(id) {
             { withCredentials: true }
         );
         if (response.status < 200 || response.status > 399) {
-            console.error("getScript ERROR: get script structure call returned %d, possible cause: script not found", response.status);
+            printMessage(`getScript ERROR: get script structure call returned ${response.status}, possible cause: script ${id} not found`, 'error');
             return null;
         }
         return response.data;
     } catch (e) {
-        console.error("getScript ERROR: get script structure error - ", e.message);
+        printMessage(`getScript ERROR: get script structure (_id=${id}) error - ${e.message}`, 'error');
         return null;
     }
 }
@@ -78,25 +82,25 @@ export async function putScript(id, data) {
             { withCredentials: true }
         );
         if (response.status < 200 || response.status > 399) {
-            console.error(`putScript ERROR: put script call returned ${response.status}, details: ${response}`);
+            printMessage(`putScript ERROR: put script call returned ${response.status}, details: ${response}`, 'error');
             return null;
         }
         if (response.data._id != id) {
-            console.error(`putScript ERROR: generic error importing script ${id}`);
+            printMessage(`putScript ERROR: generic error importing script ${id}`, 'error');
             return null;
         }
         return "";
     } catch (e) {
         if (e.response.status == 409) {
-            console.error("putScript WARNING: script with name [%s] already exists, using renaming policy... <name> => <name - imported (n)>", data.name);
+            printMessage(`putScript WARNING: script with name ${data.name} already exists, using renaming policy... <name> => <name - imported (n)>`, 'warn');
             let newName = applyNameCollisionPolicy(data.name);
             //console.log(newName);
-            console.log("Trying to save script as %s", newName);
+            printMessage(`Trying to save script as ${newName}`, 'warn');
             data.name = newName;
             putScript(id, data);
             return "";
         }
-        console.error(`putScript ERROR: put script error, script ${id} - ${e.message}`);
+        printMessage(`putScript ERROR: put script error, script ${id} - ${e.message}`, 'error');
         return null;
     }
 }

@@ -2,6 +2,7 @@ import util from 'util';
 import { generateAmApi } from './BaseApi.js';
 import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const oauth2ApplicationURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client/%s';
@@ -49,17 +50,17 @@ export async function listOAuth2Applications() {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listOAuth2Applications ERROR: list OAuth2 application call returned %d, possible cause: applications not found',
-        response.status
+      printMessage(
+        `listOAuth2Applications ERROR: list OAuth2 application call returned ${response.status}, possible cause: applications not found`,
+        'error'
       );
       return [];
     }
     return response.data.result;
   } catch (e) {
-    console.error(
-      'listOAuth2Applications ERROR: list OAuth2 application error - ',
-      e
+    printMessage(
+      `listOAuth2Applications ERROR: list OAuth2 application error - ${e}`,
+      'error'
     );
     return [];
   }
@@ -103,17 +104,16 @@ export async function getOAuth2Application(id) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getOAuth2Application ERROR: get OAuth2 application call returned %d, possible cause: application not found',
-        response.status
+      printMessage(
+        `getOAuth2Application ERROR: get OAuth2 application call returned ${response.status}, possible cause: application not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(
-      'getOAuth2Application ERROR: get Oauth2 application error - ',
-      e.message
+    printMessage(
+      `getOAuth2Application ERROR: get Oauth2 application error - ${e.message}`, 'error'
     );
     return null;
   }
@@ -131,22 +131,24 @@ export async function putApplication(id, data) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putApplication ERROR: put application call returned ${response.status}, details: ${response}`
+      printMessage(
+        `putApplication ERROR: put application call returned ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     if (response.data._id !== id) {
-      console.error(
-        `putApplication ERROR: generic error importing application ${id}`
+      printMessage(
+        `putApplication ERROR: generic error importing application ${id}`,
+        'error'
       );
       return null;
     }
     return '';
   } catch (e) {
-    console.error(
-      `putApplication ERROR: put application error, application [${id}] - ${e.message}`,
-      e
+    printMessage(
+      `putApplication ERROR: put application error, application [${id}] - ${e.message} - ${e}`,
+      'error'
     );
     return null;
   }

@@ -7,6 +7,7 @@ import storage from '../storage/SessionStorage.js';
 import { getEmailTemplate, putEmailTemplate } from './EmailTemplateApi.js';
 import { getScript, putScript } from './ScriptApi.js';
 import * as global from '../storage/StaticStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const journeyURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
@@ -56,27 +57,27 @@ async function getAllJourneyData() {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request);
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data.result;
@@ -94,27 +95,27 @@ async function getAllNodesData() {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data.result;
@@ -136,27 +137,27 @@ async function getNodeData(id, nodeType) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   // console.dir(response.data);
@@ -179,27 +180,27 @@ async function deleteNode(id, nodeType) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   // console.dir(response.data);
@@ -218,17 +219,16 @@ async function getJourneyStructureData(name) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        '\ngetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found',
-        response.status
+        printMessage(
+        `\ngetJourneyStructureData ERROR: get journey structure call returned ${response.status}, possible cause: journey not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(
-      '\ngetJourneyStructureData ERROR: get journey structure error - ',
-      e.message
+    printMessage(
+      `\ngetJourneyStructureData ERROR: get journey structure error - ${e.message}`, 'error'
     );
     return null;
   }
@@ -310,7 +310,7 @@ export async function getJourneyData(journey) {
     });
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach((item) => {
-      scriptsMap[item._id] = item;
+      if(item) scriptsMap[item._id] = item;
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
@@ -428,8 +428,8 @@ export async function getJourneyData(journey) {
   journeyMap.emailTemplates = emailTemplatesMap;
   journeyMap.nodes = nodesMap;
   journeyMap.tree = journeyStructureData;
-  console.log('.');
-  console.log(
+  printMessage('.');
+  printMessage(
     `Nodes(inner): ${
       Object.keys(nodesMap).length + Object.keys(innerNodesMap).length
     }(${Object.keys(innerNodesMap).length}), Scripts: ${
@@ -489,27 +489,27 @@ async function putNodeData(id, nodeType, data) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -528,27 +528,27 @@ async function putJourneyStructureData(id, data) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -567,7 +567,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
   const treeId = journeyMap.tree._id;
 
   if (sourceOrigin === targetOrigin) {
-    console.log(
+    printMessage(
       `- Importing journey ${treeId} to the same environment and realm from where it was exported`
     );
   }
@@ -577,8 +577,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
       process.stdout.write(`    - ${scriptData.name} (${scriptId})`);
       if ((await putScript(scriptId, scriptData)) == null) {
-        console.error(
-          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
+          'error'
         );
         return null;
       }
@@ -597,8 +598,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
         null
       ) {
-        console.error(
-          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`,
+          'error'
         );
         return null;
       }
@@ -621,8 +623,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     innerNodeData._id = newUuid;
 
     if ((await putNodeData(newUuid, nodeType, innerNodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
@@ -655,8 +658,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
 
     if ((await putNodeData(newUuid, nodeType, nodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
@@ -674,8 +678,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
   const journeyData = JSON.parse(journeyText);
   if ((await putJourneyStructureData(id, journeyData)) == null) {
-    console.error(
-      `importJourney ERROR: error importing journey structure ${treeId}`
+    printMessage(
+      `importJourney ERROR: error importing journey structure ${treeId}`,
+      'error'
     );
     return null;
   }
@@ -733,7 +738,7 @@ async function resolveDependencies(
   }
   after = unresolvedJourneys.length;
   if (index !== -1 && after === before) {
-    console.log('Trees with unresolved dependencies: {}', unresolvedJourneys);
+    printMessage('Trees with unresolved dependencies: {}', unresolvedJourneys);
   } else if (after > 0) {
     resolveDependencies(
       installedJorneys,
@@ -1053,8 +1058,9 @@ async function isCustom(journey) {
         }
       }
     } else {
-      console.error(
-        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`
+        printMessage(
+        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`,
+        'error'
       );
       custom = false;
     }
@@ -1073,9 +1079,9 @@ export async function listJourneys(analyze) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listJourneys ERROR: list journeys call returned %d, possible cause: invalid credentials',
-        response.status
+        printMessage(
+        `listJourneys ERROR: list journeys call returned ${response.status}, possible cause: invalid credentials`,
+        'error'
       );
       return null;
     }
@@ -1100,7 +1106,7 @@ export async function listJourneys(analyze) {
     // console.log(journeyList);
     return journeyList;
   } catch (e) {
-    console.error('listJourneys ERROR: error getting journey list - ', e);
+    printMessage(`listJourneys ERROR: error getting journey list - ${e}`, 'error');
     return null;
   }
 }

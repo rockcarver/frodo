@@ -15,6 +15,7 @@ import emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
 import application from './commands/application/cmd.js';
 import pkg from '../package.json' assert { type: 'json' };
+import { printMessage } from './api/utils/Console.js';
 
 const program = new Command(pkg.name).version(
   `v${pkg.version} [${process.version}]`,
@@ -42,6 +43,6 @@ storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
     program.showHelpAfterError();
     program.parse();
   } catch (e) {
-    console.error('ERROR: exception running frodo - ', e);
+    printMessage(`ERROR: exception running frodo - ${e}`, 'error');
   }
 })();

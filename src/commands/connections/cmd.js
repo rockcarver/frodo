@@ -6,6 +6,7 @@ import {
   getConnectionFileName,
 } from '../../api/AuthApi.js';
 import * as common from '../cmd_common.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const connections = new Command('connections');
@@ -64,17 +65,17 @@ export default function setup() {
           const data = fs.readFileSync(filename, 'utf8');
           connectionsData = JSON.parse(data);
           if (connectionsData[host])
-            console.log(`Deleting existing connection profile ${host}`);
-          else console.log(`Connection profile ${host} not found`);
+            printMessage(`Deleting existing connection profile ${host}`);
+          else printMessage(`Connection profile ${host} not found`);
         } else if (err.code === 'ENOENT') {
-          console.log(`Connection profile file ${filename} not found`);
+          printMessage(`Connection profile file ${filename} not found`);
         } else {
-          console.error('Error in deleting connection profile: ', err.code);
+          printMessage(`Error in deleting connection profile: ${err.code}`, 'error');
           return;
         }
         delete connectionsData[host];
         fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
-        console.log('done.');
+        printMessage('done.');
       });
     });
   connections.showHelpAfterError();

@@ -2,6 +2,7 @@ import util from 'util';
 import { generateAmApi } from './BaseApi.js';
 import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const oauth2ClientURLTemplate = '%s/json%s/realm-config/agents/OAuth2Client/%s';
 const oauth2ClientListURLTemplate =
@@ -28,17 +29,16 @@ export async function listOAuth2Clients() {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listOAuth2Clients ERROR: list OAuth2Clients structure call returned %d',
-        response.status
+      printMessage(
+        `listOAuth2Clients ERROR: list OAuth2Clients structure call returned ${response.status}`,
+        'error'
       );
       return [];
     }
     return response.data.result;
   } catch (e) {
-    console.error(
-      'listOAuth2Clients ERROR: list OAuth2Clients structure error - ',
-      e
+    printMessage(
+      `listOAuth2Clients ERROR: list OAuth2Clients structure error - ${e}`, 'error'
     );
     return [];
   }
@@ -56,15 +56,15 @@ export async function getOAuth2ClientByName(name) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getOAuth2ClientByName ERROR: structure call returned %d, possible cause: OAuth2 Client not found',
-        response.status
+      printMessage(
+        `getOAuth2ClientByName ERROR: structure call returned ${response.status}, possible cause: OAuth2 Client not found`,
+        'error'
       );
       return null;
     }
     return response.data.result;
   } catch (e) {
-    console.error('getOAuth2ClientByName ERROR: structure error - ', e.message);
+    printMessage(`getOAuth2ClientByName ERROR: structure error - ${e.message}`, 'error');
     return null;
   }
 }
@@ -81,15 +81,15 @@ export async function getOAuth2Client(id) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getOAuth2Client ERROR: get structure call returned %d, possible cause: OAuth2 Client not found',
-        response.status
+      printMessage(
+        `getOAuth2Client ERROR: get structure call returned ${response.status}, possible cause: OAuth2 Client not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error('getOAuth2Client ERROR: structure error - ', e.message);
+    printMessage(`getOAuth2Client ERROR: structure error - ${e.message}`, 'error');
     return null;
   }
 }
@@ -113,22 +113,24 @@ export async function putOAuth2Client(id, data) {
       }
     );
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putOAuth2Client ERROR: ${response.status}, details: ${response}`
+      printMessage(
+        `putOAuth2Client ERROR: ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     if (response.data._id !== id) {
-      console.error(
-        `putOAuth2Client ERROR: generic error importing OAuth2 Client ${id}`
+      printMessage(
+        `putOAuth2Client ERROR: generic error importing OAuth2 Client ${id}`,
+        'error'
       );
       return null;
     }
     return '';
   } catch (e) {
-    console.error(
-      `putOAuth2Client ERROR: OAuth2 Client: ${id} - ${e.message}`,
-      e.response
+    printMessage(
+      `putOAuth2Client ERROR: OAuth2 Client: ${id} - ${e.message} - ${e.response}`,
+      'error'
     );
     return null;
   }
