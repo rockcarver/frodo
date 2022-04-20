@@ -147,12 +147,12 @@ export async function getCount(type) {
     totalPagedResults: -1,
     remainingPagedResults: -1,
   };
-  process.stdout.write('Counting..');
+  printMessage('Counting..', 'info', false);
   do {
     // eslint-disable-next-line no-await-in-loop
     result = await queryManagedObjects(type, [], result.pagedResultsCookie);
     count += result.resultCount;
-    process.stdout.write('.');
+    printMessage('.', 'info', false);
     // count.active += result.result.filter(value => (value.accountStatus === 'active' || value.accountStatus === 'Active')).length;
   } while (result.pagedResultsCookie);
   printMessage('');

@@ -11,6 +11,7 @@ import {
   removeCustomDomain,
 } from '../../api/RealmApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('realm')
@@ -38,7 +39,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log('Listing all realms...');
+        printMessage('Listing all realms...');
         const realms = await listRealms();
         if (options.long) {
           const table = new Table({
@@ -74,10 +75,10 @@ export default function setup() {
               realmConfig.parentPath,
             ]);
           });
-          console.log(table.toString());
+          printMessage(table.toString());
         } else {
           realms.forEach((realmConfig) => {
-            console.log(realmConfig.name);
+            printMessage(realmConfig.name);
           });
         }
       }
@@ -101,7 +102,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Retrieving details of realm ${storage.session.getRealm()}...`
         );
         const realmConfig = await getRealmByName(storage.session.getRealm());
@@ -137,9 +138,9 @@ export default function setup() {
           ]);
           table.push(['Parent'.brightCyan, realmConfig.parentPath]);
           table.push(['Id'.brightCyan, realmConfig._id]);
-          console.log(table.toString());
+          printMessage(table.toString());
         } else {
-          console.log(`No realm found with name ${options.target}`);
+            printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });
@@ -168,7 +169,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Adding custom DNS domain ${
             options.domain
           } to realm ${storage.session.getRealm()}...`
@@ -209,9 +210,9 @@ export default function setup() {
           ]);
           table.push(['Parent'.brightCyan, realmConfig.parentPath]);
           table.push(['Id'.brightCyan, realmConfig._id]);
-          console.log(table.toString());
+          printMessage(table.toString());
         } else {
-          console.log(`No realm found with name ${options.target}`);
+            printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });
@@ -240,7 +241,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Removing custom DNS domain ${
             options.domain
           } from realm ${storage.session.getRealm()}...`
@@ -281,9 +282,9 @@ export default function setup() {
           ]);
           table.push(['Parent'.brightCyan, realmConfig.parentPath]);
           table.push(['Id'.brightCyan, realmConfig._id]);
-          console.log(table.toString());
+          printMessage(table.toString());
         } else {
-          console.log(`No realm found with name ${options.target}`);
+            printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });

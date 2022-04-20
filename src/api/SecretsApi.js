@@ -3,6 +3,7 @@ import { encode } from './utils/Base64.js';
 import { getTenantURL, getCurrentRealmPath } from './utils/ApiUtils.js';
 import { generateESVApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const secretsListURLTemplate = '%s/environment/secrets';
 const secretListVersionsURLTemplate = '%s/environment/secrets/%s/versions';
@@ -34,27 +35,27 @@ export async function listSecrets() {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data.result;
@@ -74,27 +75,27 @@ export async function getSecret(id) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -118,27 +119,27 @@ export async function createSecret(id, value, description) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -156,27 +157,27 @@ export async function setSecretDescription(id, description) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return '';
@@ -196,27 +197,27 @@ export async function deleteSecret(id) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -236,27 +237,27 @@ export async function listSecretVersions(id) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data;
@@ -274,27 +275,27 @@ export async function createNewVersionOfSecret(id, value) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -315,27 +316,27 @@ export async function getVersionOfSecret(id, version) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -354,27 +355,27 @@ export async function setStatusOfVersionOfSecret(id, version, status) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
+        printMessage(
+            `Error! The request was made and the server responded with a status code! - ${error.message}`,
+            'error'
+          );
+          printMessage(error.response.data, 'error');
+          printMessage(error.response.status, 'error');
+          printMessage(error.response.headers, 'error');
+        } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -403,27 +404,27 @@ export async function deleteVersionOfSecret(id, version) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;

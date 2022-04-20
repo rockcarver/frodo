@@ -72,7 +72,7 @@ async function getAllJourneyData() {
           `Error! The request was made but no response was received! - ${error.message}`,
           'error'
         );
-        printMessage(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
         printMessage(`Error setting up request - ${error.message}`, 'error');
@@ -235,7 +235,7 @@ async function getJourneyStructureData(name) {
 }
 
 export async function getJourneyData(journey) {
-  process.stdout.write(`${journey}`);
+  printMessage(`${journey}`, 'info', false);
 
   const journeyMap = {};
   const nodesMap = {};
@@ -268,19 +268,19 @@ export async function getJourneyData(journey) {
       journeyStructureData.nodes
     )) {
       nodeDataPromises.push(getNodeData(nodeId, nodeInfo.nodeType));
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
     }
     const nodeDataResults = await Promise.all(nodeDataPromises);
     nodeDataResults.forEach(async (entry) => {
       const nodeData = entry;
       delete nodeData._rev;
       nodesMap[nodeData._id] = nodeData;
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         scriptPromises.push(getScript(nodeData.script));
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -294,7 +294,7 @@ export async function getJourneyData(journey) {
           emailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
 
@@ -304,7 +304,7 @@ export async function getJourneyData(journey) {
           innerNodeDataPromises.push(
             getNodeData(innerNode._id, innerNode.nodeType)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
     });
@@ -322,12 +322,12 @@ export async function getJourneyData(journey) {
       const nodeData = entry;
       delete nodeData._rev;
       innerNodesMap[nodeData._id] = nodeData;
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         innerScriptPromises.push(getScript(nodeData.script));
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -341,7 +341,7 @@ export async function getJourneyData(journey) {
           innerEmailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
     });
@@ -364,12 +364,12 @@ export async function getJourneyData(journey) {
     //   // console.log(nodeData);
     //   delete nodeData._rev;
     //   nodesMap[nodeId] = nodeData;
-    //   process.stdout.write('.');
+    //   printMessage('.', 'info', false);
 
     //   // handle script node types
     //   if (scriptedNodes.includes(nodeInfo.nodeType)) {
     //     scriptsMap[nodeData.script] = await getScript(nodeData.script);
-    //     process.stdout.write('.');
+    //     printMessage('.', 'info', false);
     //   }
 
     //   // frodo supports email templates in platform deployments
@@ -382,7 +382,7 @@ export async function getJourneyData(journey) {
     //     if (emailTemplateNodes.includes(nodeInfo.nodeType)) {
     //       emailTemplatesMap[nodeData.emailTemplateName] =
     //         await getEmailTemplate(nodeData.emailTemplateName);
-    //       process.stdout.write('.');
+    //       printMessage('.', 'info', false);
     //     }
     //   }
 
@@ -401,7 +401,7 @@ export async function getJourneyData(journey) {
     //         scriptsMap[inPageNodeData.script] = await getScript(
     //           inPageNodeData.script
     //         );
-    //         process.stdout.write('.');
+    //         printMessage('.', 'info', false);
     //       }
 
     //       // frodo supports email templates in platform deployments
@@ -414,7 +414,7 @@ export async function getJourneyData(journey) {
     //         if (emailTemplateNodes.includes(inPageNode.nodeType)) {
     //           emailTemplatesMap[inPageNodeData.emailTemplateName] =
     //             await getEmailTemplate(inPageNodeData.emailTemplateName);
-    //           process.stdout.write('.');
+    //           printMessage('.', 'info', false);
     //         }
     //       }
     //     }
@@ -555,7 +555,7 @@ async function putJourneyStructureData(id, data) {
 }
 
 export async function importJourney(id, journeyMap, noreuuid) {
-  process.stdout.write(`- ${id}\n`);
+  printMessage(`- ${id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
 
@@ -573,9 +573,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
 
   if (Object.entries(journeyMap.scripts).length > 0) {
-    process.stdout.write('  - Scripts:\n');
+    printMessage('  - Scripts:\n');
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-      process.stdout.write(`    - ${scriptData.name} (${scriptId})`);
+      printMessage(`    - ${scriptData.name} (${scriptId})`, 'info', false);
       if ((await putScript(scriptId, scriptData)) == null) {
         printMessage(
           `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
@@ -583,17 +583,17 @@ export async function importJourney(id, journeyMap, noreuuid) {
         );
         return null;
       }
-      process.stdout.write('\n');
+      printMessage('');
     }
   }
 
   if (Object.entries(journeyMap.emailTemplates).length > 0) {
-    process.stdout.write('  - Email templates:\n');
+    printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
       journeyMap.emailTemplates
     )) {
       const templateLongId = templateData._id;
-      process.stdout.write(`    - ${templateId}`);
+      printMessage(`    - ${templateId}`, 'info', false);
       if (
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
         null
@@ -604,16 +604,16 @@ export async function importJourney(id, journeyMap, noreuuid) {
         );
         return null;
       }
-      process.stdout.write('\n');
+      printMessage('');
     }
   }
 
-  process.stdout.write('  - Inner nodes:\n');
+  printMessage('  - Inner nodes:');
   for (const [innerNodeId, innerNodeData] of Object.entries(
     journeyMap.innernodes
   )) {
     const nodeType = innerNodeData._type._id;
-    process.stdout.write(`    - ${innerNodeId}`);
+    printMessage(`    - ${innerNodeId}`, 'info', false);
     if (noreuuid) {
       newUuid = innerNodeId;
     } else {
@@ -629,14 +629,14 @@ export async function importJourney(id, journeyMap, noreuuid) {
       );
       return null;
     }
-    process.stdout.write('\n');
+    printMessage('');
   }
 
-  process.stdout.write('  - Nodes:\n');
+  printMessage('  - Nodes:');
   // eslint-disable-next-line prefer-const
   for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
     const nodeType = nodeData._type._id;
-    process.stdout.write(`    - ${nodeId}`);
+    printMessage(`    - ${nodeId}`, 'info', false);
     if (noreuuid) {
       newUuid = nodeId;
     } else {
@@ -664,10 +664,10 @@ export async function importJourney(id, journeyMap, noreuuid) {
       );
       return null;
     }
-    process.stdout.write('\n');
+    printMessage('');
   }
 
-  process.stdout.write('  - Flow\n');
+  printMessage('  - Flow');
   // eslint-disable-next-line no-param-reassign
   journeyMap.tree._id = id;
   let journeyText = JSON.stringify(journeyMap.tree, null, 2);
@@ -698,7 +698,7 @@ async function resolveDependencies(
   let trees = [];
   let after = index;
   if (index === -1) {
-    process.stdout.write('Resolving dependencies');
+    printMessage('Resolving dependencies', 'info', false);
     trees = Object.keys(journeyMap);
   } else {
     before = index;
@@ -709,7 +709,7 @@ async function resolveDependencies(
     if ({}.hasOwnProperty.call(journeyMap, tree)) {
       // console.dir(journeyMap[tree]);
       const dependencies = [];
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
       for (const node in journeyMap[tree].nodes) {
         if (
           journeyMap[tree].nodes[node]._type._id === 'InnerTreeEvaluatorNode'
@@ -719,7 +719,7 @@ async function resolveDependencies(
       }
       let allResolved = true;
       for (const dependency of dependencies) {
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
         if (
           !resolvedJourneys.includes(dependency) &&
           !installedJorneys.includes(dependency)
@@ -748,7 +748,7 @@ async function resolveDependencies(
       after
     );
   }
-  process.stdout.write('\n');
+  printMessage('');
 }
 
 export async function findOrphanedNodes(allNodes, orphanedNodes) {
@@ -778,7 +778,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
 
 export async function removeOrphanedNodes(allNodes, orphanedNodes) {
   orphanedNodes.forEach(async (node) => {
-    process.stdout.write('.');
+    printMessage('.', 'info', false);
     await deleteNode(node._id, node._type._id);
   });
 }

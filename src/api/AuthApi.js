@@ -82,7 +82,6 @@ export function listConnections() {
         });
         printMessage("Any unique substring of a saved host can be used as the value for host parameter in all commands");
     } catch (e) {
-        // console.error(`No connections found in ${filename} (${e.message})`);
         printMessage(`No connections found in ${filename} (${e.message})`, 'error');
     }
 }
@@ -124,7 +123,6 @@ export async function getConnection() {
         const connectionsData = JSON.parse(fs.readFileSync(filename, connFile.options));
         const tenantData = findByWildcard(connectionsData, storage.session.getTenant());
         if(!tenantData) {
-            // console.error(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`);
             printMessage(`No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`, 'error');
             return null;
         }
@@ -136,7 +134,6 @@ export async function getConnection() {
             secret: tenantData.logApiSecret?tenantData.logApiSecret:null
         }    
     } catch(e) {
-        // console.error("Can not read saved connection info, please specify credentials on command line: " + e)
         printMessage("Can not read saved connection info, please specify credentials on command line: " + e, 'error')
         return null;
     }
@@ -186,7 +183,6 @@ async function getCookieName() {
         const serverinfo = await generateAmApi(getServerInfoApiConfig()).get(urlString, {});
         return serverinfo.data.cookieName;
     } catch(e) {
-        // console.error("error getting cookie name: " + e)
         printMessage("error getting cookie name: " + e, 'error')
         return null;
     }
@@ -287,11 +283,9 @@ async function getVersionInfo() {
             printMessage("Connected to " + response.data.fullVersion);
             return version[0];
         } else {
-            // console.error("error getting version info: version not in response data")
             printMessage("error getting version info: version not in response data", 'error')
         }
     } catch(e) {
-        // console.error("error getting version info - ", e.message)
         printMessage("error getting version info - ", e.message, 'error')
     }
 }
@@ -329,28 +323,21 @@ async function authenticate() {
             storage.session.setAmVersion(await getVersionInfo());
             return "";
         } else {
-            // console.error("error authenticating - ", e.message);
-            // console.error("+++ likely cause, bad credentials!!! +++");
             printMessage("error authenticating - ", e.message, 'error');
             printMessage("+++ likely cause, bad credentials!!! +++", 'error');
             return null;
         }
     } catch(e) {
         if(e.response && e.response.status == 401) {
-            // console.error("error authenticating - %s", e.message);
-            // console.error("+++ likely cause, bad credentials +++");
             printMessage("error authenticating - %s", e.message, 'error');
             printMessage("+++ likely cause, bad credentials +++", 'error');
             return null;
         }
         else if (e.message && e.message == "self signed certificate") {
-            // console.error("error authenticating - %s", e.message);
-            // console.error("+++ use -k, --insecure option to allow +++");
             printMessage("error authenticating - %s", e.message, 'error');
             printMessage("+++ use -k, --insecure option to allow +++", 'error');
         }
         else {
-            // console.error("error authenticating - %s", e.message);
             printMessage("error authenticating - %s", e.message, 'error');
             return null;
         }
@@ -369,8 +356,6 @@ async function getAuthCode(authorizeURL, redirectURL, codeChallenge, codeChallen
             }
         );
         if(response.status < 200 || response.status > 399) {
-            // console.error("error getting auth code");
-            // console.error("likely cause: mismatched parameters with OAuth client config");
             printMessage("error getting auth code", 'error');
             printMessage("likely cause: mismatched parameters with OAuth client config", 'error');
             return null;
@@ -380,12 +365,10 @@ async function getAuthCode(authorizeURL, redirectURL, codeChallenge, codeChallen
         if("code" in queryObject) {
             return queryObject.code;
         } else {
-            // console.error("auth code not found");
             printMessage("auth code not found", 'error');
             return null;
         }
     } catch(e) {
-        // console.error("error getting auth code - ", e.message);
         printMessage("error getting auth code - ", e.message, 'error');
         return null;
     }
@@ -401,7 +384,6 @@ async function getAccessToken() {
         const redirectURL = url.resolve(storage.session.getTenant(), redirectURLTemplate);
         const authCode = await getAuthCode(authorizeURL, redirectURL, challenge, challengeMethod)
         if(authCode == null) {
-            // console.error("error getting auth code");
             printMessage("error getting auth code", 'error');
             return null;
         }
@@ -418,7 +400,6 @@ async function getAccessToken() {
             response = await generateOauth2Api(getOauth2ApiConfig()).post(accessTokenURL, bodyFormData);
         }
         if(response.status < 200 || response.status > 399) {
-            // console.error("access token call returned " + response.status);
             printMessage("access token call returned " + response.status, 'error');
             return null;
         }
@@ -426,12 +407,10 @@ async function getAccessToken() {
             storage.session.setBearerToken(response.data.access_token);
             return "";
         } else {
-            // console.error("can't get access token");
             printMessage("can't get access token", 'error');
             return null;
         }
     } catch(e) {
-        // console.error("error getting access token - ");
         printMessage("error getting access token - ", 'error');
         return null;
     }

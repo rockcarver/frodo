@@ -395,10 +395,10 @@ describe the journey/tree export file indicated by -f.'
               'Do you want to prune (permanently delete) all the orphaned node instances?(y|n):',
           });
           if (ok) {
-            process.stdout.write('Pruning.');
+            printMessage('Pruning.', 'info', false);
             removeOrphanedNodes(allNodes, orphanedNodes);
           }
-          process.stdout.write('done');
+          printMessage('done', 'info', false);
           printMessage('');
         } else {
           printMessage('No orphaned nodes found.');
