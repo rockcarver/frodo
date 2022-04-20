@@ -7,6 +7,7 @@ import storage from '../storage/SessionStorage.js';
 import { getEmailTemplate, putEmailTemplate } from './EmailTemplateApi.js';
 import { getScript, putScript } from './ScriptApi.js';
 import * as global from '../storage/StaticStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const journeyURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
@@ -56,27 +57,27 @@ async function getAllJourneyData() {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data.result;
@@ -94,27 +95,27 @@ async function getAllNodesData() {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return [];
     });
   return response.data.result;
@@ -136,27 +137,27 @@ async function getNodeData(id, nodeType) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   // console.dir(response.data);
@@ -179,27 +180,27 @@ async function deleteNode(id, nodeType) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   // console.dir(response.data);
@@ -218,24 +219,23 @@ async function getJourneyStructureData(name) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        '\ngetJourneyStructureData ERROR: get journey structure call returned %d, possible cause: journey not found',
-        response.status
+        printMessage(
+        `\ngetJourneyStructureData ERROR: get journey structure call returned ${response.status}, possible cause: journey not found`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(
-      '\ngetJourneyStructureData ERROR: get journey structure error - ',
-      e.message
+    printMessage(
+      `\ngetJourneyStructureData ERROR: get journey structure error - ${e.message}`, 'error'
     );
     return null;
   }
 }
 
 export async function getJourneyData(journey) {
-  process.stdout.write(`${journey}`);
+  printMessage(`${journey}`, 'info', false);
 
   const journeyMap = {};
   const nodesMap = {};
@@ -268,19 +268,19 @@ export async function getJourneyData(journey) {
       journeyStructureData.nodes
     )) {
       nodeDataPromises.push(getNodeData(nodeId, nodeInfo.nodeType));
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
     }
     const nodeDataResults = await Promise.all(nodeDataPromises);
     nodeDataResults.forEach(async (entry) => {
       const nodeData = entry;
       delete nodeData._rev;
       nodesMap[nodeData._id] = nodeData;
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         scriptPromises.push(getScript(nodeData.script));
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -294,7 +294,7 @@ export async function getJourneyData(journey) {
           emailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
 
@@ -304,13 +304,13 @@ export async function getJourneyData(journey) {
           innerNodeDataPromises.push(
             getNodeData(innerNode._id, innerNode.nodeType)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
     });
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach((item) => {
-      scriptsMap[item._id] = item;
+      if(item) scriptsMap[item._id] = item;
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
@@ -322,12 +322,12 @@ export async function getJourneyData(journey) {
       const nodeData = entry;
       delete nodeData._rev;
       innerNodesMap[nodeData._id] = nodeData;
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         innerScriptPromises.push(getScript(nodeData.script));
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -341,7 +341,7 @@ export async function getJourneyData(journey) {
           innerEmailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          process.stdout.write('.');
+          printMessage('.', 'info', false);
         }
       }
     });
@@ -364,12 +364,12 @@ export async function getJourneyData(journey) {
     //   // console.log(nodeData);
     //   delete nodeData._rev;
     //   nodesMap[nodeId] = nodeData;
-    //   process.stdout.write('.');
+    //   printMessage('.', 'info', false);
 
     //   // handle script node types
     //   if (scriptedNodes.includes(nodeInfo.nodeType)) {
     //     scriptsMap[nodeData.script] = await getScript(nodeData.script);
-    //     process.stdout.write('.');
+    //     printMessage('.', 'info', false);
     //   }
 
     //   // frodo supports email templates in platform deployments
@@ -382,7 +382,7 @@ export async function getJourneyData(journey) {
     //     if (emailTemplateNodes.includes(nodeInfo.nodeType)) {
     //       emailTemplatesMap[nodeData.emailTemplateName] =
     //         await getEmailTemplate(nodeData.emailTemplateName);
-    //       process.stdout.write('.');
+    //       printMessage('.', 'info', false);
     //     }
     //   }
 
@@ -401,7 +401,7 @@ export async function getJourneyData(journey) {
     //         scriptsMap[inPageNodeData.script] = await getScript(
     //           inPageNodeData.script
     //         );
-    //         process.stdout.write('.');
+    //         printMessage('.', 'info', false);
     //       }
 
     //       // frodo supports email templates in platform deployments
@@ -414,7 +414,7 @@ export async function getJourneyData(journey) {
     //         if (emailTemplateNodes.includes(inPageNode.nodeType)) {
     //           emailTemplatesMap[inPageNodeData.emailTemplateName] =
     //             await getEmailTemplate(inPageNodeData.emailTemplateName);
-    //           process.stdout.write('.');
+    //           printMessage('.', 'info', false);
     //         }
     //       }
     //     }
@@ -428,8 +428,8 @@ export async function getJourneyData(journey) {
   journeyMap.emailTemplates = emailTemplatesMap;
   journeyMap.nodes = nodesMap;
   journeyMap.tree = journeyStructureData;
-  console.log('.');
-  console.log(
+  printMessage('.');
+  printMessage(
     `Nodes(inner): ${
       Object.keys(nodesMap).length + Object.keys(innerNodesMap).length
     }(${Object.keys(innerNodesMap).length}), Scripts: ${
@@ -489,27 +489,27 @@ async function putNodeData(id, nodeType, data) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
@@ -528,34 +528,34 @@ async function putJourneyStructureData(id, data) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
+        printMessage(
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
         );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
+        printMessage(
+          `Error! The request was made but no response was received! - ${error.message}`,
+          'error'
         );
-        console.log(error.request);
+        printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
+        printMessage(`Error setting up request - ${error.message}`, 'error');
       }
-      console.log(error.config);
+      printMessage(error.config, 'error');
       return null;
     });
   return response.data;
 }
 
 export async function importJourney(id, journeyMap, noreuuid) {
-  process.stdout.write(`- ${id}\n`);
+  printMessage(`- ${id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
 
@@ -567,51 +567,53 @@ export async function importJourney(id, journeyMap, noreuuid) {
   const treeId = journeyMap.tree._id;
 
   if (sourceOrigin === targetOrigin) {
-    console.log(
+    printMessage(
       `- Importing journey ${treeId} to the same environment and realm from where it was exported`
     );
   }
 
   if (Object.entries(journeyMap.scripts).length > 0) {
-    process.stdout.write('  - Scripts:\n');
+    printMessage('  - Scripts:\n');
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-      process.stdout.write(`    - ${scriptData.name} (${scriptId})`);
+      printMessage(`    - ${scriptData.name} (${scriptId})`, 'info', false);
       if ((await putScript(scriptId, scriptData)) == null) {
-        console.error(
-          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
+          'error'
         );
         return null;
       }
-      process.stdout.write('\n');
+      printMessage('');
     }
   }
 
   if (Object.entries(journeyMap.emailTemplates).length > 0) {
-    process.stdout.write('  - Email templates:\n');
+    printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
       journeyMap.emailTemplates
     )) {
       const templateLongId = templateData._id;
-      process.stdout.write(`    - ${templateId}`);
+      printMessage(`    - ${templateId}`, 'info', false);
       if (
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
         null
       ) {
-        console.error(
-          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`
+        printMessage(
+          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`,
+          'error'
         );
         return null;
       }
-      process.stdout.write('\n');
+      printMessage('');
     }
   }
 
-  process.stdout.write('  - Inner nodes:\n');
+  printMessage('  - Inner nodes:');
   for (const [innerNodeId, innerNodeData] of Object.entries(
     journeyMap.innernodes
   )) {
     const nodeType = innerNodeData._type._id;
-    process.stdout.write(`    - ${innerNodeId}`);
+    printMessage(`    - ${innerNodeId}`, 'info', false);
     if (noreuuid) {
       newUuid = innerNodeId;
     } else {
@@ -621,19 +623,20 @@ export async function importJourney(id, journeyMap, noreuuid) {
     innerNodeData._id = newUuid;
 
     if ((await putNodeData(newUuid, nodeType, innerNodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
-    process.stdout.write('\n');
+    printMessage('');
   }
 
-  process.stdout.write('  - Nodes:\n');
+  printMessage('  - Nodes:');
   // eslint-disable-next-line prefer-const
   for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
     const nodeType = nodeData._type._id;
-    process.stdout.write(`    - ${nodeId}`);
+    printMessage(`    - ${nodeId}`, 'info', false);
     if (noreuuid) {
       newUuid = nodeId;
     } else {
@@ -655,15 +658,16 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
 
     if ((await putNodeData(newUuid, nodeType, nodeData)) == null) {
-      console.error(
-        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`
+        printMessage(
+        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`,
+        'error'
       );
       return null;
     }
-    process.stdout.write('\n');
+    printMessage('');
   }
 
-  process.stdout.write('  - Flow\n');
+  printMessage('  - Flow');
   // eslint-disable-next-line no-param-reassign
   journeyMap.tree._id = id;
   let journeyText = JSON.stringify(journeyMap.tree, null, 2);
@@ -674,8 +678,9 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
   const journeyData = JSON.parse(journeyText);
   if ((await putJourneyStructureData(id, journeyData)) == null) {
-    console.error(
-      `importJourney ERROR: error importing journey structure ${treeId}`
+    printMessage(
+      `importJourney ERROR: error importing journey structure ${treeId}`,
+      'error'
     );
     return null;
   }
@@ -693,7 +698,7 @@ async function resolveDependencies(
   let trees = [];
   let after = index;
   if (index === -1) {
-    process.stdout.write('Resolving dependencies');
+    printMessage('Resolving dependencies', 'info', false);
     trees = Object.keys(journeyMap);
   } else {
     before = index;
@@ -704,7 +709,7 @@ async function resolveDependencies(
     if ({}.hasOwnProperty.call(journeyMap, tree)) {
       // console.dir(journeyMap[tree]);
       const dependencies = [];
-      process.stdout.write('.');
+      printMessage('.', 'info', false);
       for (const node in journeyMap[tree].nodes) {
         if (
           journeyMap[tree].nodes[node]._type._id === 'InnerTreeEvaluatorNode'
@@ -714,7 +719,7 @@ async function resolveDependencies(
       }
       let allResolved = true;
       for (const dependency of dependencies) {
-        process.stdout.write('.');
+        printMessage('.', 'info', false);
         if (
           !resolvedJourneys.includes(dependency) &&
           !installedJorneys.includes(dependency)
@@ -733,7 +738,7 @@ async function resolveDependencies(
   }
   after = unresolvedJourneys.length;
   if (index !== -1 && after === before) {
-    console.log('Trees with unresolved dependencies: {}', unresolvedJourneys);
+    printMessage('Trees with unresolved dependencies: {}', unresolvedJourneys);
   } else if (after > 0) {
     resolveDependencies(
       installedJorneys,
@@ -743,7 +748,7 @@ async function resolveDependencies(
       after
     );
   }
-  process.stdout.write('\n');
+  printMessage('');
 }
 
 export async function findOrphanedNodes(allNodes, orphanedNodes) {
@@ -773,7 +778,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
 
 export async function removeOrphanedNodes(allNodes, orphanedNodes) {
   orphanedNodes.forEach(async (node) => {
-    process.stdout.write('.');
+    printMessage('.', 'info', false);
     await deleteNode(node._id, node._type._id);
   });
 }
@@ -1053,8 +1058,9 @@ async function isCustom(journey) {
         }
       }
     } else {
-      console.error(
-        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`
+        printMessage(
+        `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`,
+        'error'
       );
       custom = false;
     }
@@ -1073,9 +1079,9 @@ export async function listJourneys(analyze) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listJourneys ERROR: list journeys call returned %d, possible cause: invalid credentials',
-        response.status
+        printMessage(
+        `listJourneys ERROR: list journeys call returned ${response.status}, possible cause: invalid credentials`,
+        'error'
       );
       return null;
     }
@@ -1100,7 +1106,7 @@ export async function listJourneys(analyze) {
     // console.log(journeyList);
     return journeyList;
   } catch (e) {
-    console.error('listJourneys ERROR: error getting journey list - ', e);
+    printMessage(`listJourneys ERROR: error getting journey list - ${e}`, 'error');
     return null;
   }
 }

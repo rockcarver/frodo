@@ -12,6 +12,7 @@ import {
   validateImport,
 } from '../../api/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const emailTemplate = new Command('email_templates')
@@ -34,12 +35,12 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(`Listing email templates ...`);
+        printMessage(`Listing email templates ...`);
         const templateList = await listEmailTemplates();
         // console.log(templateList);
         templateList.sort((a, b) => a._id.localeCompare(b._id));
         templateList.forEach((item, index) => {
-          console.log(`- ${item._id.replaceAll('emailTemplate/', '')}`);
+          printMessage(`- ${item._id.replaceAll('emailTemplate/', '')}`);
         });
       }
     });
@@ -87,7 +88,7 @@ export default function setup() {
       if (await getTokens()) {
         // export
         if (command.opts().template) {
-          console.log('Exporting template...');
+          printMessage('Exporting template...');
           let fileName = `${command.opts().template}.json`;
           if (command.opts().file) {
             fileName = command.opts().file;
@@ -98,7 +99,7 @@ export default function setup() {
         }
         // exportAll -a
         else if (command.opts().all) {
-          console.log('Exporting all email templates to a single file...');
+          printMessage('Exporting all email templates to a single file...');
           let fileName = 'allEmailTemplates.json';
           const templateList = await listEmailTemplates();
           const allTemplatesData = [];
@@ -115,7 +116,7 @@ export default function setup() {
         }
         // exportAllSeparate -A
         else if (command.opts().allSeparate) {
-          console.log('Exporting all email templates to separate files...');
+          printMessage('Exporting all email templates to separate files...');
           const templateList = await listEmailTemplates();
           for (const item of templateList) {
             templateData = await getEmailTemplate(
@@ -130,7 +131,7 @@ export default function setup() {
         }
         // unrecognized combination of options or no options
         else {
-          console.log('Unrecognized combination of options or no options...');
+          printMessage('Unrecognized combination of options or no options...', 'error');
           command.help();
         }
       }
@@ -153,26 +154,26 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(`Importing email templates(s) ...`);
+        printMessage(`Importing email templates(s) ...`);
         fs.readFile(command.opts().file, 'utf8', (err, data) => {
           if (err) throw err;
           const templateData = JSON.parse(data);
           if (validateImport(templateData.meta)) {
             for (const id in templateData.emailTemplate) {
               if ({}.hasOwnProperty.call(templateData.emailTemplate, id)) {
-                console.log(id);
+                // console.log(id);
                 // console.log(templateData.script[id]);
                 putEmailTemplate(
                   id.replaceAll('emailTemplate/', ''),
                   id,
                   templateData.emailTemplate[id]
                 ).then((result) => {
-                  if (!result == null) console.log(`Imported ${id}`);
+                  if (!result == null) printMessage(`Imported ${id}`);
                 });
               }
             }
           } else {
-            console.error('Import validation failed...');
+            printMessage('Import validation failed...', 'error');
           }
         });
       }

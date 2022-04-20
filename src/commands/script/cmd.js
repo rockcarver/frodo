@@ -15,6 +15,7 @@ import {
   validateImport,
 } from '../../api/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const script = new Command('script')
@@ -39,14 +40,14 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Listing scripts in realm "${storage.session.getRealm()}"...`
         );
         const scriptList = await listScripts();
         // console.log(scriptList);
         scriptList.sort((a, b) => a.name.localeCompare(b.name));
         scriptList.forEach((item, index) => {
-          console.log(`- ${item.name}`);
+          printMessage(`- ${item.name}`);
         });
       }
     });
@@ -96,15 +97,16 @@ export default function setup() {
       if (await getTokens()) {
         // export
         if (command.opts().script) {
-          console.log('Exporting script...');
+          printMessage('Exporting script...');
           let fileName = `${command.opts().script}.json`;
           if (command.opts().file) {
             fileName = command.opts().file;
           }
           scriptData = await getScriptByName(command.opts().script);
           if (scriptData.length > 1) {
-            return console.error(
-              `Multiple scripts with name ${command.opts().script} found...`
+            return printMessage(
+              `Multiple scripts with name ${command.opts().script} found...`,
+              'error'
             );
           }
           scriptData.forEach((element) => {
@@ -120,7 +122,7 @@ export default function setup() {
         }
         // exportAll -a
         else if (command.opts().all) {
-          console.log('Exporting all scripts to a single file...');
+          printMessage('Exporting all scripts to a single file...');
           let fileName = 'allScripts.json';
           const scriptList = await listScripts();
           const allScriptsData = [];
@@ -141,7 +143,7 @@ export default function setup() {
         }
         // exportAllSeparate -A
         else if (command.opts().allSeparate) {
-          console.log('Exporting all scripts to separate files...');
+          printMessage('Exporting all scripts to separate files...');
           const scriptList = await listScripts();
           for (const item of scriptList) {
             scriptData = await getScriptByName(item.name);
@@ -158,7 +160,7 @@ export default function setup() {
         }
         // unrecognized combination of options or no options
         else {
-          console.log('Unrecognized combination of options or no options...');
+          printMessage('Unrecognized combination of options or no options...', 'error');
           command.help();
         }
       }
@@ -184,7 +186,7 @@ export default function setup() {
       storage.session.setAllowInsecureConnection(options.insecure);
       let encodedScript = null;
       if (await getTokens()) {
-        console.log(
+        printMessage(
           `Importing script(s) into realm "${storage.session.getRealm()}"...`
         );
         fs.readFile(command.opts().file, 'utf8', (err, data) => {
@@ -200,12 +202,12 @@ export default function setup() {
                 scriptData.script[id].script = encodedScript;
                 // console.log(scriptData.script[id]);
                 putScript(id, scriptData.script[id]).then((result) => {
-                  if (!result == null) console.log(`Imported ${id}`);
+                  if (!result == null) printMessage(`Imported ${id}`);
                 });
               }
             }
           } else {
-            console.error('Import validation failed...');
+            printMessage('Import validation failed...', 'error');
           }
         });
       }

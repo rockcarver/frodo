@@ -3,6 +3,7 @@ import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import { queryManagedObjects } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from './utils/Console.js';
 
 const organizationURLTemplate = '%s/openidm/managed/%s/%s';
 const organizationQueryTemplate = '%s/openidm/managed/%s?_queryId=query-all';
@@ -30,17 +31,17 @@ export async function listOrganizations() {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listOrganizations ERROR: list organizations data call returned %d',
-        response.status
+        printMessage(
+        `listOrganizations ERROR: list organizations data call returned ${response.status}`,
+        'error'
       );
       return [];
     }
     return response.data.result;
   } catch (e) {
-    console.error(
-      'listOrganizations ERROR: list organizations data error - ',
-      e.message
+    printMessage(
+      `listOrganizations ERROR: list organizations data error - ${e.message}`,
+      'error'
     );
     return [];
   }
@@ -64,7 +65,7 @@ export async function listOrganizationsTopDown() {
       result.pagedResultsCookie
     );
     orgs.concat(result.result);
-    process.stdout.write('.');
+    printMessage('.', 'info', false);
   } while (result.pagedResultsCookie);
   return orgs;
 }
@@ -79,17 +80,17 @@ export async function getOrganization(id) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getOrganization ERROR: get organization data call returned %d',
-        response.status
+        printMessage(
+        `getOrganization ERROR: get organization data call returned ${response.status}`,
+        'error'
       );
       return [];
     }
     return response.data;
   } catch (e) {
-    console.error(
-      'getOrganization ERROR: get organization data error - ',
-      e.message
+    printMessage(
+      `getOrganization ERROR: get organization data error - ${e.message}`,
+      'error'
     );
     return [];
   }
@@ -105,14 +106,15 @@ export async function putOrganization(id, data) {
     );
     const response = await generateIdmApi().put(urlString, data);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`
+        printMessage(
+        `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(`putOrganization ERROR: organization ${id} - ${e.message}`);
+    printMessage(`putOrganization ERROR: organization ${id} - ${e.message}`, 'error');
     return null;
   }
 }

@@ -6,6 +6,7 @@ import { getOAuth2Provider } from '../../api/AmServiceApi.js'
 import { listOAuth2Applications, getOAuth2Application, putApplication } from '../../api/ApplicationApi.js';
 import { saveToFile, validateImport, checkTargetCompatibility } from '../../api/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
     const application = new Command("application")
@@ -28,12 +29,11 @@ export default function setup() {
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
             if(await getTokens()) {
-                console.log(`OAuth2 applications ...`);
+                printMessage(`OAuth2 applications ...`);
                 const applicationList = await listOAuth2Applications();
-                // console.log(applicationList);
                 applicationList.sort((a, b) => a._id.localeCompare(b._id));
                 applicationList.forEach((item, index) => {
-                    console.log(`- ${item._id}`);
+                    printMessage(`- ${item._id}`);
                 })
                 // console.log("\nSAML entities ...");
                 // const entityList = await listSamlEntities();
@@ -70,7 +70,7 @@ export default function setup() {
                 oauthServiceData = await getOAuth2Provider();
                 // export
                 if (command.opts().id) {
-                    console.log('Exporting application...');
+                    printMessage('Exporting application...');
                     let fileName = command.opts().id+".json";
                     if (command.opts().file) {
                         fileName = command.opts().file;
@@ -82,7 +82,7 @@ export default function setup() {
                 }
                 // exportAll -a
                 else if (command.opts().all) {
-                    console.log('Exporting all applications to a single file...');
+                    printMessage('Exporting all applications to a single file...');
                     let fileName = "allApplications.json";
                     const applicationList = await listOAuth2Applications();
                     let allApplicationsData = [];
@@ -98,7 +98,7 @@ export default function setup() {
                 }
                 // exportAllSeparate -A
                 else if (command.opts().allSeparate) {
-                    console.log('Exporting all applications to separate files...');
+                    printMessage('Exporting all applications to separate files...');
                     const applicationList = await listOAuth2Applications();
                     for (const item of applicationList) {
                         applicationData = await getOAuth2Application(item._id);
@@ -109,7 +109,7 @@ export default function setup() {
                 }
                 // unrecognized combination of options or no options
                 else {
-                    console.log('Unrecognized combination of options or no options...');
+                    printMessage('Unrecognized combination of options or no options...');
                     command.help();
                 }
             }
@@ -132,7 +132,7 @@ export default function setup() {
             storage.session.setPassword(password);
             storage.session.setDeploymentType(options.type);
             if(await getTokens()) {
-                console.log(`Importing application(s) ...`);
+                printMessage(`Importing application(s) ...`);
                 let targetOauthServiceData = await getOAuth2Provider();
                 fs.readFile(command.opts().file, 'utf8', function (err, data) {
                     if (err) throw err;
@@ -147,11 +147,11 @@ export default function setup() {
                             delete applicationData.application[id]._rev;
                             putApplication(id, applicationData.application[id]).then(result=>{
                                 if(!result == null)
-                                    console.log(`Imported ${id}`);
+                                    printMessage(`Imported ${id}`);
                             });
                         }
                     } else {
-                        console.error("Import validation failed...");
+                        printMessage("Import validation failed...", 'error');
                     }
                 });
             }

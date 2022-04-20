@@ -19,6 +19,7 @@ import {
   deleteVersionOfSecret,
 } from '../../api/SecretsApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('secret')
@@ -46,7 +47,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log('Listing all secrets...');
+        printMessage('Listing all secrets...');
         const secrets = await listSecrets();
         if (options.long) {
           const table = new Table({
@@ -88,10 +89,10 @@ export default function setup() {
               secret.lastChangeDate,
             ]);
           });
-          console.log(table.toString());
+          printMessage(table.toString());
         } else {
           secrets.forEach((secret) => {
-            console.log(secret._id);
+            printMessage(secret._id);
           });
         }
       }
@@ -116,7 +117,7 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(`Retrieving details of secret ${options.target}...`);
+        printMessage(`Retrieving details of secret ${options.target}...`);
         const secret = await getSecret(options.target);
         const table = new Table({
           chars: {
@@ -156,7 +157,7 @@ export default function setup() {
           'Use In Placeholders'.brightCyan,
           secret.useInPlaceholders,
         ]);
-        console.log(table.toString());
+        printMessage(table.toString());
       }
     });
 
