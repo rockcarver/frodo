@@ -323,22 +323,22 @@ async function authenticate() {
             storage.session.setAmVersion(await getVersionInfo());
             return "";
         } else {
-            printMessage("error authenticating - ", e.message, 'error');
+            printMessage(`error authenticating - ${e.message}`, 'error');
             printMessage("+++ likely cause, bad credentials!!! +++", 'error');
             return null;
         }
     } catch(e) {
         if(e.response && e.response.status == 401) {
-            printMessage("error authenticating - %s", e.message, 'error');
+            printMessage(`error authenticating - ${e.message}`, 'error');
             printMessage("+++ likely cause, bad credentials +++", 'error');
             return null;
         }
         else if (e.message && e.message == "self signed certificate") {
-            printMessage("error authenticating - %s", e.message, 'error');
+            printMessage(`error authenticating - ${e.message}`, 'error');
             printMessage("+++ use -k, --insecure option to allow +++", 'error');
         }
         else {
-            printMessage("error authenticating - %s", e.message, 'error');
+            printMessage(`error authenticating - ${e.message}`, 'error');
             return null;
         }
     }
