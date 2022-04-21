@@ -7,6 +7,7 @@ import {
 } from '../../api/AuthApi.js';
 import * as common from '../cmd_common.js';
 import { printMessage } from '../../api/utils/Console.js';
+import storage from '../../storage/SessionStorage.js';
 
 export default function setup() {
   const connections = new Command('connections');
@@ -39,13 +40,12 @@ export default function setup() {
     )
     .action(async (host, user, password, key, secret, options, command) => {
       // console.log('list command called');
-      saveConnection({
-        tenant: host,
-        username: user,
-        password,
-        key,
-        secret,
-      });
+      storage.session.setTenant(host);
+      storage.session.setUsername(user);
+      storage.session.setPassword(password);
+      storage.session.setLogApiKey(key);
+      storage.session.setLogApiSecret(secret);
+      saveConnection();
     });
 
   connections
