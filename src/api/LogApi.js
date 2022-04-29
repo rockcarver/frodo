@@ -198,6 +198,7 @@ export async function createAPIKeyAndSecret() {
             printMessage(`create keys ERROR: could not create log API key ${keyName}`, 'error');
             return null;    
         }
+        printMessage(`Created a new log API key [${keyName}] in ${storage.session.getTenant()}`);
         return logsKeyObject;
     } catch (e) {
         printMessage(`create keys ERROR: create keys data error - ${e}`, 'error');
