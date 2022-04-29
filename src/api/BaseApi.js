@@ -112,6 +112,36 @@ export function generateIdmApi(requestOverride = {}) {
 }
 
 /**
+ * Generates a LogKeys API Axios instance
+ * @param {object} requestOverride Takes an object of AXIOS parameters that can be used to either add
+ * on extra information or override default properties https://github.com/axios/axios#request-config
+ *
+ * @returns {AxiosInstance}
+ */
+ export function generateLogKeysApi(requestOverride = {}) {
+    const headers = {
+      'Content-type': 'application/json'
+    };
+    const requestDetails = {
+      baseURL: getTenantURL(storage.session.getTenant()),
+      timeout,
+      headers: headers,
+      ...requestOverride,
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
+      }),
+    };
+
+    if (storage.session.getBearerToken()) {
+        requestDetails.headers.Authorization = `Bearer ${storage.session.getBearerToken()}`;
+    }
+    
+    const request = axios.create(requestDetails);
+ 
+    return request;
+  }
+  
+/**
  * Generates a Log API Axios instance
  * @param {object} requestOverride Takes an object of AXIOS parameters that can be used to either add
  * on extra information or override default properties https://github.com/axios/axios#request-config
