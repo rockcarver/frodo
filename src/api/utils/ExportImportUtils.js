@@ -62,6 +62,7 @@ function saveToFile(type, data, identifier, filename) {
 }
 
 export {
+  getCurrentTimestamp,
   saveToFile,
   convertBase64ScriptToArray,
   convertArrayToBase64Script,

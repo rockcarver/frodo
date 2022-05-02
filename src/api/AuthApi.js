@@ -18,7 +18,7 @@ const authorizeURLTemplate = "%s/oauth2%s/authorize"
 const accessTokenURLTemplate = "%s/oauth2%s/access_token"
 const redirectURLTemplate = "/platform/appAuthHelperRedirect.html"
 
-const idmAdminScope = "fr:idm:*"
+const idmAdminScope = "fr:idm:* openid"
 const authenticationApiVersion = "resource=2.0, protocol=1.0"
 const getAuthenticationApiConfig = () => {
     return {

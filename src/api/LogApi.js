@@ -1,5 +1,6 @@
-import { generateLogApi } from './BaseApi.js';
+import { generateLogApi, generateLogKeysApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
+import { getCurrentTimestamp } from './utils/ExportImportUtils.js';
 import { saveConnection } from './AuthApi.js';
 import storage from '../storage/SessionStorage.js';
 import util from 'util';
@@ -131,6 +132,8 @@ const noise = misc_noise.concat(saml_noise).concat(journeys_noise)
 
 const logsTailURLTemplate = "%s/monitoring/logs/tail?source=%s";
 const logsSourcesURLTemplate = "%s/monitoring/logs/sources";
+const logsCreateAPIKeyAndSecretURLTemplate = "%s/keys?_action=create"
+const logsGetAPIKeysURLTemplate = "%s/keys"
 
 async function tail(source, cookie) {
     try {
@@ -152,6 +155,53 @@ async function tail(source, cookie) {
         return logsObject;
     } catch (e) {
         printMessage(`tail ERROR: tail data error - ${e}`, 'error');
+        return null;
+    }
+}
+
+async function getAPIKeys() {
+    try {
+        let urlString = util.format(logsGetAPIKeysURLTemplate, getTenantURL(storage.session.getTenant()));
+        const req = generateLogKeysApi();
+        const response = await req.get(urlString);
+        if (response.status < 200 || response.status > 399) {
+            printMessage(`get keys ERROR: get keys call returned ${response.status}`, 'error');
+            return null;
+        }
+        let logsKeyObject = response.data;
+        return logsKeyObject;
+    } catch (e) {
+        printMessage(`get keys ERROR: keys data error - ${e}`, 'error');
+        return null;
+    }
+}
+
+export async function createAPIKeyAndSecret() {
+    try {
+        let keyName = `frodo-${storage.session.getUsername()}`;
+        let existingKeys = await getAPIKeys();
+        existingKeys.result.forEach(k=>{
+          if(k.name == keyName) {
+            // append current timestamp to name if the named key already exists
+            keyName = `${keyName}-${getCurrentTimestamp()}`;
+          }
+        })
+        let urlString = util.format(logsCreateAPIKeyAndSecretURLTemplate, getTenantURL(storage.session.getTenant()));
+        const req = generateLogKeysApi();
+        const response = await req.post(urlString, {name: keyName});
+        if (response.status < 200 || response.status > 399) {
+            printMessage(`create keys ERROR: create keys call returned ${response.status}`, 'error');
+            return null;
+        }
+        let logsKeyObject = response.data;
+        if(logsKeyObject.name != keyName) {
+            printMessage(`create keys ERROR: could not create log API key ${keyName}`, 'error');
+            return null;    
+        }
+        printMessage(`Created a new log API key [${keyName}] in ${storage.session.getTenant()}`);
+        return logsKeyObject;
+    } catch (e) {
+        printMessage(`create keys ERROR: create keys data error - ${e}`, 'error');
         return null;
     }
 }
