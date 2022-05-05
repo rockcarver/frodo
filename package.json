@@ -50,6 +50,7 @@
     "@colors/colors": "^1.5.0",
     "axios": "^0.25.0",
     "axios-retry": "^3.2.4",
+    "chalk": "^5.0.1",
     "cli-table3": "^0.6.2",
     "commander": "^9.0.0",
     "fs-extra": "^10.0.0",

@@ -219,7 +219,7 @@ async function getJourneyStructureData(name) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `\ngetJourneyStructureData ERROR: get journey structure call returned ${response.status}, possible cause: journey not found`,
         'error'
       );
@@ -228,7 +228,8 @@ async function getJourneyStructureData(name) {
     return response.data;
   } catch (e) {
     printMessage(
-      `\ngetJourneyStructureData ERROR: get journey structure error - ${e.message}`, 'error'
+      `\ngetJourneyStructureData ERROR: get journey structure error - ${e.message}`,
+      'error'
     );
     return null;
   }
@@ -310,7 +311,7 @@ export async function getJourneyData(journey) {
     });
     const scripts = await Promise.all(scriptPromises);
     scripts.forEach((item) => {
-      if(item) scriptsMap[item._id] = item;
+      if (item) scriptsMap[item._id] = item;
     });
     const emailTemplates = await Promise.all(emailTemplatePromises);
     emailTemplates.forEach((item) => {
@@ -529,7 +530,7 @@ async function putJourneyStructureData(id, data) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          `Error! The putJourneyStructureData request was made and the server responded with a status code! - ${error.message}`,
           'error'
         );
         printMessage(error.response.data, 'error');
@@ -540,18 +541,24 @@ async function putJourneyStructureData(id, data) {
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
         printMessage(
-          `Error! The request was made but no response was received! - ${error.message}`,
+          `Error! The putJourneyStructureData request was made but no response was received! - ${error.message}`,
           'error'
         );
         printMessage(error.request, 'error');
       } else {
         // Something happened in setting up the request that triggered an Error
-        printMessage(`Error setting up request - ${error.message}`, 'error');
+        printMessage(
+          `Error setting up putJourneyStructureData request - ${error.message}`,
+          'error'
+        );
       }
       printMessage(error.config, 'error');
       return null;
     });
-  return response.data;
+  if (response) {
+    return response.data;
+  }
+  return null;
 }
 
 export async function importJourney(id, journeyMap, noreuuid) {
@@ -623,7 +630,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
     innerNodeData._id = newUuid;
 
     if ((await putNodeData(newUuid, nodeType, innerNodeData)) == null) {
-        printMessage(
+      printMessage(
         `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
         'error'
       );
@@ -658,7 +665,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
 
     if ((await putNodeData(newUuid, nodeType, nodeData)) == null) {
-        printMessage(
+      printMessage(
         `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`,
         'error'
       );
@@ -1058,7 +1065,7 @@ async function isCustom(journey) {
         }
       }
     } else {
-        printMessage(
+      printMessage(
         `isCustom ERROR: can't get ${nodeList[pageNode].nodeType} with id ${pageNode} in ${journey._id}`,
         'error'
       );
@@ -1079,7 +1086,7 @@ export async function listJourneys(analyze) {
       withCredentials: true,
     });
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `listJourneys ERROR: list journeys call returned ${response.status}, possible cause: invalid credentials`,
         'error'
       );
@@ -1106,7 +1113,10 @@ export async function listJourneys(analyze) {
     // console.log(journeyList);
     return journeyList;
   } catch (e) {
-    printMessage(`listJourneys ERROR: error getting journey list - ${e}`, 'error');
+    printMessage(
+      `listJourneys ERROR: error getting journey list - ${e}`,
+      'error'
+    );
     return null;
   }
 }
