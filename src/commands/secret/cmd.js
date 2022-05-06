@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
 import { v4 as uuidv4 } from 'uuid';

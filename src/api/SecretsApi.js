@@ -36,13 +36,13 @@ export async function listSecrets() {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -76,13 +76,13 @@ export async function getSecret(id) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -120,13 +120,13 @@ export async function createSecret(id, value, description) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -158,13 +158,13 @@ export async function setSecretDescription(id, description) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -198,13 +198,13 @@ export async function deleteSecret(id) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -238,13 +238,13 @@ export async function listSecretVersions(id) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -276,13 +276,13 @@ export async function createNewVersionOfSecret(id, value) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -317,13 +317,13 @@ export async function getVersionOfSecret(id, version) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
@@ -356,13 +356,13 @@ export async function setStatusOfVersionOfSecret(id, version, status) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         printMessage(
-            `Error! The request was made and the server responded with a status code! - ${error.message}`,
-            'error'
-          );
-          printMessage(error.response.data, 'error');
-          printMessage(error.response.status, 'error');
-          printMessage(error.response.headers, 'error');
-        } else if (error.request) {
+          `Error! The request was made and the server responded with a status code! - ${error.message}`,
+          'error'
+        );
+        printMessage(error.response.data, 'error');
+        printMessage(error.response.status, 'error');
+        printMessage(error.response.headers, 'error');
+      } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js

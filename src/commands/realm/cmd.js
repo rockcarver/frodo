@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
 import Table from 'cli-table3';
-import * as colors from '@colors/colors';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import {
@@ -78,7 +77,7 @@ export default function setup() {
           printMessage(table.toString());
         } else {
           realms.forEach((realmConfig) => {
-            printMessage(realmConfig.name);
+            printMessage(realmConfig.name, 'info');
           });
         }
       }
@@ -140,7 +139,7 @@ export default function setup() {
           table.push(['Id'.brightCyan, realmConfig._id]);
           printMessage(table.toString());
         } else {
-            printMessage(`No realm found with name ${options.target}`, 'warn');
+          printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });
@@ -212,7 +211,7 @@ export default function setup() {
           table.push(['Id'.brightCyan, realmConfig._id]);
           printMessage(table.toString());
         } else {
-            printMessage(`No realm found with name ${options.target}`, 'warn');
+          printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });
@@ -284,7 +283,7 @@ export default function setup() {
           table.push(['Id'.brightCyan, realmConfig._id]);
           printMessage(table.toString());
         } else {
-            printMessage(`No realm found with name ${options.target}`, 'warn');
+          printMessage(`No realm found with name ${options.target}`, 'warn');
         }
       }
     });

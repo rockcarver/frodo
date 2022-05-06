@@ -326,7 +326,7 @@ export default function setup() {
         );
         subjects.sort((a, b) => a.localeCompare(b));
         subjects.forEach((item) => {
-            printMessage(`${item}`);
+          printMessage(`${item}`);
         });
       }
     });

@@ -22,31 +22,29 @@ export default function setup() {
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       storage.session.setItem('scriptFriendly', options.scriptFriendly);
-      if(!options.scriptFriendly) {
+      if (!options.scriptFriendly) {
         // console.log('Printing versions and tokens...');
         printMessage('Printing versions and tokens...');
         if (await getTokens()) {
-        //   console.log(`Cookie name: ${storage.session.getCookieName()}`);
-        //   console.log(`Session token: ${storage.session.getCookieValue()}`);
-        printMessage(`Cookie name: ${storage.session.getCookieName()}`);
-        printMessage(`Session token: ${storage.session.getCookieValue()}`);
+          //   console.log(`Cookie name: ${storage.session.getCookieName()}`);
+          //   console.log(`Session token: ${storage.session.getCookieValue()}`);
+          printMessage(`Cookie name: ${storage.session.getCookieName()}`);
+          printMessage(`Session token: ${storage.session.getCookieValue()}`);
           if (storage.session.getBearerToken()) {
             // console.log(`Bearer token: ${storage.session.getBearerToken()}`);
             printMessage(`Bearer token: ${storage.session.getBearerToken()}`);
           }
-        }  
-      } else {
-        if (await getTokens()) {
-          const output = {
-              cookieName: storage.session.getCookieName(),
-              sessionToken: storage.session.getCookieValue()
-          };
-          if (storage.session.getBearerToken()) {
-            output.bearerToken = storage.session.getBearerToken();
-          }
+        }
+      } else if (await getTokens()) {
+        const output = {
+          cookieName: storage.session.getCookieName(),
+          sessionToken: storage.session.getCookieValue(),
+        };
+        if (storage.session.getBearerToken()) {
+          output.bearerToken = storage.session.getBearerToken();
+        }
         //   console.log(output);
         printMessage(output, 'data');
-        }
       }
     });
   info.showHelpAfterError();

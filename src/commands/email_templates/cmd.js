@@ -28,7 +28,7 @@ export default function setup() {
     .addOption(common.deploymentOption)
     .addOption(common.insecureOption)
     .description('List all the email templates in the system.')
-    .action(async (host, user, password, options, command) => {
+    .action(async (host, user, password, options) => {
       storage.session.setTenant(host);
       storage.session.setUsername(user);
       storage.session.setPassword(password);
@@ -39,8 +39,11 @@ export default function setup() {
         const templateList = await listEmailTemplates();
         // console.log(templateList);
         templateList.sort((a, b) => a._id.localeCompare(b._id));
-        templateList.forEach((item, index) => {
-          printMessage(`- ${item._id.replaceAll('emailTemplate/', '')}`);
+        templateList.forEach((item) => {
+          printMessage(
+            `- ${item._id.replaceAll('emailTemplate/', '')}`,
+            'info'
+          );
         });
       }
     });
@@ -131,7 +134,10 @@ export default function setup() {
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...', 'error');
+          printMessage(
+            'Unrecognized combination of options or no options...',
+            'error'
+          );
           command.help();
         }
       }

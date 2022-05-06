@@ -7,6 +7,7 @@ import { printMessage } from './utils/Console.js';
 
 const organizationURLTemplate = '%s/openidm/managed/%s/%s';
 const organizationQueryTemplate = '%s/openidm/managed/%s?_queryId=query-all';
+// eslint-disable-next-line no-unused-vars
 const organizationHierarchyQueryTemplate =
   '%s/openidm/managed/%s?_queryId=query-all&_fields=name,parent/*/name,children/*/name';
 // const organizationRootsQueryTemplate =
@@ -31,7 +32,7 @@ export async function listOrganizations() {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `listOrganizations ERROR: list organizations data call returned ${response.status}`,
         'error'
       );
@@ -65,7 +66,7 @@ export async function listOrganizationsTopDown() {
       result.pagedResultsCookie
     );
     orgs.concat(result.result);
-    printMessage('.', 'info', false);
+    printMessage('.', 'text', false);
   } while (result.pagedResultsCookie);
   return orgs;
 }
@@ -80,7 +81,7 @@ export async function getOrganization(id) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `getOrganization ERROR: get organization data call returned ${response.status}`,
         'error'
       );
@@ -106,7 +107,7 @@ export async function putOrganization(id, data) {
     );
     const response = await generateIdmApi().put(urlString, data);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`,
         'error'
       );
@@ -114,7 +115,10 @@ export async function putOrganization(id, data) {
     }
     return response.data;
   } catch (e) {
-    printMessage(`putOrganization ERROR: organization ${id} - ${e.message}`, 'error');
+    printMessage(
+      `putOrganization ERROR: organization ${id} - ${e.message}`,
+      'error'
+    );
     return null;
   }
 }

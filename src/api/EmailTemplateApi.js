@@ -72,7 +72,7 @@ export async function putEmailTemplate(id, longid, data) {
       );
       return null;
     }
-    if (response.data._id != longid) {
+    if (response.data._id !== longid) {
       printMessage(
         `putEmailTemplate ERROR: generic error importing template ${id} (${longid})`,
         'error'

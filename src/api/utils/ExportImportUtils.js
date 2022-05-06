@@ -1,8 +1,7 @@
 import fs from 'fs';
-import _ from 'underscore';
 import storage from '../../storage/SessionStorage.js';
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
-import { printMessage } from './Console.js'
+import { printMessage } from './Console.js';
 
 function getCurrentTimestamp() {
   const ts = new Date();
@@ -34,10 +33,12 @@ function convertArrayToBase64Script(scriptArray) {
   return b64encodedScript;
 }
 
+// eslint-disable-next-line no-unused-vars
 function validateImport(metadata) {
   return true;
 }
 
+// eslint-disable-next-line no-unused-vars
 function checkTargetCompatibility(type, source, target) {
   // console.log(`source ${source}, target ${target}`);
   //   compatibilityKeys[type].forEach((element) => {
@@ -54,7 +55,8 @@ function saveToFile(type, data, identifier, filename) {
   data.forEach((element) => {
     exportData[type][element[identifier]] = element;
   });
-  fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err, data) => {
+  // eslint-disable-next-line consistent-return
+  fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
     if (err) {
       return printMessage(`ERROR - can't save ${type} to file`, 'error');
     }

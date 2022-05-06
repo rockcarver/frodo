@@ -38,7 +38,8 @@ export async function listOAuth2Clients() {
     return response.data.result;
   } catch (e) {
     printMessage(
-      `listOAuth2Clients ERROR: list OAuth2Clients structure error - ${e}`, 'error'
+      `listOAuth2Clients ERROR: list OAuth2Clients structure error - ${e}`,
+      'error'
     );
     return [];
   }
@@ -64,7 +65,10 @@ export async function getOAuth2ClientByName(name) {
     }
     return response.data.result;
   } catch (e) {
-    printMessage(`getOAuth2ClientByName ERROR: structure error - ${e.message}`, 'error');
+    printMessage(
+      `getOAuth2ClientByName ERROR: structure error - ${e.message}`,
+      'error'
+    );
     return null;
   }
 }
@@ -89,7 +93,10 @@ export async function getOAuth2Client(id) {
     }
     return response.data;
   } catch (e) {
-    printMessage(`getOAuth2Client ERROR: structure error - ${e.message}`, 'error');
+    printMessage(
+      `getOAuth2Client ERROR: structure error - ${e.message}`,
+      'error'
+    );
     return null;
   }
 }

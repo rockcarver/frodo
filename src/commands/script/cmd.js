@@ -3,7 +3,6 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import {
-  getScript,
   putScript,
   listScripts,
   getScriptByName,
@@ -15,7 +14,12 @@ import {
   validateImport,
 } from '../../api/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import {
+  printMessage,
+  createProgressBar,
+  updateProgressBar,
+  stopProgressBar,
+} from '../../api/utils/Console.js';
 
 export default function setup() {
   const script = new Command('script')
@@ -46,8 +50,8 @@ export default function setup() {
         const scriptList = await listScripts();
         // console.log(scriptList);
         scriptList.sort((a, b) => a.name.localeCompare(b.name));
-        scriptList.forEach((item, index) => {
-          printMessage(`- ${item.name}`);
+        scriptList.forEach((item) => {
+          printMessage(`- ${item.name}`, 'info');
         });
       }
     });
@@ -86,6 +90,7 @@ export default function setup() {
       )
     )
     .description('Export scripts.')
+    // eslint-disable-next-line consistent-return
     .action(async (host, realm, user, password, options, command) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
@@ -111,6 +116,7 @@ export default function setup() {
           }
           scriptData.forEach((element) => {
             const scriptTextArray = convertBase64ScriptToArray(element.script);
+            // eslint-disable-next-line no-param-reassign
             element.script = scriptTextArray;
           });
           saveToFile('script', scriptData, '_id', fileName);
@@ -126,12 +132,16 @@ export default function setup() {
           let fileName = 'allScripts.json';
           const scriptList = await listScripts();
           const allScriptsData = [];
+          createProgressBar(scriptList.length, 'Reading script');
           for (const item of scriptList) {
+            updateProgressBar(`Reading script ${item.name}`);
+            // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
               const scriptTextArray = convertBase64ScriptToArray(
                 element.script
               );
+              // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
               allScriptsData.push(element);
             });
@@ -139,28 +149,37 @@ export default function setup() {
           if (command.opts().file) {
             fileName = command.opts().file;
           }
+          stopProgressBar();
           saveToFile('script', allScriptsData, '_id', fileName);
         }
         // exportAllSeparate -A
         else if (command.opts().allSeparate) {
           printMessage('Exporting all scripts to separate files...');
           const scriptList = await listScripts();
+          createProgressBar(scriptList.length, 'Reading script');
           for (const item of scriptList) {
+            updateProgressBar(`Reading script ${item.name}`);
+            // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
               const scriptTextArray = convertBase64ScriptToArray(
                 element.script
               );
+              // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
               // allScriptsData.push(element);
             });
             const fileName = `./${item.name}.json`;
             saveToFile('script', scriptData, '_id', fileName);
           }
+          stopProgressBar();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...', 'error');
+          printMessage(
+            'Unrecognized combination of options or no options...',
+            'error'
+          );
           command.help();
         }
       }
@@ -193,6 +212,7 @@ export default function setup() {
           if (err) throw err;
           const scriptData = JSON.parse(data);
           if (validateImport(scriptData.meta)) {
+            createProgressBar(Object.keys(scriptData.script).length, '');
             for (const id in scriptData.script) {
               if ({}.hasOwnProperty.call(scriptData.script, id)) {
                 // console.log(id);
@@ -200,12 +220,19 @@ export default function setup() {
                   scriptData.script[id].script
                 );
                 scriptData.script[id].script = encodedScript;
+                updateProgressBar(`Importing ${scriptData.script[id].name}`);
                 // console.log(scriptData.script[id]);
                 putScript(id, scriptData.script[id]).then((result) => {
-                  if (!result == null) printMessage(`Imported ${id}`);
+                  if (result == null)
+                    printMessage(
+                      `Error importing ${scriptData.script[id].name}`,
+                      'error'
+                    );
                 });
               }
             }
+            stopProgressBar();
+            printMessage('Done');
           } else {
             printMessage('Import validation failed...', 'error');
           }
