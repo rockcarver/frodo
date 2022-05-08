@@ -208,12 +208,14 @@ export async function createAPIKeyAndSecret() {
 
 export async function tailLogs(source, cookie) {
     const result = await tail(source, cookie);
-    if(!cookie && result.result) {
-        await saveConnection();
+    if (result.result) {
+        if (!cookie) {
+            await saveConnection();
+        }
+        result.result.forEach(e => {
+            printMessage(JSON.stringify(e.payload));
+        });
     }
-    result.result.forEach(e => {
-        printMessage(JSON.stringify(e.payload));
-    });
     setTimeout(function () {
         tailLogs(source, result.pagedResultsCookie)
     }, 5000);
