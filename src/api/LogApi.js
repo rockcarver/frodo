@@ -208,7 +208,7 @@ export async function createAPIKeyAndSecret() {
 
 export async function tailLogs(source, cookie) {
     const result = await tail(source, cookie);
-    if (result.result) {
+    if (result && result.result) {
         if (!cookie) {
             await saveConnection();
         }
