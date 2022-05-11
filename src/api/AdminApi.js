@@ -9,9 +9,9 @@ import { getRealmManagedOrganization } from './OrganizationApi.js';
 import { getOAuth2Provider } from './AmServiceApi.js';
 import { createSecret } from './SecretsApi.js';
 import { clientCredentialsGrant } from './OAuth2OIDCApi.js';
-import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
+// import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
-import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
+// import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
 import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
 import { printMessage } from './utils/Console.js';
 
@@ -244,7 +244,7 @@ async function addAdminScopes(clientId, client) {
       addDefaultScope = true;
       modClient.coreOAuth2ClientConfig.defaultScopes.value = adminDefaultScopes;
     } else {
-        printMessage(
+      printMessage(
         `Client "${clientId}" already has default scopes configured, not adding admin default scope.`
       );
     }
@@ -519,15 +519,17 @@ async function removeAdminStaticUserMapping(name) {
   authentication.rsFilter.staticUserMapping = mappings;
   if (modified || removeMapping) {
     if (removeMapping) {
-        printMessage(`Removing static user mapping for client "${name}"...`);
+      printMessage(`Removing static user mapping for client "${name}"...`);
     } else {
-        printMessage(
+      printMessage(
         `Removing admin roles from static user mapping for client "${name}"...`
       );
     }
     await putConfigEntity('authentication', authentication);
   } else {
-    printMessage(`Static user mapping for client "${name}" has no admin roles.`);
+    printMessage(
+      `Static user mapping for client "${name}" has no admin roles.`
+    );
   }
 }
 
@@ -643,11 +645,11 @@ export async function hideGenericExtensionAttributes(
         includeCustomized
       ) {
         if (object.schema.properties[name].viewable) {
-            printMessage(`${name}: hide`);
+          printMessage(`${name}: hide`);
           // eslint-disable-next-line no-param-reassign
           object.schema.properties[name].viewable = false;
         } else {
-            printMessage(`${name}: ignore (already hidden)`);
+          printMessage(`${name}: ignore (already hidden)`);
         }
       } else {
         printMessage(`${name}: skip (customized)`);
@@ -684,11 +686,11 @@ export async function showGenericExtensionAttributes(
         includeCustomized
       ) {
         if (!object.schema.properties[name].viewable) {
-            printMessage(`${name}: show`);
+          printMessage(`${name}: show`);
           // eslint-disable-next-line no-param-reassign
           object.schema.properties[name].viewable = true;
         } else {
-            printMessage(`${name}: ignore (already showing)`);
+          printMessage(`${name}: ignore (already showing)`);
         }
       } else {
         printMessage(`${name}: skip (customized)`);

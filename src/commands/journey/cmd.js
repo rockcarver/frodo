@@ -43,17 +43,17 @@ export default function setup() {
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         printMessage(
-            `Listing journeys in realm "${storage.session.getRealm()}"...`
-          );  
+          `Listing journeys in realm "${storage.session.getRealm()}"...`
+        );
         const journeyList = await listJourneys(command.opts().analyze);
         journeyList.sort((a, b) => a.name.localeCompare(b.name));
         if (command.opts().analyze) {
-          journeyList.forEach((item, index) => {
+          journeyList.forEach((item) => {
             printMessage(`${item.name} ${item.custom ? '(*)' : ''}`);
           });
-        printMessage('(*) Tree contains custom node(s).');
+          printMessage('(*) Tree contains custom node(s).');
         } else {
-          journeyList.forEach((item, index) => {
+          journeyList.forEach((item) => {
             printMessage(`${item.name}`);
           });
         }
@@ -91,7 +91,10 @@ describe the journey/tree export file indicated by -f.'
         typeof command.opts().file !== 'undefined'
       ) {
         if (typeof command.opts().file === 'undefined') {
-          printMessage('You either need <host> or -f when using describe', 'error');
+          printMessage(
+            'You either need <host> or -f when using describe',
+            'error'
+          );
           return;
         }
         printMessage(`Describing local journey file ${command.opts().file}...`);
@@ -109,6 +112,7 @@ describe the journey/tree export file indicated by -f.'
         if (typeof command.opts().tree === 'undefined') {
           const journeyList = await listJourneys(false);
           for (const item of journeyList) {
+            // eslint-disable-next-line no-await-in-loop
             const journeyData = await getJourneyData(item.name);
             treeDescription.push(describeTree(journeyData));
           }
@@ -129,7 +133,7 @@ describe the journey/tree export file indicated by -f.'
           printMessage(`- ${name}: ${desc}`);
         }
         printMessage('\nEmail Templates:');
-        for (const [id, displayName] of Object.entries(item.emailTemplates)) {
+        for (const [id] of Object.entries(item.emailTemplates)) {
           printMessage(`- ${id}`);
         }
       }
@@ -188,10 +192,14 @@ describe the journey/tree export file indicated by -f.'
           fs.writeFile(
             fileName,
             JSON.stringify(journeyData, null, 2),
-            (err, data) => {
+            (err) => {
               if (err) {
-                return printMessage("ERROR - can't save journey to file", 'error');
+                return printMessage(
+                  "ERROR - can't save journey to file",
+                  'error'
+                );
               }
+              return '';
             }
           );
         }
@@ -203,6 +211,7 @@ describe the journey/tree export file indicated by -f.'
           const topLevelMap = {};
           const journeyList = await listJourneys(false);
           for (const item of journeyList) {
+            // eslint-disable-next-line no-await-in-loop
             journeysMap[item.name] = await getJourneyData(item.name);
           }
           topLevelMap.trees = journeysMap;
@@ -212,10 +221,14 @@ describe the journey/tree export file indicated by -f.'
           fs.writeFile(
             fileName,
             JSON.stringify(topLevelMap, null, 2),
-            (err, data) => {
+            (err) => {
               if (err) {
-                return printMessage("ERROR - can't save journeys to file", 'error');
+                return printMessage(
+                  "ERROR - can't save journeys to file",
+                  'error'
+                );
               }
+              return '';
             }
           );
         }
@@ -224,18 +237,20 @@ describe the journey/tree export file indicated by -f.'
           printMessage('Exporting all journeys to separate files...');
           const journeyList = await listJourneys(false);
           for (const item of journeyList) {
+            // eslint-disable-next-line no-await-in-loop
             const journeyData = await getJourneyData(item.name);
             const fileName = `./${item.name}.json`;
             fs.writeFile(
               fileName,
               JSON.stringify(journeyData, null, 2),
-              (err, data) => {
+              (err) => {
                 if (err) {
                   return printMessage(
                     `ERROR - can't save journey ${item.name} to file`,
                     'error'
                   );
                 }
+                return '';
               }
             );
           }

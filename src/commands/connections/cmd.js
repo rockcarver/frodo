@@ -20,7 +20,7 @@ export default function setup() {
     .showHelpAfterError()
     .helpOption('-h, --help', 'Help')
     .description('List configured connections.')
-    .action(async (options, command) => {
+    .action(async () => {
       // console.log('list command called');
       listConnections();
     });
@@ -38,7 +38,7 @@ export default function setup() {
       'Add a new connection. You have to specify a URL, username and password at a minimum.\n' +
         'Optionally, for Identity Cloud, you can also add a log API key and secret.'
     )
-    .action(async (host, user, password, key, secret, options, command) => {
+    .action(async (host, user, password, key, secret) => {
       // console.log('list command called');
       storage.session.setTenant(host);
       storage.session.setUsername(user);
@@ -56,11 +56,11 @@ export default function setup() {
     .description(
       "Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor)."
     )
-    .action(async (host, options, command) => {
+    .action(async (host) => {
       // console.log('list command called');
       const filename = getConnectionFileName();
       let connectionsData = {};
-      fs.stat(filename, (err, stat) => {
+      fs.stat(filename, (err) => {
         if (err == null) {
           const data = fs.readFileSync(filename, 'utf8');
           connectionsData = JSON.parse(data);
@@ -70,7 +70,10 @@ export default function setup() {
         } else if (err.code === 'ENOENT') {
           printMessage(`Connection profile file ${filename} not found`);
         } else {
-          printMessage(`Error in deleting connection profile: ${err.code}`, 'error');
+          printMessage(
+            `Error in deleting connection profile: ${err.code}`,
+            'error'
+          );
           return;
         }
         delete connectionsData[host];

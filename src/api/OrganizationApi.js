@@ -7,8 +7,8 @@ import { printMessage } from './utils/Console.js';
 
 const organizationURLTemplate = '%s/openidm/managed/%s/%s';
 const organizationQueryTemplate = '%s/openidm/managed/%s?_queryId=query-all';
-const organizationHierarchyQueryTemplate =
-  '%s/openidm/managed/%s?_queryId=query-all&_fields=name,parent/*/name,children/*/name';
+// const organizationHierarchyQueryTemplate =
+//   '%s/openidm/managed/%s?_queryId=query-all&_fields=name,parent/*/name,children/*/name';
 // const organizationRootsQueryTemplate =
 // '%s/openidm/managed/%s?_queryFilter=!(parent/*/_ref+pr)&_fields=name,children/*/name';
 
@@ -31,7 +31,7 @@ export async function listOrganizations() {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `listOrganizations ERROR: list organizations data call returned ${response.status}`,
         'error'
       );
@@ -80,7 +80,7 @@ export async function getOrganization(id) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `getOrganization ERROR: get organization data call returned ${response.status}`,
         'error'
       );
@@ -106,7 +106,7 @@ export async function putOrganization(id, data) {
     );
     const response = await generateIdmApi().put(urlString, data);
     if (response.status < 200 || response.status > 399) {
-        printMessage(
+      printMessage(
         `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`,
         'error'
       );
@@ -114,7 +114,10 @@ export async function putOrganization(id, data) {
     }
     return response.data;
   } catch (e) {
-    printMessage(`putOrganization ERROR: organization ${id} - ${e.message}`, 'error');
+    printMessage(
+      `putOrganization ERROR: organization ${id} - ${e.message}`,
+      'error'
+    );
     return null;
   }
 }

@@ -37,7 +37,8 @@ export async function getOAuth2Provider() {
     return response.data;
   } catch (e) {
     printMessage(
-      `getOAuth2Provider ERROR: get Oauth2 provider error - ${e.message}`, 'error'
+      `getOAuth2Provider ERROR: get Oauth2 provider error - ${e.message}`,
+      'error'
     );
     return null;
   }

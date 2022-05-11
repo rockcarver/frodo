@@ -1,20 +1,21 @@
 import { Command } from 'commander';
 import { getConnection, saveConnection, getTokens } from '../../api/AuthApi.js';
 import * as common from '../cmd_common.js';
-import { createAPIKeyAndSecret, getSources, tailLogs } from '../../api/LogApi.js';
+import {
+  createAPIKeyAndSecret,
+  getSources,
+  tailLogs,
+} from '../../api/LogApi.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const logs = new Command('logs');
   logs
-    .addArgument(common.hostArgumentM)
     .helpOption('-h, --help', 'Help')
-    .description(`
-View Identity Cloud logs. If valid tenant admin credentials
-are specified, a log API key and secret are automatically 
-created for that admin user.
-    `);
+    .description(
+      `View Identity Cloud logs. If valid tenant admin credentials are specified, a log API key and secret are automatically created for that admin user.`
+    );
 
   logs
     .command('list')
@@ -31,14 +32,17 @@ created for that admin user.
       storage.session.setPassword(password);
       storage.session.setAllowInsecureConnection(options.insecure);
       printMessage('Listing available ID Cloud log sources...');
-      let conn = await getConnection();
+      const conn = await getConnection();
       storage.session.setTenant(conn.tenant);
       if (conn.key != null && conn.secret != null) {
         storage.session.setLogApiKey(conn.key);
-        storage.session.setLogApiSecret(conn.secret);          
+        storage.session.setLogApiSecret(conn.secret);
       } else {
-        if(conn.username == null && conn.password == null) {
-          if (!storage.session.getUsername() && !storage.session.getPassword()) {
+        if (conn.username == null && conn.password == null) {
+          if (
+            !storage.session.getUsername() &&
+            !storage.session.getPassword()
+          ) {
             credsFromParameters = false;
             printMessage(
               'User credentials not specified as parameters and no saved API key and secret found!',
@@ -92,10 +96,13 @@ created for that admin user.
       storage.session.setTenant(conn.tenant);
       if (conn.key != null && conn.secret != null) {
         storage.session.setLogApiKey(conn.key);
-        storage.session.setLogApiSecret(conn.secret);          
+        storage.session.setLogApiSecret(conn.secret);
       } else {
-        if(conn.username == null && conn.password == null) {
-          if (!storage.session.getUsername() && !storage.session.getPassword()) {
+        if (conn.username == null && conn.password == null) {
+          if (
+            !storage.session.getUsername() &&
+            !storage.session.getPassword()
+          ) {
             credsFromParameters = false;
             printMessage(
               'User credentials not specified as parameters and no saved API key and secret found!',
@@ -119,7 +126,7 @@ created for that admin user.
         }...`
       );
       if (credsFromParameters) await saveConnection(); // save new values if they were specified on CLI
-      await tailLogs(command.opts().sources, null);          
+      await tailLogs(command.opts().sources, null);
     });
 
   // logs

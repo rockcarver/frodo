@@ -16,7 +16,7 @@ import { promisify } from 'util';
 import { printMessage } from './Console.js';
 
 const scrypt = promisify(crypto.scrypt);
-//using WeakMaps for added security since  it gets garbage collected
+// using WeakMaps for added security since  it gets garbage collected
 const _masterKey = new WeakMap();
 const _nonce = new WeakMap();
 const _salt = new WeakMap();
@@ -26,7 +26,7 @@ const _encrypt = new WeakMap();
 class DataProtection {
   constructor() {
     const masterKeyPath = () => `${homedir()}/.frodo/masterkey.key`;
-    //Generates a master key in base64 format. This master key will be used to derive the key for encryption. this key should be protected by an HSM or KMS
+    // Generates a master key in base64 format. This master key will be used to derive the key for encryption. this key should be protected by an HSM or KMS
     _masterKey.set(this, async () => {
       try {
         if (!fs.existsSync(masterKeyPath())) {
@@ -36,25 +36,20 @@ class DataProtection {
         return await fsp.readFile(masterKeyPath(), 'utf8');
       } catch (err) {
         printMessage(err.message, 'error');
+        return '';
       }
     });
 
     // the nonce for AES GCM
-    _nonce.set(this, () => {
-      return crypto.randomBytes(16);
-    });
+    _nonce.set(this, () => crypto.randomBytes(16));
 
-    //The salt
-    _salt.set(this, () => {
-      return crypto.randomBytes(64);
-    });
+    // The salt
+    _salt.set(this, () => crypto.randomBytes(64));
 
-    //The function that derives the key, this supports sync and async operations
-    _key.set(this, async (masterKey, salt) => {
-      return await scrypt(masterKey, salt, 32);
-    });
+    // The function that derives the key, this supports sync and async operations
+    _key.set(this, async (masterKey, salt) => scrypt(masterKey, salt, 32));
 
-    //private method to encrypt and return encrypted data. cleaner code
+    // private method to encrypt and return encrypted data. cleaner code
     _encrypt.set(this, (key, nonce, data, salt) => {
       const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);
       const encrypted = Buffer.concat([
@@ -85,8 +80,8 @@ class DataProtection {
     const key = await _key.get(this)(masterKey, salt);
     const decipher = crypto.createDecipheriv('aes-256-gcm', key, nonce);
     decipher.setAuthTag(tag);
-    return (
-      JSON.parse(decipher.update(encrypted, 'binary', 'utf8') + decipher.final('utf8'))
+    return JSON.parse(
+      decipher.update(encrypted, 'binary', 'utf8') + decipher.final('utf8')
     );
   }
 }

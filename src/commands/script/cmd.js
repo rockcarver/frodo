@@ -3,7 +3,6 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import {
-  getScript,
   putScript,
   listScripts,
   getScriptByName,
@@ -46,7 +45,7 @@ export default function setup() {
         const scriptList = await listScripts();
         // console.log(scriptList);
         scriptList.sort((a, b) => a.name.localeCompare(b.name));
-        scriptList.forEach((item, index) => {
+        scriptList.forEach((item) => {
           printMessage(`- ${item.name}`);
         });
       }
@@ -111,14 +110,10 @@ export default function setup() {
           }
           scriptData.forEach((element) => {
             const scriptTextArray = convertBase64ScriptToArray(element.script);
+            // eslint-disable-next-line no-param-reassign
             element.script = scriptTextArray;
           });
           saveToFile('script', scriptData, '_id', fileName);
-          // fs.writeFile(fileName, JSON.stringify(scriptData[0], null, 2), function (err, data) {
-          //     if (err) {
-          //         return console.error("ERROR - can't save script to file");
-          //     }
-          // });
         }
         // exportAll -a
         else if (command.opts().all) {
@@ -127,11 +122,13 @@ export default function setup() {
           const scriptList = await listScripts();
           const allScriptsData = [];
           for (const item of scriptList) {
+            // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
               const scriptTextArray = convertBase64ScriptToArray(
                 element.script
               );
+              // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
               allScriptsData.push(element);
             });
@@ -146,13 +143,14 @@ export default function setup() {
           printMessage('Exporting all scripts to separate files...');
           const scriptList = await listScripts();
           for (const item of scriptList) {
+            // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
               const scriptTextArray = convertBase64ScriptToArray(
                 element.script
               );
+              // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
-              // allScriptsData.push(element);
             });
             const fileName = `./${item.name}.json`;
             saveToFile('script', scriptData, '_id', fileName);
@@ -160,7 +158,10 @@ export default function setup() {
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...', 'error');
+          printMessage(
+            'Unrecognized combination of options or no options...',
+            'error'
+          );
           command.help();
         }
       }
