@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
 import Table from 'cli-table3';

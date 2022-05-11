@@ -8,9 +8,6 @@ const oauth2ApplicationURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client/%s';
 const oauth2ApplicationListURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client?_fields=_id&_queryFilter=true';
-const samlApplicationURLTemplate = '%s/json%s/realm-config/saml2/%s/%s';
-const samlApplicationListURLTemplate =
-  '%s/json%s/realm-config/saml2?_queryFilter=true';
 
 const apiVersion = 'protocol=2.1,resource=1.0';
 const getApiConfig = () => {

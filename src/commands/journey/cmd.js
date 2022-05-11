@@ -14,7 +14,12 @@ import {
   removeOrphanedNodes,
 } from '../../api/TreeApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import {
+  printMessage,
+  createProgressBar,
+  updateProgressBar,
+  stopProgressBar,
+} from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('journey')
@@ -54,7 +59,7 @@ export default function setup() {
           printMessage('(*) Tree contains custom node(s).');
         } else {
           journeyList.forEach((item) => {
-            printMessage(`${item.name}`);
+            printMessage(`${item.name}`, 'info');
           });
         }
       }
@@ -111,30 +116,33 @@ describe the journey/tree export file indicated by -f.'
         );
         if (typeof command.opts().tree === 'undefined') {
           const journeyList = await listJourneys(false);
+          createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
             // eslint-disable-next-line no-await-in-loop
             const journeyData = await getJourneyData(item.name);
             treeDescription.push(describeTree(journeyData));
+            updateProgressBar(`Analyzing journey - ${item.name}`);
           }
+          stopProgressBar();
         } else {
           const journeyData = await getJourneyData(command.opts().tree);
           treeDescription.push(describeTree(journeyData));
         }
       }
       for (const item of treeDescription) {
-        printMessage(`\nJourney: ${item.treeName}`);
+        printMessage(`\nJourney: ${item.treeName}`, 'info');
         printMessage('========');
-        printMessage('\nNodes:');
+        printMessage('\nNodes:', 'info');
         for (const [name, count] of Object.entries(item.nodeTypes)) {
-          printMessage(`- ${name}: ${count}`);
+          printMessage(`- ${name}: ${count}`, 'info');
         }
-        printMessage('\nScripts:');
+        printMessage('\nScripts:', 'info');
         for (const [name, desc] of Object.entries(item.scripts)) {
-          printMessage(`- ${name}: ${desc}`);
+          printMessage(`- ${name}: ${desc}`, 'info');
         }
-        printMessage('\nEmail Templates:');
+        printMessage('\nEmail Templates:', 'info');
         for (const [id] of Object.entries(item.emailTemplates)) {
-          printMessage(`- ${id}`);
+          printMessage(`- ${id}`, 'info');
         }
       }
     });
@@ -188,7 +196,10 @@ describe the journey/tree export file indicated by -f.'
           if (command.opts().file) {
             fileName = command.opts().file;
           }
+          createProgressBar(1);
+          updateProgressBar(`Reading journey - ${command.opts().tree}`);
           const journeyData = await getJourneyData(command.opts().tree);
+          stopProgressBar();
           fs.writeFile(
             fileName,
             JSON.stringify(journeyData, null, 2),
@@ -210,10 +221,13 @@ describe the journey/tree export file indicated by -f.'
           const journeysMap = {};
           const topLevelMap = {};
           const journeyList = await listJourneys(false);
+          createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
             // eslint-disable-next-line no-await-in-loop
             journeysMap[item.name] = await getJourneyData(item.name);
+            updateProgressBar(`Reading journey - ${item.name}`);
           }
+          stopProgressBar();
           topLevelMap.trees = journeysMap;
           if (command.opts().file) {
             fileName = command.opts().file;
@@ -236,8 +250,9 @@ describe the journey/tree export file indicated by -f.'
         else if (command.opts().allSeparate) {
           printMessage('Exporting all journeys to separate files...');
           const journeyList = await listJourneys(false);
+          createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
-            // eslint-disable-next-line no-await-in-loop
+            updateProgressBar(`Reading journey - ${item.name}`);
             const journeyData = await getJourneyData(item.name);
             const fileName = `./${item.name}.json`;
             fs.writeFile(
@@ -254,6 +269,7 @@ describe the journey/tree export file indicated by -f.'
               }
             );
           }
+          stopProgressBar();
         }
         // unrecognized combination of options or no options
         else {
@@ -401,8 +417,8 @@ describe the journey/tree export file indicated by -f.'
           'Analyzing authentication nodes configuration artifacts...'
         );
         await findOrphanedNodes(allNodes, orphanedNodes);
-        printMessage(`Total nodes:       ${allNodes.length}`);
-        printMessage(`Orphaned nodes:    ${orphanedNodes.length}`);
+        printMessage(`Total nodes:       ${allNodes.length}`, 'info');
+        printMessage(`Orphaned nodes:    ${orphanedNodes.length}`, 'info');
         // console.log(orphanedNodes);
         if (orphanedNodes.length > 0) {
           const ok = await yesno({
@@ -410,10 +426,10 @@ describe the journey/tree export file indicated by -f.'
               'Do you want to prune (permanently delete) all the orphaned node instances?(y|n):',
           });
           if (ok) {
-            printMessage('Pruning.', 'info', false);
+            printMessage('Pruning.', 'text', false);
             removeOrphanedNodes(allNodes, orphanedNodes);
           }
-          printMessage('done', 'info', false);
+          printMessage('done', 'text', false);
           printMessage('');
         } else {
           printMessage('No orphaned nodes found.');

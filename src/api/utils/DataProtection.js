@@ -47,7 +47,11 @@ class DataProtection {
     _salt.set(this, () => crypto.randomBytes(64));
 
     // The function that derives the key, this supports sync and async operations
-    _key.set(this, async (masterKey, salt) => scrypt(masterKey, salt, 32));
+    _key.set(
+      this,
+      // eslint-disable-next-line no-return-await
+      async (masterKey, salt) => await scrypt(masterKey, salt, 32)
+    );
 
     // private method to encrypt and return encrypted data. cleaner code
     _encrypt.set(this, (key, nonce, data, salt) => {

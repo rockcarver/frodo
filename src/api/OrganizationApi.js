@@ -65,7 +65,7 @@ export async function listOrganizationsTopDown() {
       result.pagedResultsCookie
     );
     orgs.concat(result.result);
-    printMessage('.', 'info', false);
+    printMessage('.', 'text', false);
   } while (result.pagedResultsCookie);
   return orgs;
 }

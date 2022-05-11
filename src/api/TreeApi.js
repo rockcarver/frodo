@@ -7,7 +7,14 @@ import storage from '../storage/SessionStorage.js';
 import { getEmailTemplate, putEmailTemplate } from './EmailTemplateApi.js';
 import { getScript, putScript } from './ScriptApi.js';
 import * as global from '../storage/StaticStorage.js';
-import { printMessage } from './utils/Console.js';
+import {
+  printMessage,
+  createProgressBar,
+  updateProgressBar,
+  stopProgressBar,
+  showSpinner,
+  stopSpinner,
+} from './utils/Console.js';
 
 const journeyURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
@@ -236,7 +243,7 @@ async function getJourneyStructureData(name) {
 }
 
 export async function getJourneyData(journey) {
-  printMessage(`${journey}`, 'info', false);
+  //   printMessage(`${journey}`, 'text', false);
 
   const journeyMap = {};
   const nodesMap = {};
@@ -269,19 +276,19 @@ export async function getJourneyData(journey) {
       journeyStructureData.nodes
     )) {
       nodeDataPromises.push(getNodeData(nodeId, nodeInfo.nodeType));
-      printMessage('.', 'info', false);
+      //   printMessage('.', 'text', false);
     }
     const nodeDataResults = await Promise.all(nodeDataPromises);
     nodeDataResults.forEach(async (entry) => {
       const nodeData = entry;
       delete nodeData._rev;
       nodesMap[nodeData._id] = nodeData;
-      printMessage('.', 'info', false);
+      //   printMessage('.', 'text', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         scriptPromises.push(getScript(nodeData.script));
-        printMessage('.', 'info', false);
+        // printMessage('.', 'text', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -295,7 +302,7 @@ export async function getJourneyData(journey) {
           emailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          printMessage('.', 'info', false);
+          //   printMessage('.', 'text', false);
         }
       }
 
@@ -305,7 +312,7 @@ export async function getJourneyData(journey) {
           innerNodeDataPromises.push(
             getNodeData(innerNode._id, innerNode.nodeType)
           );
-          printMessage('.', 'info', false);
+          //   printMessage('.', 'text', false);
         }
       }
     });
@@ -323,12 +330,12 @@ export async function getJourneyData(journey) {
       const nodeData = entry;
       delete nodeData._rev;
       innerNodesMap[nodeData._id] = nodeData;
-      printMessage('.', 'info', false);
+      //   printMessage('.', 'text', false);
 
       // handle script node types
       if (scriptedNodes.includes(nodeData._type._id)) {
         innerScriptPromises.push(getScript(nodeData.script));
-        printMessage('.', 'info', false);
+        // printMessage('.', 'text', false);
       }
 
       // frodo supports email templates in platform deployments
@@ -342,7 +349,7 @@ export async function getJourneyData(journey) {
           innerEmailTemplatePromises.push(
             getEmailTemplate(nodeData.emailTemplateName)
           );
-          printMessage('.', 'info', false);
+          //   printMessage('.', 'text', false);
         }
       }
     });
@@ -429,14 +436,14 @@ export async function getJourneyData(journey) {
   journeyMap.emailTemplates = emailTemplatesMap;
   journeyMap.nodes = nodesMap;
   journeyMap.tree = journeyStructureData;
-  printMessage('.');
-  printMessage(
-    `Nodes(inner): ${
-      Object.keys(nodesMap).length + Object.keys(innerNodesMap).length
-    }(${Object.keys(innerNodesMap).length}), Scripts: ${
-      Object.keys(scriptsMap).length
-    }, Email Templates: ${Object.keys(emailTemplatesMap).length}`
-  );
+  //   printMessage('.');
+  //   printMessage(
+  //     `Nodes(inner): ${
+  //       Object.keys(nodesMap).length + Object.keys(innerNodesMap).length
+  //     }(${Object.keys(innerNodesMap).length}), Scripts: ${
+  //       Object.keys(scriptsMap).length
+  //     }, Email Templates: ${Object.keys(emailTemplatesMap).length}`
+  //   );
   return journeyMap;
 }
 
@@ -580,18 +587,24 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
 
   if (Object.entries(journeyMap.scripts).length > 0) {
-    printMessage('  - Scripts:\n');
+    // printMessage('  - Scripts:\n');
+    const scriptPromises = [];
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-      printMessage(`    - ${scriptData.name} (${scriptId})`, 'info', false);
-      if ((await putScript(scriptId, scriptData)) == null) {
-        printMessage(
-          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
-          'error'
-        );
-        return null;
-      }
-      printMessage('');
+      scriptPromises.push(putScript(scriptId, scriptData));
     }
+    Promise.all(scriptPromises).then((results) => {
+      results.forEach((result) => {
+        if (result.error) {
+          printMessage(
+            `importJourney ERROR: error importing script ${result.name} in journey ${treeId}`,
+            'error'
+          );
+        } else {
+          printMessage(`    - Script [${result.name}]`, 'info', false);
+        }
+      });
+    });
+    printMessage('');
   }
 
   if (Object.entries(journeyMap.emailTemplates).length > 0) {
@@ -702,21 +715,20 @@ async function resolveDependencies(
   index = -1
 ) {
   let before = -1;
-  let trees = [];
+//   let trees = [];
   let after = index;
   if (index === -1) {
-    printMessage('Resolving dependencies', 'info', false);
-    trees = Object.keys(journeyMap);
+    showSpinner('Resolving dependencies');
+    // trees = Object.keys(journeyMap);
   } else {
     before = index;
-    trees = [...unresolvedJourneys];
+    // trees = [...unresolvedJourneys];
   }
 
   for (const tree in journeyMap) {
     if ({}.hasOwnProperty.call(journeyMap, tree)) {
       // console.dir(journeyMap[tree]);
       const dependencies = [];
-      printMessage('.', 'info', false);
       for (const node in journeyMap[tree].nodes) {
         if (
           journeyMap[tree].nodes[node]._type._id === 'InnerTreeEvaluatorNode'
@@ -726,7 +738,6 @@ async function resolveDependencies(
       }
       let allResolved = true;
       for (const dependency of dependencies) {
-        printMessage('.', 'info', false);
         if (
           !resolvedJourneys.includes(dependency) &&
           !installedJorneys.includes(dependency)
@@ -755,7 +766,7 @@ async function resolveDependencies(
       after
     );
   }
-  printMessage('');
+  stopSpinner();
 }
 
 export async function findOrphanedNodes(allNodes, orphanedNodes) {
@@ -785,7 +796,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
 
 export async function removeOrphanedNodes(allNodes, orphanedNodes) {
   orphanedNodes.forEach(async (node) => {
-    printMessage('.', 'info', false);
+    printMessage('.', 'text', false);
     await deleteNode(node._id, node._type._id);
   });
 }
@@ -1122,16 +1133,19 @@ export async function listJourneys(analyze) {
 }
 
 export async function importAllJourneys(journeyMap, noreuuid) {
-  const installedJorneys = (await listJourneys(false)).map((x) => x.name);
+  const installedJourneys = (await listJourneys(false)).map((x) => x.name);
   const unresolvedJourneys = [];
   const resolvedJourneys = [];
-  resolveDependencies(
-    installedJorneys,
+  await resolveDependencies(
+    installedJourneys,
     journeyMap,
     unresolvedJourneys,
     resolvedJourneys
   );
+  createProgressBar(resolvedJourneys.length);
   for (const tree of resolvedJourneys) {
+    updateProgressBar(`Importing ${tree}`);
     await importJourney(tree, journeyMap[tree], noreuuid);
   }
+  stopProgressBar();
 }

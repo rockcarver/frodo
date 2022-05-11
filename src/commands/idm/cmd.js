@@ -11,7 +11,11 @@ import {
   getCount,
 } from '../../api/IdmConfigApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import {
+  printMessage,
+  showSpinner,
+  stopSpinner,
+} from '../../api/utils/Console.js';
 
 export default function setup() {
   const idm = new Command('idm');
@@ -35,7 +39,7 @@ export default function setup() {
         const configEntities = await getAllConfigEntities();
         if ('configurations' in configEntities) {
           configEntities.configurations.forEach((x) => {
-            printMessage(`- ${x._id}`);
+            printMessage(`- ${x._id}`, 'info');
           });
         }
       }
@@ -107,22 +111,32 @@ export default function setup() {
           if (!fs.existsSync(options.directory)) {
             fs.mkdirSync(options.directory);
           }
-          configEntities.configurations.forEach(async (x) => {
+          showSpinner('Exporting config objects...');
+          const entityPromises = [];
+          configEntities.configurations.forEach((x) => {
             // console.log(`- ${x._id}`);
-            const configEntity = await getConfigEntity(x._id);
-            fse.outputFile(
-              `${options.directory}/${x._id}.json`,
-              JSON.stringify(configEntity, null, 2),
-              (err) => {
-                if (err) {
-                  return printMessage(
-                    `ERROR - can't save config ${x._id} to file - ${err}`,
-                    'error'
-                  );
-                }
-                return '';
+            entityPromises.push(getConfigEntity(x._id));
+          });
+          Promise.all(entityPromises).then((result) => {
+            // console.log(result);
+            result.forEach((item) => {
+              if (item != null) {
+                fse.outputFile(
+                  `${options.directory}/${item._id}.json`,
+                  JSON.stringify(item, null, 2),
+                  // eslint-disable-next-line consistent-return
+                  (err) => {
+                    if (err) {
+                      return printMessage(
+                        `ERROR - can't save config ${item._id} to file - ${err}`,
+                        'error'
+                      );
+                    }
+                  }
+                );
               }
-            );
+            });
+            stopSpinner();
           });
         }
       }
@@ -163,33 +177,42 @@ export default function setup() {
             if (!fs.existsSync(options.directory)) {
               fs.mkdirSync(options.directory);
             }
-            configEntities.configurations.forEach(async (x) => {
-              // console(x)
+            showSpinner('Exporting config objects...');
+            const entityPromises = [];
+            configEntities.configurations.forEach((x) => {
               if (entriesToExport.includes(x._id)) {
-                // if entity is in the list of entities to export
-                const configEntity = await getConfigEntity(x._id);
-                let configEntityString = JSON.stringify(configEntity, null, 2);
-                envParams.each((key, value) => {
-                  configEntityString = replaceall(
-                    value,
-                    `\${${key}}`,
-                    configEntityString
-                  );
-                });
-                fs.writeFile(
-                  `${options.directory}/${x._id}.json`,
-                  configEntityString,
-                  (err2) => {
-                    if (err2) {
-                      return printMessage(
-                        `ERROR - can't save config ${x._id} to file`,
-                        'error'
-                      );
-                    }
-                    return '';
-                  }
-                );
+                // console.log(`- ${x._id}`);
+                entityPromises.push(getConfigEntity(x._id));
               }
+            });
+            Promise.all(entityPromises).then((result) => {
+              // console.log(result);
+              result.forEach((item) => {
+                if (item != null) {
+                  let configEntityString = JSON.stringify(item, null, 2);
+                  envParams.each((key, value) => {
+                    configEntityString = replaceall(
+                      value,
+                      `\${${key}}`,
+                      configEntityString
+                    );
+                  });
+                  fse.outputFile(
+                    `${options.directory}/${item._id}.json`,
+                    JSON.stringify(item, null, 2),
+                    // eslint-disable-next-line consistent-return
+                    (error) => {
+                      if (err) {
+                        return printMessage(
+                          `ERROR - can't save config ${item._id} to file - ${error}`,
+                          'error'
+                        );
+                      }
+                    }
+                  );
+                }
+              });
+              stopSpinner();
             });
           }
         });
