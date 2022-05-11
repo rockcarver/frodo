@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 const _sessionStorage = {};
 
 export default {
