@@ -40,7 +40,10 @@ export default function setup() {
         // console.log(templateList);
         templateList.sort((a, b) => a._id.localeCompare(b._id));
         templateList.forEach((item) => {
-          printMessage(`- ${item._id.replaceAll('emailTemplate/', '')}`);
+          printMessage(
+            `- ${item._id.replaceAll('emailTemplate/', '')}`,
+            'info'
+          );
         });
       }
     });

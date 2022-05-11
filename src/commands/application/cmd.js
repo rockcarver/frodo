@@ -115,7 +115,6 @@ export default function setup() {
           const applicationList = await listOAuth2Applications();
           const allApplicationsData = [];
           for (const item of applicationList) {
-            // eslint-disable-next-line no-await-in-loop
             applicationData = await getOAuth2Application(item._id);
             applicationData._provider = oauthServiceData;
             allApplicationsData.push(applicationData);
@@ -130,7 +129,6 @@ export default function setup() {
           printMessage('Exporting all applications to separate files...');
           const applicationList = await listOAuth2Applications();
           for (const item of applicationList) {
-            // eslint-disable-next-line no-await-in-loop
             applicationData = await getOAuth2Application(item._id);
             applicationData._provider = oauthServiceData;
             const fileName = `./${item._id}.json`;

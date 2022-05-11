@@ -170,10 +170,13 @@ export const sourcesOptionM = new Option(
 ).default('am-everything,idm-everything', sourcesOptionDefaultValueDescription);
 
 export const scriptFriendlyOption = new Option(
-    '-s, --scriptFriendly',
-    'Output to screen in a script-friendly format (JSON)'
-  ).default(false, "Output as plain text");
-  
+  '-s, --scriptFriendly',
+  'Send output of operation to STDOUT in a script-friendly format (JSON) which can be piped to other \
+commands. User messages/warnings are output to STDERR, and are not piped. For example, to only get \
+bearer token: \n\
+<<< frodo info my-tenant -s 2>/dev/null | jq -r .bearerToken >>>'
+).default(false, 'Output as plain text');
+
 treeOptionM.makeOptionMandatory();
 fileOptionM.makeOptionMandatory();
 deploymentOptionM.makeOptionMandatory();

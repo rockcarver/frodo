@@ -73,7 +73,8 @@ export function listConnections() {
       printMessage(
         `- [${c}] : [${connectionsData[c].username}]${
           connectionsData[c].logApiKey ? ' [Log API key present]' : ''
-        }`
+        }`,
+        'info'
       );
     });
     printMessage(
@@ -193,13 +194,13 @@ export async function saveConnection() {
 }
 
 function getRealmUrl(realm) {
-  let mRealm = realm;
-  if (mRealm.startsWith('/') && mRealm.length > 1) {
-    mRealm = mRealm.substring(1);
+  let localRealm = realm;
+  if (localRealm.startsWith('/') && localRealm.length > 1) {
+    localRealm = localRealm.substring(1);
   }
   let realmPath = util.format(realmPathTemplate, 'root');
-  if (mRealm !== '/') {
-    realmPath += util.format(realmPathTemplate, mRealm);
+  if (localRealm !== '/') {
+    realmPath += util.format(realmPathTemplate, localRealm);
   }
   return realmPath;
 }
@@ -222,6 +223,7 @@ async function getCookieName() {
   }
 }
 
+// eslint-disable-next-line consistent-return
 async function checkAndHandle2FA(payload) {
   // let skippable = false;
   if ('callbacks' in payload) {
@@ -232,7 +234,6 @@ async function checkAndHandle2FA(payload) {
           element.input[0].value = 'Skip';
           return {
             need2fa: true,
-            // canskip: true,
             payload,
           };
         }
@@ -245,18 +246,18 @@ async function checkAndHandle2FA(payload) {
           element.input[0].value = code;
           return {
             need2fa: true,
-            // canskip: false,
             payload,
           };
         }
       }
     }
+  } else {
+    // console.info("NO2FA");
+    return {
+      need2fa: false,
+      payload,
+    };
   }
-  return {
-    need2fa: false,
-    // canskip: null,
-    payload,
-  };
 }
 
 function determineDefaultRealm(deploymentType) {
@@ -268,6 +269,7 @@ function determineDefaultRealm(deploymentType) {
 async function determineDeployment() {
   const fidcClientId = 'idmAdminClient';
   const forgeopsClientId = 'idm-admin-ui';
+  let response = {};
 
   const verifier = base64url.encode(randomBytes(32));
   const challenge = base64url.encode(
@@ -288,19 +290,20 @@ async function determineDeployment() {
 
   let deploymentType = global.CLASSIC_DEPLOYMENT_TYPE_KEY;
   try {
-    await generateOauth2Api(getOauth2ApiConfig()).post(
+    response = await generateOauth2Api(getOauth2ApiConfig()).post(
       authorizeURL,
       bodyFormData,
       { maxRedirects: 0 }
     );
   } catch (e) {
     if (e.response && e.response.status === 302) {
-      printMessage('ForgeRock Identity Cloud detected.');
+      printMessage('ForgeRock Identity Cloud ', 'info', false);
       deploymentType = global.CLOUD_DEPLOYMENT_TYPE_KEY;
     } else {
       try {
         bodyFormData = `redirect_uri=${redirectURL}&scope=${idmAdminScope}&response_type=code&client_id=${forgeopsClientId}&csrf=${storage.session.getCookieValue()}&decision=allow&code_challenge=${challenge}&code_challenge_method=${challengeMethod}`;
-        await generateOauth2Api(getOauth2ApiConfig()).post(
+        // eslint-disable-next-line no-unused-vars
+        response = await generateOauth2Api(getOauth2ApiConfig()).post(
           authorizeURL,
           bodyFormData,
           { maxRedirects: 0 }
@@ -308,13 +311,14 @@ async function determineDeployment() {
       } catch (ex) {
         if (ex.response.status === 302) {
           adminClientId = forgeopsClientId;
-          printMessage('ForgeOps deployment detected.');
+          printMessage('ForgeOps deployment ', 'info', false);
           deploymentType = global.FORGEOPS_DEPLOYMENT_TYPE_KEY;
         } else {
-          printMessage('Classic deployment detected.');
+          printMessage('Classic deployment ', 'info', false);
         }
       }
     }
+    printMessage('detected.');
   }
   determineDefaultRealm(deploymentType);
   return deploymentType;
@@ -344,7 +348,7 @@ async function getVersionInfo() {
     );
     return 'error getting version info: version not in response data';
   } catch (e) {
-    printMessage('error getting version info - ', e.message, 'error');
+    printMessage(`error getting version info - ${e.message}`, 'error');
     return `error getting version info - ${e.message}`;
   }
 }
@@ -386,20 +390,20 @@ async function authenticate() {
       storage.session.setAmVersion(await getVersionInfo());
       return '';
     }
-    printMessage('error authenticating', 'error');
+    printMessage(`error authenticating`, 'error');
+    printMessage('+++ likely cause, bad credentials!!! +++', 'error');
     return null;
   } catch (e) {
     if (e.response && e.response.status === 401) {
       printMessage(`error authenticating - ${e.message}`, 'error');
       printMessage('+++ likely cause, bad credentials +++', 'error');
-      return null;
     }
     if (e.message && e.message === 'self signed certificate') {
       printMessage(`error authenticating - ${e.message}`, 'error');
       printMessage('+++ use -k, --insecure option to allow +++', 'error');
-      return null;
+    } else {
+      printMessage(`error authenticating - ${e.message}`, 'error');
     }
-    printMessage(`error authenticating - ${e.message}`, 'error');
     return null;
   }
 }

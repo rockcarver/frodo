@@ -79,7 +79,7 @@ export default function setup() {
           printMessage(table.toString());
         } else {
           realms.forEach((realmConfig) => {
-            printMessage(realmConfig.name);
+            printMessage(realmConfig.name, 'info');
           });
         }
       }

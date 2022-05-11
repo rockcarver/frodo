@@ -9,9 +9,9 @@ import { getRealmManagedOrganization } from './OrganizationApi.js';
 import { getOAuth2Provider } from './AmServiceApi.js';
 import { createSecret } from './SecretsApi.js';
 import { clientCredentialsGrant } from './OAuth2OIDCApi.js';
-// import CLOUD_MANAGED_JSON from './templates/cloud/managed.json' assert { type: 'json' };
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
-// import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
+// eslint-disable-next-line no-unused-vars
+import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
 import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
 import { printMessage } from './utils/Console.js';
 
@@ -770,11 +770,17 @@ async function repairOrgModelOrg(dryRun) {
   return repairData;
 }
 
-async function repairOrgModelData(dryRun) {
-  const rootOrgs = await findRootOrganizations();
+async function repairOrgModelData(dryRun = false) {
+  if (!dryRun) {
+    // const rootOrgs = await findRootOrganizations();
+  }
 }
 
-async function extendOrgModelPermissins(dryRun) {}
+async function extendOrgModelPermissins(dryRun = false) {
+  if (!dryRun) {
+    // const rootOrgs = await findRootOrganizations();
+  }
+}
 
 export async function repairOrgModel(
   excludeCustomized,
@@ -796,12 +802,16 @@ export async function repairOrgModel(
 }
 
 // suggested by John K.
+// eslint-disable-next-line no-empty-function
 export async function removeRealmNameFromManagedObjectLabels() {}
 
+// eslint-disable-next-line no-empty-function
 export async function addRealmNameToManagedObjectLabels() {}
 
 // suggested by John K.
+// eslint-disable-next-line no-empty-function
 export async function cleanUpPostmanArtifacts() {}
 
 // suggested by John K.
+// eslint-disable-next-line no-empty-function
 export async function createSampleThemes() {}

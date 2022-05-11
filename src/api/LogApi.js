@@ -93,12 +93,13 @@ const journeysNoise = [
   'org.forgerock.openam.auth.trees.engine.AuthTreeExecutor',
 ];
 
-// const journeys = [
-//   'org.forgerock.openam.auth.nodes.SelectIdPNode',
-//   'org.forgerock.openam.auth.nodes.ValidatedPasswordNode',
-//   'org.forgerock.openam.auth.nodes.ValidatedUsernameNode',
-//   'org.forgerock.openam.auth.trees.engine.AuthTreeExecutor',
-// ];
+// eslint-disable-next-line no-unused-vars
+const journeys = [
+  'org.forgerock.openam.auth.nodes.SelectIdPNode',
+  'org.forgerock.openam.auth.nodes.ValidatedPasswordNode',
+  'org.forgerock.openam.auth.nodes.ValidatedUsernameNode',
+  'org.forgerock.openam.auth.trees.engine.AuthTreeExecutor',
+];
 
 const samlNoise = [
   'com.sun.identity.cot.COTCache',
@@ -120,13 +121,14 @@ const samlNoise = [
   'org.apache.xml.security.signature.Manifest',
 ];
 
-// const saml = [
-//   'jsp.saml2.spAssertionConsumer',
-//   'com.sun.identity.saml.common.SAMLUtils',
-//   'com.sun.identity.saml2.common.SAML2Utils',
-//   'com.sun.identity.saml2.meta.SAML2MetaManager',
-//   'com.sun.identity.saml2.xmlsig.FMSigProvider',
-// ];
+// eslint-disable-next-line no-unused-vars
+const saml = [
+  'jsp.saml2.spAssertionConsumer',
+  'com.sun.identity.saml.common.SAMLUtils',
+  'com.sun.identity.saml2.common.SAML2Utils',
+  'com.sun.identity.saml2.meta.SAML2MetaManager',
+  'com.sun.identity.saml2.xmlsig.FMSigProvider',
+];
 
 const noise = miscNoise.concat(samlNoise).concat(journeysNoise);
 

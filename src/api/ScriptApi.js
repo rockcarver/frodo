@@ -76,7 +76,8 @@ export async function getScriptByName(name) {
 }
 
 export async function getScript(id) {
-  if (typeof id === 'undefined' || id === '[Empty]') {
+  // eslint-disable-next-line eqeqeq
+  if (typeof id == 'undefined' || id == '[Empty]') {
     return null;
   }
   try {
@@ -122,16 +123,16 @@ export async function putScript(id, data) {
         `putScript ERROR: put script call returned ${response.status}, details: ${response}`,
         'error'
       );
-      return null;
+      return { error: true, name: data.name };
     }
     if (response.data._id !== id) {
       printMessage(
         `putScript ERROR: generic error importing script ${id}`,
         'error'
       );
-      return null;
+      return { error: true, name: data.name };
     }
-    return '';
+    return { error: false, name: data.name };
   } catch (e) {
     if (e.response.status === 409) {
       printMessage(
@@ -141,15 +142,15 @@ export async function putScript(id, data) {
       const newName = applyNameCollisionPolicy(data.name);
       // console.log(newName);
       printMessage(`Trying to save script as ${newName}`, 'warn');
-      const data2 = data;
-      data2.name = newName;
-      putScript(id, data2);
-      return '';
+      // eslint-disable-next-line no-param-reassign
+      data.name = newName;
+      putScript(id, data);
+      return { error: false, name: data.name };
     }
     printMessage(
       `putScript ERROR: put script error, script ${id} - ${e.message}`,
       'error'
     );
-    return null;
+    return { error: true, name: data.name };
   }
 }
