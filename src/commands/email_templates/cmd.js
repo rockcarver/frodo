@@ -28,7 +28,7 @@ export default function setup() {
     .addOption(common.deploymentOption)
     .addOption(common.insecureOption)
     .description('List all the email templates in the system.')
-    .action(async (host, user, password, options, command) => {
+    .action(async (host, user, password, options) => {
       storage.session.setTenant(host);
       storage.session.setUsername(user);
       storage.session.setPassword(password);
@@ -39,7 +39,7 @@ export default function setup() {
         const templateList = await listEmailTemplates();
         // console.log(templateList);
         templateList.sort((a, b) => a._id.localeCompare(b._id));
-        templateList.forEach((item, index) => {
+        templateList.forEach((item) => {
           printMessage(`- ${item._id.replaceAll('emailTemplate/', '')}`);
         });
       }
@@ -104,6 +104,7 @@ export default function setup() {
           const templateList = await listEmailTemplates();
           const allTemplatesData = [];
           for (const item of templateList) {
+            // eslint-disable-next-line no-await-in-loop
             templateData = await getEmailTemplate(
               `${item._id.replaceAll('emailTemplate/', '')}`
             );
@@ -119,6 +120,7 @@ export default function setup() {
           printMessage('Exporting all email templates to separate files...');
           const templateList = await listEmailTemplates();
           for (const item of templateList) {
+            // eslint-disable-next-line no-await-in-loop
             templateData = await getEmailTemplate(
               `${item._id.replaceAll('emailTemplate/', '')}`
             );
@@ -131,7 +133,10 @@ export default function setup() {
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...', 'error');
+          printMessage(
+            'Unrecognized combination of options or no options...',
+            'error'
+          );
           command.help();
         }
       }

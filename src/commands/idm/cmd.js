@@ -25,7 +25,7 @@ export default function setup() {
     .helpOption('-h, --help', 'Help')
     .addOption(common.insecureOption)
     .description('List all IDM configuration objects.')
-    .action(async (host, user, password, options, command) => {
+    .action(async (host, user, password, options) => {
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setTenant(host);
@@ -64,13 +64,14 @@ export default function setup() {
           fs.writeFile(
             command.opts().file,
             JSON.stringify(configEntity, null, 2),
-            (err, data) => {
+            (err) => {
               if (err) {
                 return printMessage(
                   `ERROR - can't save ${command.opts().name} export to file`,
                   'error'
                 );
               }
+              return '';
             }
           );
         } else {
@@ -112,13 +113,14 @@ export default function setup() {
             fse.outputFile(
               `${options.directory}/${x._id}.json`,
               JSON.stringify(configEntity, null, 2),
-              (err, data) => {
+              (err) => {
                 if (err) {
                   return printMessage(
                     `ERROR - can't save config ${x._id} to file - ${err}`,
                     'error'
                   );
                 }
+                return '';
               }
             );
           });
@@ -137,7 +139,7 @@ export default function setup() {
     .addOption(common.envFileOptionM)
     .addOption(common.insecureOption)
     .description('Export all IDM configuration objects.')
-    .action(async (host, user, password, options, command) => {
+    .action(async (host, user, password, options) => {
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setTenant(host);
@@ -145,7 +147,6 @@ export default function setup() {
       printMessage('Exporting all IDM configuration objects...');
       if (await getTokens()) {
         let entriesToExport = [];
-        const envFileData = {};
         // read list of entities to export
         fs.readFile(options.entitiesFile, 'utf8', async (err, data) => {
           if (err) throw err;
@@ -178,13 +179,14 @@ export default function setup() {
                 fs.writeFile(
                   `${options.directory}/${x._id}.json`,
                   configEntityString,
-                  (err, data) => {
-                    if (err) {
+                  (err2) => {
+                    if (err2) {
                       return printMessage(
                         `ERROR - can't save config ${x._id} to file`,
                         'error'
                       );
                     }
+                    return '';
                   }
                 );
               }
@@ -241,7 +243,7 @@ export default function setup() {
     .addOption(common.managedNameOptionM)
     .addOption(common.insecureOption)
     .description('Count number of managed objects of a given type.')
-    .action(async (host, user, password, options, command) => {
+    .action(async (host, user, password, options) => {
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setTenant(host);

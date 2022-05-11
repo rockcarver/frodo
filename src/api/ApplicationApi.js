@@ -113,7 +113,8 @@ export async function getOAuth2Application(id) {
     return response.data;
   } catch (e) {
     printMessage(
-      `getOAuth2Application ERROR: get Oauth2 application error - ${e.message}`, 'error'
+      `getOAuth2Application ERROR: get Oauth2 application error - ${e.message}`,
+      'error'
     );
     return null;
   }

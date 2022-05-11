@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
-import { v4 as uuidv4 } from 'uuid';
 import Table from 'cli-table3';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
@@ -8,15 +7,15 @@ import wordwrap from '../../api/utils/Wordwrap.js';
 import {
   listSecrets,
   getSecret,
-  createSecret,
-  setSecretDescription,
-  deleteSecret,
-  listSecretVersions,
-  createNewVersionOfSecret,
-  getVersionOfSecret,
-  enableVersionOfSecret,
-  disableVersionOfSecret,
-  deleteVersionOfSecret,
+  // createSecret,
+  // setSecretDescription,
+  // deleteSecret,
+  // listSecretVersions,
+  // createNewVersionOfSecret,
+  // getVersionOfSecret,
+  // enableVersionOfSecret,
+  // disableVersionOfSecret,
+  // deleteVersionOfSecret,
 } from '../../api/SecretsApi.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
