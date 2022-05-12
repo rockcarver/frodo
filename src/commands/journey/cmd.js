@@ -123,7 +123,7 @@ describe the journey/tree export file indicated by -f.'
             treeDescription.push(describeTree(journeyData));
             updateProgressBar(`Analyzing journey - ${item.name}`);
           }
-          stopProgressBar();
+          stopProgressBar('Done');
         } else {
           const journeyData = await getJourneyData(command.opts().tree);
           treeDescription.push(describeTree(journeyData));
@@ -197,9 +197,9 @@ describe the journey/tree export file indicated by -f.'
             fileName = command.opts().file;
           }
           createProgressBar(1);
-          updateProgressBar(`Reading journey - ${command.opts().tree}`);
+          updateProgressBar(`Exporting journey - ${command.opts().tree}`);
           const journeyData = await getJourneyData(command.opts().tree);
-          stopProgressBar();
+          stopProgressBar('Done');
           fs.writeFile(
             fileName,
             JSON.stringify(journeyData, null, 2),
@@ -225,9 +225,9 @@ describe the journey/tree export file indicated by -f.'
           for (const item of journeyList) {
             // eslint-disable-next-line no-await-in-loop
             journeysMap[item.name] = await getJourneyData(item.name);
-            updateProgressBar(`Reading journey - ${item.name}`);
+            updateProgressBar(`Exporting journey - ${item.name}`);
           }
-          stopProgressBar();
+          stopProgressBar('Done');
           topLevelMap.trees = journeysMap;
           if (command.opts().file) {
             fileName = command.opts().file;
@@ -252,7 +252,7 @@ describe the journey/tree export file indicated by -f.'
           const journeyList = await listJourneys(false);
           createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
-            updateProgressBar(`Reading journey - ${item.name}`);
+            updateProgressBar(`Exporting journey - ${item.name}`);
             const journeyData = await getJourneyData(item.name);
             const fileName = `./${item.name}.json`;
             fs.writeFile(
@@ -269,7 +269,7 @@ describe the journey/tree export file indicated by -f.'
               }
             );
           }
-          stopProgressBar();
+          stopProgressBar('Done');
         }
         // unrecognized combination of options or no options
         else {

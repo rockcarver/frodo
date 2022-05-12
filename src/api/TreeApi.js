@@ -1147,5 +1147,5 @@ export async function importAllJourneys(journeyMap, noreuuid) {
     updateProgressBar(`Importing ${tree}`);
     await importJourney(tree, journeyMap[tree], noreuuid);
   }
-  stopProgressBar();
+  stopProgressBar('Done');
 }
