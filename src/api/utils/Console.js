@@ -164,8 +164,12 @@ export function updateProgressBar(data = null) {
 /**
  * Stop and hide the progress bar
  */
-export function stopProgressBar() {
+export function stopProgressBar(data = null) {
   const pBar = storage.session.getItem('progressBar');
+  if (data)
+    pBar.update({
+      data,
+    });
   pBar.stop();
 }
 

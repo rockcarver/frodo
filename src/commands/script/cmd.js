@@ -127,7 +127,7 @@ export default function setup() {
           let fileName = 'allScripts.json';
           const scriptList = await listScripts();
           const allScriptsData = [];
-          createProgressBar(scriptList.length, 'Reading script');
+          createProgressBar(scriptList.length, 'Exporting script');
           for (const item of scriptList) {
             updateProgressBar(`Reading script ${item.name}`);
             // eslint-disable-next-line no-await-in-loop
@@ -144,14 +144,14 @@ export default function setup() {
           if (command.opts().file) {
             fileName = command.opts().file;
           }
-          stopProgressBar();
+          stopProgressBar('Done');
           saveToFile('script', allScriptsData, '_id', fileName);
         }
         // exportAllSeparate -A
         else if (command.opts().allSeparate) {
           printMessage('Exporting all scripts to separate files...');
           const scriptList = await listScripts();
-          createProgressBar(scriptList.length, 'Reading script');
+          createProgressBar(scriptList.length, 'Exporting script');
           for (const item of scriptList) {
             updateProgressBar(`Reading script ${item.name}`);
             // eslint-disable-next-line no-await-in-loop
@@ -166,7 +166,7 @@ export default function setup() {
             const fileName = `./${item.name}.json`;
             saveToFile('script', scriptData, '_id', fileName);
           }
-          stopProgressBar();
+          stopProgressBar('Done');
         }
         // unrecognized combination of options or no options
         else {
@@ -225,8 +225,8 @@ export default function setup() {
                 });
               }
             }
-            stopProgressBar();
-            printMessage('Done');
+            stopProgressBar('Done');
+            // printMessage('Done');
           } else {
             printMessage('Import validation failed...', 'error');
           }
