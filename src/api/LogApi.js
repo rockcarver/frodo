@@ -239,7 +239,7 @@ export async function tailLogs(source, cookie) {
       await saveConnection();
     }
     result.result.forEach((e) => {
-      printMessage(JSON.stringify(e.payload));
+      printMessage(JSON.stringify(e.payload), 'data');
     });
   }
   setTimeout(() => {
