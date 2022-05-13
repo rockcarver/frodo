@@ -1,4 +1,3 @@
-/* eslint no-unused-expressions: ["error", { "allowTernary": true }] */
 import chalk from 'chalk';
 import { SingleBar, Presets } from 'cli-progress';
 import { createSpinner } from 'nanospinner';
@@ -30,7 +29,7 @@ function info(message) {
       console.dir(message);
       break;
     default:
-      console.error(chalk.blueBright(message));
+      console.error(chalk.cyanBright(message));
   }
 }
 
@@ -63,7 +62,6 @@ function error(message) {
  * @param {boolean} [newline=true] Whether to add a new at the end of message
  *
  */
-// eslint-disable-next-line import/prefer-default-export
 export function printMessage(message, type = 'text', newline = true) {
   //   if (storage.session.getItem('scriptFriendly')) {
   switch (type) {
@@ -85,7 +83,7 @@ export function printMessage(message, type = 'text', newline = true) {
       if (newline) {
         info(message);
       } else {
-        process.stderr.write(chalk.blueBright(message));
+        process.stderr.write(chalk.cyanBright(message));
       }
       break;
     case 'warn':
@@ -118,20 +116,19 @@ export function printMessage(message, type = 'text', newline = true) {
  * [========================================] 100% | 49/49 | Analyzing journey - transactional_auth
  *
  * @param {int} total The total number of entries to track progress for
- * @param {string} [data] The string message to show at the end ("Analyzing journey - transactional_auth"
+ * @param {string} [message] The string message to show at the end ("Analyzing journey - transactional_auth"
  * in the example). default is empty string.
  *
  */
 export function createProgressBar(
   total,
-  // eslint-disable-next-line no-shadow
-  data = null,
+  message = null,
   options = {
     format: '[{bar}] {percentage}% | {value}/{total} | {data}',
   }
 ) {
   let opt = options;
-  if (data == null) {
+  if (message == null) {
     opt = {
       format: '[{bar}] {percentage}% | {value}/{total}',
     };
@@ -139,7 +136,7 @@ export function createProgressBar(
   let pBar = storage.session.getItem('progressBar');
   if (!pBar) pBar = new SingleBar(opt, Presets.legacy); // create only when needed
   pBar.start(total, 0, {
-    data,
+    data: message,
   });
   storage.session.setItem('progressBar', pBar);
 }
@@ -147,16 +144,15 @@ export function createProgressBar(
 /**
  * Updates the progress bar by 1
  *
- * @param {string} data The string message to show at the end ("Analyzing journey - transactional_auth"
+ * @param {string} message The string message to show at the end ("Analyzing journey - transactional_auth"
  * in the example)
  *
  */
-// eslint-disable-next-line no-shadow
-export function updateProgressBar(data = null) {
+export function updateProgressBar(message = null) {
   const pBar = storage.session.getItem('progressBar');
-  if (data)
+  if (message)
     pBar.increment({
-      data,
+      data: message,
     });
   else pBar.increment();
 }
@@ -164,11 +160,11 @@ export function updateProgressBar(data = null) {
 /**
  * Stop and hide the progress bar
  */
-export function stopProgressBar(data = null) {
+export function stopProgressBar(message = null) {
   const pBar = storage.session.getItem('progressBar');
-  if (data)
+  if (message)
     pBar.update({
-      data,
+      data: message,
     });
   pBar.stop();
 }
