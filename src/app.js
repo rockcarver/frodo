@@ -11,6 +11,7 @@ import logging from './commands/logging/cmd.js';
 import realm from './commands/realm/cmd.js';
 import script from './commands/script/cmd.js';
 import secret from './commands/secret/cmd.js';
+import theme from './commands/theme/cmd.js';
 import emailTemplate from './commands/email_templates/cmd.js';
 import storage from './storage/SessionStorage.js';
 import application from './commands/application/cmd.js';
@@ -39,6 +40,7 @@ storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
     program.addCommand(realm());
     program.addCommand(script());
     program.addCommand(secret());
+    program.addCommand(theme());
 
     program.showHelpAfterError();
     program.parse();
