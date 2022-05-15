@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
@@ -92,13 +91,13 @@ export default function setup() {
     .addOption(
       new Option(
         '-a, --all',
-        'Export all the themes in a realm to a single file. Ignored with -t.'
+        'Export all the themes in a realm to a single file. Ignored with -t and -i.'
       )
     )
     .addOption(
       new Option(
         '-A, --all-separate',
-        'Export all the themes in a realm as separate files <theme>.json. Ignored with -s or -a.'
+        'Export all the themes in a realm as separate files <theme name>.theme.json. Ignored with -t, -i, and -a.'
       )
     )
     .description('Export themes.')
@@ -163,10 +162,13 @@ export default function setup() {
         // --all -a
         else if (command.opts().all) {
           printMessage('Exporting all themes to a single file...');
-          const fileName = getTypedFilename(
+          let fileName = getTypedFilename(
             `all${getRealmString()}Themes`,
             'theme'
           );
+          if (command.opts().file) {
+            fileName = command.opts().file;
+          }
           const allThemesData = await getThemes();
           createProgressBar(allThemesData.length, 'Exporting themes');
           for (const themeData of allThemesData) {

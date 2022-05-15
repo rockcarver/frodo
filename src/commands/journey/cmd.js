@@ -176,7 +176,7 @@ describe the journey/tree export file indicated by -f.'
     )
     .addOption(
       new Option(
-        '-A, --allSeparate',
+        '-A, --all-separate',
         'Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.'
       )
     )
@@ -214,7 +214,7 @@ describe the journey/tree export file indicated by -f.'
             }
           );
         }
-        // exportAll -a
+        // --all -a
         else if (command.opts().all) {
           printMessage('Exporting all journeys to a single file...');
           let fileName = 'allJourneys.json';
@@ -246,13 +246,14 @@ describe the journey/tree export file indicated by -f.'
             }
           );
         }
-        // exportAllSeparate -A
+        // --all-separate -A
         else if (command.opts().allSeparate) {
           printMessage('Exporting all journeys to separate files...');
           const journeyList = await listJourneys(false);
           createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
             updateProgressBar(`Exporting journey - ${item.name}`);
+            // eslint-disable-next-line no-await-in-loop
             const journeyData = await getJourneyData(item.name);
             const fileName = `./${item.name}.json`;
             fs.writeFile(
@@ -308,7 +309,7 @@ describe the journey/tree export file indicated by -f.'
     )
     .addOption(
       new Option(
-        '-A, --allSeparate',
+        '-A, --all-separate',
         'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -t or -a.'
       )
     )
@@ -337,7 +338,7 @@ describe the journey/tree export file indicated by -f.'
             });
           });
         }
-        // importAll -a
+        // --all -a
         else if (command.opts().all && command.opts().file) {
           printMessage(
             `Importing all journeys from a single file (${
@@ -355,7 +356,7 @@ describe the journey/tree export file indicated by -f.'
             });
           });
         }
-        // importAllSeparate -A
+        // --all-separate -A
         else if (command.opts().allSeparate && !command.opts().file) {
           printMessage(
             'Importing all journeys from separate files in current directory...'
