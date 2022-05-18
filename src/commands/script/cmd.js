@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
@@ -188,7 +189,24 @@ export default function setup() {
     .helpOption('-h, --help', 'Help')
     .addOption(common.deploymentOption)
     .addOption(common.insecureOption)
-    .addOption(common.fileOptionM)
+    .addOption(
+      new Option(
+        '-f, --file <file>',
+        'Name of the file to import the script(s) from.'
+      )
+    )
+    .addOption(
+      new Option(
+        '-s, --script [script]',
+        'Name of a script. If specified, -a and -A are ignored and only the first script is imported and given the name as indicated this parameter.'
+      )
+    )
+    .addOption(
+      new Option(
+        '--re-uuid',
+        'Re-UUID. Create a new unique UUID for the script upon import. Use this to duplicate a script or create a new version of the same script. Note that you must also choose a different name using the -s [name] than any existing scripts.'
+      ).default(false, 'false')
+    )
     .description('Import script.')
     .action(async (host, realm, user, password, options, command) => {
       storage.session.setTenant(host);
@@ -207,22 +225,41 @@ export default function setup() {
           const scriptData = JSON.parse(data);
           if (validateImport(scriptData.meta)) {
             createProgressBar(Object.keys(scriptData.script).length, '');
-            for (const id in scriptData.script) {
-              if ({}.hasOwnProperty.call(scriptData.script, id)) {
+            for (const existingId in scriptData.script) {
+              if ({}.hasOwnProperty.call(scriptData.script, existingId)) {
+                let newId = existingId;
                 // console.log(id);
                 encodedScript = convertArrayToBase64Script(
-                  scriptData.script[id].script
+                  scriptData.script[existingId].script
                 );
-                scriptData.script[id].script = encodedScript;
-                updateProgressBar(`Importing ${scriptData.script[id].name}`);
+                scriptData.script[existingId].script = encodedScript;
+                if (options.reUuid) {
+                  newId = uuidv4();
+                  // printMessage(
+                  //   `Re-uuid-ing script ${scriptData.script[existingId].name} ${existingId} => ${newId}...`
+                  // );
+                  scriptData.script[existingId]._id = newId;
+                }
+                if (options.script) {
+                  // printMessage(
+                  //   `Renaming script ${scriptData.script[existingId].name} => ${options.script}...`
+                  // );
+                  scriptData.script[existingId].name = options.script;
+                }
+                updateProgressBar(
+                  `Importing ${scriptData.script[existingId].name}`
+                );
                 // console.log(scriptData.script[id]);
-                putScript(id, scriptData.script[id]).then((result) => {
-                  if (result == null)
-                    printMessage(
-                      `Error importing ${scriptData.script[id].name}`,
-                      'error'
-                    );
-                });
+                putScript(newId, scriptData.script[existingId]).then(
+                  (result) => {
+                    if (result == null)
+                      printMessage(
+                        `Error importing ${scriptData.script[existingId].name}`,
+                        'error'
+                      );
+                  }
+                );
+                if (options.script) break;
               }
             }
             stopProgressBar('Done');
