@@ -98,7 +98,7 @@ The binaries for Windows and MacOS might require you to grant permission to run,
 
 #### Prerequisites
 
-Node 17 or newer and npm.
+Node 18 or newer and npm.
 
 #### Clone this repo
 
@@ -339,7 +339,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ### Prerequisites
 
-Node 17 or newer and npm (included with node)
+Node 18 or newer and npm (included with node)
 
 ### Process
 
