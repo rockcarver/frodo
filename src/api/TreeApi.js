@@ -587,24 +587,18 @@ export async function importJourney(id, journeyMap, noreuuid) {
   }
 
   if (Object.entries(journeyMap.scripts).length > 0) {
-    // printMessage('  - Scripts:\n');
-    const scriptPromises = [];
+    printMessage('  - Scripts:');
     for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
-      scriptPromises.push(putScript(scriptId, scriptData));
+      printMessage(`    - ${scriptId} (${scriptData.name})`, 'info', false);
+      if ((await putScript(scriptId, scriptData)) == null) {
+        printMessage(
+          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
+          'error'
+        );
+        return null;
+      }
+      printMessage('');
     }
-    Promise.all(scriptPromises).then((results) => {
-      results.forEach((result) => {
-        if (result.error) {
-          printMessage(
-            `importJourney ERROR: error importing script ${result.name} in journey ${treeId}`,
-            'error'
-          );
-        } else {
-          printMessage(`    - Script [${result.name}]`, 'info', false);
-        }
-      });
-    });
-    printMessage('');
   }
 
   if (Object.entries(journeyMap.emailTemplates).length > 0) {
@@ -633,7 +627,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
     journeyMap.innernodes
   )) {
     const nodeType = innerNodeData._type._id;
-    printMessage(`    - ${innerNodeId}`, 'info', false);
+    printMessage(`    - ${innerNodeId} (${nodeType})`, 'info', false);
     if (noreuuid) {
       newUuid = innerNodeId;
     } else {
@@ -656,7 +650,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
   // eslint-disable-next-line prefer-const
   for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
     const nodeType = nodeData._type._id;
-    printMessage(`    - ${nodeId}`, 'info', false);
+    printMessage(`    - ${nodeId} (${nodeType})`, 'info', false);
     if (noreuuid) {
       newUuid = nodeId;
     } else {
