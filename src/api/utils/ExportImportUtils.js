@@ -27,7 +27,7 @@ function getMetadata() {
 function titleCase(input) {
   const str = input.toString();
   const splitStr = str.toLowerCase().split(' ');
-  for (let i = 0; i < splitStr.length; i++) {
+  for (let i = 0; i < splitStr.length; i += 1) {
     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].slice(1);
   }
   return splitStr.join(' ');
@@ -87,6 +87,17 @@ export function saveToFile(type, data, identifier, filename) {
   fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
     if (err) {
       return printMessage(`ERROR - can't save ${type} to file`, 'error');
+    }
+    return '';
+  });
+}
+
+export function saveJsonToFile(data, filename) {
+  const exportData = data;
+  exportData.meta = getMetadata();
+  fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
+    if (err) {
+      return printMessage(`ERROR - can't save ${filename}`, 'error');
     }
     return '';
   });
