@@ -11,12 +11,12 @@ import { printMessage } from '../../api/utils/Console.js';
 
 export default function setup() {
   const logs = new Command('logs');
-  logs.addArgument(common.hostArgumentM).helpOption('-h, --help', 'Help')
-    .description(`
-View Identity Cloud logs. If valid tenant admin credentials
-are specified, a log API key and secret are automatically 
-created for that admin user.
-    `);
+  logs
+    .addArgument(common.hostArgumentM)
+    .helpOption('-h, --help', 'Help')
+    .description(
+      `View Identity Cloud logs. If valid tenant admin credentials are specified, a log API key and secret are automatically created for that admin user.`
+    );
 
   logs
     .command('list')
