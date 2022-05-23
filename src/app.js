@@ -12,7 +12,7 @@ import application from './cli/application/cmd.js';
 import connections from './cli/connections/cmd.js';
 import emailTemplate from './cli/email_templates/cmd.js';
 import idm from './cli/idm/cmd.js';
-import idp from './cli/idp/cmd.js';
+import idp from './cli/idp/idp.js';
 import info from './cli/info/cmd.js';
 import journey from './cli/journey/cmd.js';
 import logging from './cli/logging/cmd.js';
