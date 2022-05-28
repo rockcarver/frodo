@@ -60,6 +60,7 @@
     "qs": "^6.10.3",
     "readline-sync": "^1.4.10",
     "replaceall": "^0.1.6",
+    "slugify": "^1.6.5",
     "underscore": "^1.13.2",
     "uuid": "^8.3.2",
     "yesno": "^0.3.1"

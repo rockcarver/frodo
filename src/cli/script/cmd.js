@@ -9,6 +9,7 @@ import {
   getScriptByName,
 } from '../../api/ScriptApi.js';
 import {
+  getTypedFilename,
   saveToFile,
   convertBase64ScriptToArray,
   convertArrayToBase64Script,
@@ -102,16 +103,16 @@ export default function setup() {
       let scriptData = null;
       if (await getTokens()) {
         // export
-        if (command.opts().script) {
+        if (options.script) {
           printMessage('Exporting script...');
-          let fileName = `${command.opts().script}.json`;
-          if (command.opts().file) {
-            fileName = command.opts().file;
+          let fileName = getTypedFilename(options.script, 'script');
+          if (options.file) {
+            fileName = options.file;
           }
-          scriptData = await getScriptByName(command.opts().script);
+          scriptData = await getScriptByName(options.script);
           if (scriptData.length > 1) {
             return printMessage(
-              `Multiple scripts with name ${command.opts().script} found...`,
+              `Multiple scripts with name ${options.script} found...`,
               'error'
             );
           }
@@ -123,9 +124,12 @@ export default function setup() {
           saveToFile('script', scriptData, '_id', fileName);
         }
         // exportAll -a
-        else if (command.opts().all) {
+        else if (options.all) {
           printMessage('Exporting all scripts to a single file...');
-          let fileName = 'allScripts.json';
+          let fileName = getTypedFilename(
+            `all${storage.session.getRealm()}Scripts`,
+            'script'
+          );
           const scriptList = await listScripts();
           const allScriptsData = [];
           createProgressBar(scriptList.length, 'Exporting script');
@@ -142,14 +146,14 @@ export default function setup() {
               allScriptsData.push(element);
             });
           }
-          if (command.opts().file) {
-            fileName = command.opts().file;
+          if (options.file) {
+            fileName = options.file;
           }
           stopProgressBar('Done');
           saveToFile('script', allScriptsData, '_id', fileName);
         }
         // exportAllSeparate -A
-        else if (command.opts().allSeparate) {
+        else if (options.allSeparate) {
           printMessage('Exporting all scripts to separate files...');
           const scriptList = await listScripts();
           createProgressBar(scriptList.length, 'Exporting script');
@@ -164,7 +168,7 @@ export default function setup() {
               // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
             });
-            const fileName = `./${item.name}.json`;
+            const fileName = getTypedFilename(item.name, 'script');
             saveToFile('script', scriptData, '_id', fileName);
           }
           stopProgressBar('Done');
@@ -208,7 +212,7 @@ export default function setup() {
       ).default(false, 'false')
     )
     .description('Import script.')
-    .action(async (host, realm, user, password, options, command) => {
+    .action(async (host, realm, user, password, options) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
       storage.session.setUsername(user);
@@ -220,7 +224,7 @@ export default function setup() {
         printMessage(
           `Importing script(s) into realm "${storage.session.getRealm()}"...`
         );
-        fs.readFile(command.opts().file, 'utf8', (err, data) => {
+        fs.readFile(options.file, 'utf8', (err, data) => {
           if (err) throw err;
           const scriptData = JSON.parse(data);
           if (validateImport(scriptData.meta)) {
