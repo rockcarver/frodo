@@ -1,4 +1,5 @@
 import fs from 'fs';
+import slugify from 'slugify';
 import storage from '../../storage/SessionStorage.js';
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
 import { printMessage } from './Console.js';
@@ -70,7 +71,7 @@ export function checkTargetCompatibility(type, source, target) {
 }
 
 export function getTypedFilename(name, type) {
-  return `${name}.${type}.json`;
+  return `${slugify(name)}.${type}.json`;
 }
 
 export function saveToFile(type, data, identifier, filename) {
