@@ -1,14 +1,20 @@
 import util from 'util';
+import _ from 'lodash';
 import { generateAmApi } from './BaseApi.js';
 import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
 
 const providerByLocationAndIdURLTemplate = '%s/json%s/realm-config/saml2/%s/%s';
+const createHostedProviderURLTemplate =
+  '%s/json%s/realm-config/saml2/hosted/?_action=create';
+const createRemoteProviderURLTemplate =
+  '%s/json%s/realm-config/saml2/remote/?_action=importEntity';
 const queryAllProvidersURLTemplate =
   '%s/json%s/realm-config/saml2?_queryFilter=true';
 const queryProvidersByEntityIdURLTemplate =
   '%s/json%s/realm-config/saml2?_queryFilter=%s&_fields=%s';
+const metadataByEntityIdURLTemplate =
+  '%s/saml2/jsp/exportmetadata.jsp?entityid=%s&realm=%s';
 const apiVersion = 'protocol=2.1,resource=1.0';
 const getApiConfig = () => {
   const configPath = getCurrentRealmPath();
@@ -18,129 +24,145 @@ const getApiConfig = () => {
   };
 };
 
+/**
+ * Get all SAML2 entity providers
+ * @returns {Promise} a promise that resolves to an array of saml2 entity stubs
+ */
 export async function getProviders() {
-  try {
-    const urlString = util.format(
-      queryAllProvidersURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath()
-    );
-    const response = await generateAmApi(getApiConfig()).get(urlString, {
-      withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      printMessage(`getProviders ERROR: ${response.status}`, 'error');
-      printMessage(response, 'data');
-      return [];
-    }
-    return response.data.result;
-  } catch (error) {
-    printMessage(`getProviders ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
-    return [];
-  }
-}
-
-async function findProviders(filter, fields) {
-  try {
-    const urlString = util.format(
-      queryProvidersByEntityIdURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(),
-      filter,
-      fields
-    );
-    const response = await generateAmApi(getApiConfig()).get(urlString, {
-      withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      printMessage(`getProviders ERROR: ${response.status}`, 'error');
-      printMessage(response, 'data');
-      return [];
-    }
-    return response.data.result;
-  } catch (error) {
-    printMessage(`getProviders ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
-    return [];
-  }
-}
-
-export async function getProvider(entityId) {
-  const providers = await getProviders();
-  const foundProviders = providers.filter(
-    (provider) => provider._id === entityId
+  const urlString = util.format(
+    queryAllProvidersURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath()
   );
-  if (foundProviders.length === 1) {
-    return foundProviders[0];
-  }
-  return [];
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
-export async function getProviderByLocationAndId(location, id) {
-  try {
-    const urlString = util.format(
-      providerByLocationAndIdURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(),
-      location,
-      id
-    );
-    const response = await generateAmApi(getApiConfig()).get(urlString, {
-      withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      printMessage(`getProviderByTypeAndId ERROR!`, 'error');
-      printMessage(response.status, 'data');
-      printMessage(response, 'data');
-      return null;
+/**
+ * Find all providers matching the filter and return the requested fields
+ * @param {String} filter CREST filter string, eg "entityId+eq+'${entityId}'"
+ * @param {String} fields Comma-delimited list of fields to include in the response
+ * @returns {Promise} a promise that resolves to an array of saml2 entities
+ */
+export async function findProviders(filter = 'true', fields = '*') {
+  const urlString = util.format(
+    queryProvidersByEntityIdURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    encodeURIComponent(filter),
+    fields
+  );
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
+}
+
+/**
+ * Geta SAML2 entity provider by location and id
+ * @param {String} location Entity provider location (hosted or remote)
+ * @param {String} entityId64 Base64-encoded provider entity id
+ * @returns {Promise} a promise that resolves to a saml2 entity provider object
+ */
+export async function getProviderByLocationAndId(location, entityId64) {
+  const urlString = util.format(
+    providerByLocationAndIdURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    location,
+    entityId64
+  );
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
+}
+
+/**
+ * Get SAML2 entity provider by entity id
+ * @param {String} entityId Provider entity id
+ * @returns {Promise} a promise that resolves to a saml2 entity provider object or null
+ */
+export async function getProvider(entityId) {
+  const response = await findProviders(`entityId eq '${entityId}'`, 'location');
+  switch (response.data.resultCount) {
+    case 0:
+      throw new Error(`No provider with entity id '${entityId}' found`);
+    case 1: {
+      const { location } = response.data.result[0];
+      const id = response.data.result[0]._id;
+      return getProviderByLocationAndId(location, id);
     }
-    return response.data;
-  } catch (e) {
-    printMessage(`getProviderByTypeAndId ERROR: ${e.message}`, 'error');
-    return null;
+    default:
+      throw new Error(`Multiple providers with entity id '${entityId}' found`);
   }
 }
 
-export async function putProviderByTypeAndId(type, id, data) {
-  const providerData = data;
-  // delete providerData._provider;
-  // delete providerData._rev;
-  try {
-    const urlString = util.format(
-      providerByLocationAndIdURLTemplate,
+/**
+ * Get a SAML2 entity provider's metadata by entity id
+ * @param {String} entityId SAML2 entity id
+ * @returns {Promise} a promise that resolves to an object containing a SAML2 metadata
+ */
+export async function getProviderMetadata(entityId) {
+  const urlString = util.format(
+    metadataByEntityIdURLTemplate,
+    storage.session.getTenant(),
+    encodeURIComponent(entityId),
+    storage.session.getRealm()
+  );
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
+}
+
+/**
+ * Create a SAML2 entity provider
+ * @param {String} location 'hosted' or 'remote'
+ * @param {Object} providerData Object representing a SAML entity provider
+ * @param {String} metaData Base64-encoded metadata XML. Only required for remote providers
+ * @returns {Promise} a promise that resolves to a saml2 entity provider object
+ */
+export async function createProvider(location, providerData, metaData) {
+  let postData = _.cloneDeep(providerData);
+  let urlString = util.format(
+    createHostedProviderURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(storage.session.getRealm())
+  );
+
+  if (location === 'remote') {
+    /**
+     * Remote entity providers must be created using XML metadata
+     */
+    urlString = util.format(
+      createRemoteProviderURLTemplate,
       storage.session.getTenant(),
-      getCurrentRealmPath(storage.session.getRealm()),
-      type,
-      id
+      getCurrentRealmPath(storage.session.getRealm())
     );
-    const response = await generateAmApi(getApiConfig()).put(
-      urlString,
-      providerData,
-      {
-        withCredentials: true,
-      }
-    );
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `putProviderByTypeAndId ERROR: ${id} [${type}] - ${response.status}, details: ${response}`,
-        'error'
-      );
-      printMessage(response.status, 'data');
-      printMessage(response, 'data');
-      return null;
-    }
-    if (response.data._id !== id) {
-      printMessage(`putProviderByTypeAndId ERROR: ${id} [${type}]`, 'error');
-      return null;
-    }
-    return '';
-  } catch (error) {
-    printMessage(
-      `putProviderByTypeAndId ERROR: ${id} [${type}] - ${error.message}`,
-      'error'
-    );
-    printMessage(error.response, 'data');
-    return null;
+    postData = {
+      standardMetadata: metaData,
+    };
   }
+
+  return generateAmApi(getApiConfig()).post(urlString, postData, {
+    withCredentials: true,
+  });
+}
+
+/**
+ * Update SAML2 entity provider
+ * @param {String} location Entity provider location (hosted or remote)
+ * @param {Object} providerData Object representing a SAML entity provider
+ * @returns {Promise} a promise that resolves to a saml2 entity provider object
+ */
+export async function updateProvider(location, providerData) {
+  const urlString = util.format(
+    providerByLocationAndIdURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    location,
+    providerData._id
+  );
+  return generateAmApi(getApiConfig()).put(urlString, providerData, {
+    withCredentials: true,
+  });
 }

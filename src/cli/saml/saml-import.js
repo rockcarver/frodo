@@ -4,16 +4,16 @@ import { getTokens } from '../../api/AuthApi.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 import {
-  importProviderById,
+  importProvider,
   importProvidersFromFile,
   importProvidersFromFiles,
   importFirstProvider,
 } from '../../ops/SamlOps.js';
 
-const program = new Command('frodo saml export');
+const program = new Command('frodo saml import');
 
 program
-  .description('Export SAML entity providers.')
+  .description('Import SAML entity providers.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
@@ -57,13 +57,13 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by id
-        if (options.file && options.idpId) {
+        if (options.file && options.entityId) {
           printMessage(
             `Importing provider "${
-              options.idpId
+              options.entityId
             }" into realm "${storage.session.getRealm()}"...`
           );
-          importProviderById(options.idpId, options.file);
+          importProvider(options.entityId, options.file);
         }
         // --all -a
         else if (options.all && options.file) {
@@ -75,7 +75,7 @@ program
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
           printMessage(
-            'Importing all providers from separate files in current directory...'
+            'Importing all providers from separate files (*.saml.json) in current directory...'
           );
           importProvidersFromFiles();
         }

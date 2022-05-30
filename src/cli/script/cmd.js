@@ -11,8 +11,8 @@ import {
 import {
   getTypedFilename,
   saveToFile,
-  convertBase64ScriptToArray,
-  convertArrayToBase64Script,
+  convertBase64TextToArray,
+  convertTextArrayToBase64,
   validateImport,
 } from '../../api/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
@@ -117,7 +117,7 @@ export default function setup() {
             );
           }
           scriptData.forEach((element) => {
-            const scriptTextArray = convertBase64ScriptToArray(element.script);
+            const scriptTextArray = convertBase64TextToArray(element.script);
             // eslint-disable-next-line no-param-reassign
             element.script = scriptTextArray;
           });
@@ -138,9 +138,7 @@ export default function setup() {
             // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
-              const scriptTextArray = convertBase64ScriptToArray(
-                element.script
-              );
+              const scriptTextArray = convertBase64TextToArray(element.script);
               // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
               allScriptsData.push(element);
@@ -162,9 +160,7 @@ export default function setup() {
             // eslint-disable-next-line no-await-in-loop
             scriptData = await getScriptByName(item.name);
             scriptData.forEach((element) => {
-              const scriptTextArray = convertBase64ScriptToArray(
-                element.script
-              );
+              const scriptTextArray = convertBase64TextToArray(element.script);
               // eslint-disable-next-line no-param-reassign
               element.script = scriptTextArray;
             });
@@ -233,7 +229,7 @@ export default function setup() {
               if ({}.hasOwnProperty.call(scriptData.script, existingId)) {
                 let newId = existingId;
                 // console.log(id);
-                encodedScript = convertArrayToBase64Script(
+                encodedScript = convertTextArrayToBase64(
                   scriptData.script[existingId].script
                 );
                 scriptData.script[existingId].script = encodedScript;

@@ -3,7 +3,11 @@ import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
-import { listProviders } from '../../ops/SamlOps.js';
+import {
+  exportProvider,
+  exportProvidersToFile,
+  exportProvidersToFiles,
+} from '../../ops/SamlOps.js';
 
 const program = new Command('frodo saml export');
 
@@ -51,18 +55,14 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        // printMessage(
-        //   `Listing SAML entity providers in realm "${storage.session.getRealm()}"...`
-        // );
-        // listProviders(options.long);
         // export by id/name
-        if (options.idpId) {
+        if (options.entityId) {
           printMessage(
             `Exporting provider "${
-              options.idpId
+              options.entityId
             }" from realm "${storage.session.getRealm()}"...`
           );
-          exportProvider(options.idpId, options.file);
+          exportProvider(options.entityId, options.file);
         }
         // --all -a
         else if (options.all) {
@@ -80,7 +80,7 @@ program
             'Unrecognized combination of options or no options...',
             'error'
           );
-          command.help();
+          program.help();
         }
       }
     }

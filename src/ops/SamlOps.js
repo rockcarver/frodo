@@ -1,157 +1,321 @@
 import fs from 'fs';
+import _ from 'lodash';
+import { decode, encode, encodeBase64Url } from '../api/utils/Base64.js';
 import {
-  getProviders,
-  getProvider,
-  putProviderByTypeAndId,
-} from '../api/Saml2Api.js';
-import { getScript, putScript } from '../api/ScriptApi.js';
-import {
-  convertBase64ScriptToArray,
-  convertArrayToBase64Script,
-  getRealmString,
-  getTypedFilename,
-  saveJsonToFile,
-  validateImport,
-} from '../api/utils/ExportImportUtils.js';
-import {
+  createTable,
   printMessage,
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
 } from '../api/utils/Console.js';
+import {
+  getProviders,
+  findProviders,
+  getProviderByLocationAndId,
+  getProviderMetadata,
+  createProvider,
+} from '../api/Saml2Api.js';
+import { getScript, putScript } from '../api/ScriptApi.js';
+import {
+  convertBase64TextToArray,
+  convertBase64UrlTextToArray,
+  convertTextArrayToBase64,
+  convertTextArrayToBase64Url,
+  getRealmString,
+  getTypedFilename,
+  saveJsonToFile,
+  validateImport,
+} from '../api/utils/ExportImportUtils.js';
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {
   return {
     meta: {},
     script: {},
-    idp: {},
+    saml: {
+      hosted: {},
+      remote: {},
+      metadata: {},
+    },
   };
 }
 
+/**
+ * List entity providers
+ * @param {String} long Long list format with details
+ */
 export async function listProviders(long = false) {
-  const providerList = await getProviders();
+  let providerList = [];
+  try {
+    const response = await getProviders();
+    if (response.status < 200 || response.status > 399) {
+      printMessage(response, 'data');
+      printMessage(`listProviders: ${response.status}`, 'error');
+    }
+    providerList = response.data.result;
+  } catch (error) {
+    printMessage(`listProviders ERROR: ${error}`, 'error');
+    printMessage(error, 'data');
+  }
   providerList.sort((a, b) => a._id.localeCompare(b._id));
   if (!long) {
     providerList.forEach((item) => {
       printMessage(`${item.entityId}`, 'data');
     });
-  }
-}
-
-export async function exportProvider(id, file = null) {
-  let fileName = file;
-  if (!fileName) {
-    fileName = getTypedFilename(id, 'idp');
-  }
-  createProgressBar(1, `Exporting ${id}`);
-  const idpData = await getProvider(id);
-  if (idpData.length === 0) {
-    stopProgressBar(`Provider ${id} not found!`);
-    printMessage(`Provider ${id} not found!`, 'error');
   } else {
-    updateProgressBar(`Writing file ${fileName}`);
-    const fileData = getFileDataTemplate();
-    fileData.idp[idpData._id] = idpData;
-    if (idpData.transform) {
-      const scriptData = await getScript(idpData.transform);
-      scriptData.script = convertBase64ScriptToArray(scriptData.script);
-      fileData.script[idpData.transform] = scriptData;
-    }
-    saveJsonToFile(fileData, fileName);
-    stopProgressBar(`Exported ${id.brightCyan} to ${fileName.brightCyan}.`);
+    const table = createTable([
+      'Entity Id'.brightCyan,
+      'Location'.brightCyan,
+      'Role(s)'.brightCyan,
+    ]);
+    const roleMap = {
+      identityProvider: 'IDP',
+      serviceProvider: 'SP',
+      attributeQueryProvider: 'AttrQuery',
+      xacmlPolicyEnforcementPoint: 'XACML PEP',
+    };
+    providerList.forEach((provider) => {
+      table.push([
+        provider.entityId,
+        provider.location,
+        provider.roles.map((role) => roleMap[role]).join(', '),
+      ]);
+    });
+    printMessage(table.toString());
   }
 }
 
-export async function exportProvidersToFile(file) {
+/**
+ * Include dependencies in the export file
+ * @param {Object} providerData Object representing a SAML entity provider
+ * @param {Object} fileData File data object to add dependencies to
+ */
+async function exportDependencies(providerData, fileData) {
+  const attrMapperScriptId = _.get(providerData, [
+    'identityProvider',
+    'assertionProcessing',
+    'attributeMapper',
+    'attributeMapperScript',
+  ]);
+  if (attrMapperScriptId && attrMapperScriptId !== '[Empty]') {
+    const scriptData = await getScript(attrMapperScriptId);
+    scriptData.script = convertBase64TextToArray(scriptData.script);
+    // eslint-disable-next-line no-param-reassign
+    fileData.script[attrMapperScriptId] = scriptData;
+  }
+  const idpAdapterScriptId = _.get(providerData, [
+    'identityProvider',
+    'advanced',
+    'idpAdapter',
+    'idpAdapterScript',
+  ]);
+  if (idpAdapterScriptId && idpAdapterScriptId !== '[Empty]') {
+    const scriptData = await getScript(idpAdapterScriptId);
+    scriptData.script = convertBase64TextToArray(scriptData.script);
+    // eslint-disable-next-line no-param-reassign
+    fileData.script[idpAdapterScriptId] = scriptData;
+  }
+  const metaDataResponse = await getProviderMetadata(providerData.entityId);
+  // eslint-disable-next-line no-param-reassign
+  fileData.saml.metadata[providerData._id] = convertBase64UrlTextToArray(
+    encodeBase64Url(metaDataResponse.data)
+  );
+}
+
+/**
+ * Export a single entity provider to file
+ * @param {String} entityId Provider entity id
+ * @param {String} file Optional filename
+ */
+export async function exportProvider(entityId, file = null) {
   let fileName = file;
   if (!fileName) {
-    fileName = getTypedFilename(`all${getRealmString()}Providers`, 'idp');
+    fileName = getTypedFilename(entityId, 'saml');
+  }
+  createProgressBar(1, `Exporting provider ${entityId}`);
+  const found = await findProviders(`entityId eq '${entityId}'`, 'location');
+  switch (found.data.resultCount) {
+    case 0:
+      printMessage(`No provider with entity id '${entityId}' found`, 'error');
+      break;
+    case 1:
+      {
+        const { location } = found.data.result[0];
+        const id = found.data.result[0]._id;
+        getProviderByLocationAndId(location, id)
+          .then(async (response) => {
+            const providerData = response.data;
+            updateProgressBar(`Writing file ${fileName}`);
+            const fileData = getFileDataTemplate();
+            fileData.saml[location][providerData._id] = providerData;
+            await exportDependencies(providerData, fileData);
+            saveJsonToFile(fileData, fileName);
+            stopProgressBar(
+              `Exported ${entityId.brightCyan} to ${fileName.brightCyan}.`
+            );
+          })
+          .catch((err) => {
+            stopProgressBar(`${err}`);
+            printMessage(err, 'error');
+          });
+      }
+      break;
+    default:
+      printMessage(
+        `Multiple providers with entity id '${entityId}' found`,
+        'error'
+      );
+  }
+}
+
+/**
+ * Export all entity providers to one file
+ * @param {String} file Optional filename
+ */
+export async function exportProvidersToFile(file = null) {
+  let fileName = file;
+  if (!fileName) {
+    fileName = getTypedFilename(`all${getRealmString()}Providers`, 'saml');
   }
   const fileData = getFileDataTemplate();
-  const allIdpsData = await getProviders();
-  createProgressBar(allIdpsData.length, 'Exporting providers');
-  for (const idpData of allIdpsData) {
-    updateProgressBar(`Exporting provider ${idpData._id}`);
-    fileData.idp[idpData._id] = idpData;
-    if (idpData.transform) {
+  const found = await getProviders();
+  if (found.status < 200 || found.status > 399) {
+    printMessage(found, 'data');
+    printMessage(`exportProvidersToFile: ${found.status}`, 'error');
+  } else if (found.data.resultCount > 0) {
+    createProgressBar(found.data.resultCount, 'Exporting providers');
+    for (const stubData of found.data.result) {
+      updateProgressBar(`Exporting provider ${stubData.entityId}`);
       // eslint-disable-next-line no-await-in-loop
-      const scriptData = await getScript(idpData.transform);
-      scriptData.script = convertBase64ScriptToArray(scriptData.script);
-      fileData.script[idpData.transform] = scriptData;
-    }
-  }
-  saveJsonToFile(fileData, fileName);
-  // saveToFile('idp', allProvidersData, '_id', fileName);
-  stopProgressBar(`${allIdpsData.length} providers exported to ${fileName}.`);
-}
-
-export async function exportProvidersToFiles() {
-  const allIdpsData = await getProviders();
-  // printMessage(allIdpsData, 'data');
-  createProgressBar(allIdpsData.length, 'Exporting providers');
-  for (const idpData of allIdpsData) {
-    updateProgressBar(`Writing provider ${idpData._id}`);
-    const fileName = getTypedFilename(idpData._id, 'idp');
-    const fileData = getFileDataTemplate();
-    fileData.idp[idpData._id] = idpData;
-    if (idpData.transform) {
+      const response = await getProviderByLocationAndId(
+        stubData.location,
+        stubData._id
+      );
+      const providerData = response.data;
       // eslint-disable-next-line no-await-in-loop
-      const scriptData = await getScript(idpData.transform);
-      scriptData.script = convertBase64ScriptToArray(scriptData.script);
-      fileData.script[idpData.transform] = scriptData;
+      await exportDependencies(providerData, fileData);
+      fileData.saml[stubData.location][providerData._id] = providerData;
     }
     saveJsonToFile(fileData, fileName);
+    stopProgressBar(
+      `${found.data.resultCount} providers exported to ${fileName}.`
+    );
+  } else {
+    printMessage('No entity providers found.', 'info');
   }
-  stopProgressBar(`${allIdpsData.length} providers exported.`);
 }
 
-export async function importProviderById(id, file) {
+/**
+ * Export all entity providers to individual files
+ */
+export async function exportProvidersToFiles() {
+  const found = await getProviders();
+  if (found.status < 200 || found.status > 399) {
+    printMessage(found, 'data');
+    printMessage(`exportProvidersToFile: ${found.status}`, 'error');
+  } else if (found.data.resultCount > 0) {
+    createProgressBar(found.data.resultCount, 'Exporting providers');
+    for (const stubData of found.data.result) {
+      updateProgressBar(`Exporting provider ${stubData.entityId}`);
+      const fileName = getTypedFilename(stubData.entityId, 'saml');
+      const fileData = getFileDataTemplate();
+      // eslint-disable-next-line no-await-in-loop
+      const response = await getProviderByLocationAndId(
+        stubData.location,
+        stubData._id
+      );
+      const providerData = response.data;
+      // eslint-disable-next-line no-await-in-loop
+      await exportDependencies(providerData, fileData);
+      fileData.saml[stubData.location][providerData._id] = providerData;
+      saveJsonToFile(fileData, fileName);
+    }
+    stopProgressBar(`${found.data.resultCount} providers exported.`);
+  } else {
+    printMessage('No entity providers found.', 'info');
+  }
+}
+
+/**
+ * Include dependencies from the import file
+ * @param {Object} providerData Object representing a SAML entity provider
+ * @param {Object} fileData File data object to read dependencies from
+ */
+async function importDependencies(providerData, fileData) {
+  const attrMapperScriptId = _.get(providerData, [
+    'identityProvider',
+    'assertionProcessing',
+    'attributeMapper',
+    'attributeMapperScript',
+  ]);
+  if (attrMapperScriptId && attrMapperScriptId !== '[Empty]') {
+    const scriptData = _.get(fileData, ['script', attrMapperScriptId]);
+    scriptData.script = convertTextArrayToBase64(scriptData.script);
+    await putScript(attrMapperScriptId, scriptData);
+  }
+  const idpAdapterScriptId = _.get(providerData, [
+    'identityProvider',
+    'advanced',
+    'idpAdapter',
+    'idpAdapterScript',
+  ]);
+  if (idpAdapterScriptId && idpAdapterScriptId !== '[Empty]') {
+    const scriptData = _.get(fileData, ['script', idpAdapterScriptId]);
+    scriptData.script = convertTextArrayToBase64(scriptData.script);
+    await putScript(attrMapperScriptId, scriptData);
+  }
+}
+
+/**
+ * Find provider in import file and return its location
+ * @param {String} entityId64 Base64-encoded provider entity id
+ * @param {Object} fileData Import file json data
+ * @returns {String} 'hosted' or 'remote' if found, undefined otherwise
+ */
+function getLocation(entityId64, fileData) {
+  if (_.get(fileData, ['saml', 'hosted', entityId64])) {
+    return 'hosted';
+  }
+  if (_.get(fileData, ['saml', 'remote', entityId64])) {
+    return 'remote';
+  }
+  return undefined;
+}
+
+/**
+ * Import a SAML entity provider by entity id from file
+ * @param {String} entityId Provider entity id
+ * @param {String} file Import file name
+ */
+export async function importProvider(entityId, file) {
+  const entityId64 = encode(entityId, false);
   fs.readFile(file, 'utf8', async (err, data) => {
     if (err) throw err;
     const fileData = JSON.parse(data);
     if (validateImport(fileData.meta)) {
       createProgressBar(1, 'Importing provider...');
-      let found = false;
-      for (const idpId in fileData.idp) {
-        if ({}.hasOwnProperty.call(fileData.idp, idpId)) {
-          if (idpId === id) {
-            found = true;
-            updateProgressBar(`Importing ${fileData.idp[idpId]._id}`);
-            const scriptId = fileData.idp[idpId].transform;
-            const scriptData = fileData.script[scriptId];
-            if (scriptId && scriptData) {
-              scriptData.script = convertArrayToBase64Script(scriptData.script);
-              // eslint-disable-next-line no-await-in-loop
-              await putScript(
-                fileData.idp[idpId].transform,
-                fileData.script[fileData.idp[idpId].transform]
-              );
-            }
-            putProviderByTypeAndId(
-              fileData.idp[idpId]._type._id,
-              idpId,
-              fileData.idp[idpId]
-            ).then((result) => {
-              if (result == null) {
-                stopProgressBar(
-                  `Error importing provider ${fileData.idp[idpId]._id}`
-                );
-                printMessage(
-                  `Error importing provider ${fileData.idp[idpId]._id}`,
-                  'error'
-                );
-              } else {
-                stopProgressBar(`Successfully imported provider ${id}.`);
-              }
-            });
-            break;
-          }
+      const location = getLocation(entityId64, fileData);
+      if (location) {
+        const providerData = _.get(fileData, ['saml', location, entityId64]);
+        updateProgressBar(`Importing ${entityId}`);
+        importDependencies(providerData, fileData);
+        let metaData = null;
+        if (location === 'remote') {
+          metaData = convertTextArrayToBase64Url(
+            fileData.saml.metadata[entityId64]
+          );
         }
-      }
-      if (!found) {
+        createProvider(location, providerData, metaData)
+          .then(() => {
+            stopProgressBar(`Successfully imported provider ${entityId}.`);
+          })
+          .catch((createProviderErr) => {
+            printMessage(`\nError importing provider ${entityId}`, 'error');
+            printMessage(createProviderErr.response, 'error');
+          });
+      } else {
         stopProgressBar(
-          `Provider ${id.brightCyan} not found in ${file.brightCyan}!`
+          `Provider ${entityId.brightCyan} not found in ${file.brightCyan}!`
         );
       }
     } else {
@@ -160,46 +324,48 @@ export async function importProviderById(id, file) {
   });
 }
 
+/**
+ * Import first SAML entity provider from file
+ * @param {String} file Import file name
+ */
 export async function importFirstProvider(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
     if (err) throw err;
     const fileData = JSON.parse(data);
     if (validateImport(fileData.meta)) {
       createProgressBar(1, 'Importing provider...');
-      for (const idpId in fileData.idp) {
-        if ({}.hasOwnProperty.call(fileData.idp, idpId)) {
-          updateProgressBar(`Importing ${fileData.idp[idpId]._id}`);
-          const scriptId = fileData.idp[idpId].transform;
-          const scriptData = fileData.script[scriptId];
-          if (scriptId && scriptData) {
-            scriptData.script = convertArrayToBase64Script(scriptData.script);
-            // eslint-disable-next-line no-await-in-loop
-            await putScript(
-              fileData.idp[idpId].transform,
-              fileData.script[fileData.idp[idpId].transform]
-            );
-          }
-          putProviderByTypeAndId(
-            fileData.idp[idpId]._type._id,
-            idpId,
-            fileData.idp[idpId]
-          ).then((result) => {
-            if (result == null) {
-              stopProgressBar(
-                `Error importing provider ${fileData.idp[idpId]._id}`
-              );
-              printMessage(
-                `Error importing provider ${fileData.idp[idpId]._id}`,
-                'error'
-              );
-            } else {
-              stopProgressBar(
-                `Successfully imported provider ${fileData.idp[idpId]._id}.`
-              );
-            }
-          });
-          break;
+      // find providers in hosted and if none exist in remote
+      let location = 'hosted';
+      let providerIds = _.keys(fileData.saml[location]);
+      if (providerIds.length === 0) {
+        location = 'remote';
+        providerIds = _.keys(fileData.saml[location]);
+        if (providerIds.length === 0) {
+          location = null;
         }
+      }
+      if (location) {
+        const entityId64 = providerIds[0];
+        const entityId = decode(entityId64);
+        const providerData = _.get(fileData, ['saml', location, entityId64]);
+        updateProgressBar(`Importing ${entityId}`);
+        importDependencies(providerData, fileData);
+        let metaData = null;
+        if (location === 'remote') {
+          metaData = convertTextArrayToBase64Url(
+            fileData.saml.metadata[entityId64]
+          );
+        }
+        createProvider(location, providerData, metaData)
+          .then(() => {
+            stopProgressBar(`Successfully imported provider ${entityId}.`);
+          })
+          .catch((createProviderErr) => {
+            printMessage(`\nError importing provider ${entityId}`, 'error');
+            printMessage(createProviderErr.response.data, 'error');
+          });
+      } else {
+        stopProgressBar(`No providers found in ${file.brightCyan}!`);
       }
     } else {
       printMessage('Import validation failed...', 'error');
@@ -207,38 +373,38 @@ export async function importFirstProvider(file) {
   });
 }
 
+/**
+ * Import all SAML entity providers from file
+ * @param {String} file Import file name
+ */
 export async function importProvidersFromFile(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
     if (err) throw err;
     const fileData = JSON.parse(data);
     if (validateImport(fileData.meta)) {
-      createProgressBar(
-        Object.keys(fileData.idp).length,
-        'Importing providers...'
-      );
-      for (const idpId in fileData.idp) {
-        if ({}.hasOwnProperty.call(fileData.idp, idpId)) {
-          const scriptId = fileData.idp[idpId].transform;
-          const scriptData = fileData.script[scriptId];
-          if (scriptId && scriptData) {
-            scriptData.script = convertArrayToBase64Script(scriptData.script);
-            // eslint-disable-next-line no-await-in-loop
-            await putScript(
-              fileData.idp[idpId].transform,
-              fileData.script[fileData.idp[idpId].transform]
-            );
-          }
-          // eslint-disable-next-line no-await-in-loop
-          const result = await putProviderByTypeAndId(
-            fileData.idp[idpId]._type._id,
-            idpId,
-            fileData.idp[idpId]
+      // find providers in hosted and in remote and map locations
+      const hostedIds = _.keys(fileData.saml.hosted);
+      const remoteIds = _.keys(fileData.saml.remote);
+      const providerIds = hostedIds.concat(remoteIds);
+      createProgressBar(providerIds.length, 'Importing providers...');
+      for (const entityId64 of providerIds) {
+        const location = hostedIds.includes(entityId64) ? 'hosted' : 'remote';
+        const entityId = decode(entityId64);
+        const providerData = _.get(fileData, ['saml', location, entityId64]);
+        importDependencies(providerData, fileData);
+        let metaData = null;
+        if (location === 'remote') {
+          metaData = convertTextArrayToBase64Url(
+            fileData.saml.metadata[entityId64]
           );
-          if (!result) {
-            updateProgressBar(
-              `Successfully imported ${fileData.idp[idpId].name}`
-            );
-          }
+        }
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await createProvider(location, providerData, metaData);
+          updateProgressBar(`Imported ${entityId}`);
+        } catch (createProviderErr) {
+          printMessage(`\nError importing provider ${entityId}`, 'error');
+          printMessage(createProviderErr.response.data, 'error');
         }
       }
       stopProgressBar(`Providers imported.`);
@@ -248,42 +414,59 @@ export async function importProvidersFromFile(file) {
   });
 }
 
+/**
+ * Import all SAML entity providers from all *.saml.json files in the current directory
+ */
 export async function importProvidersFromFiles() {
   const names = fs.readdirSync('.');
   const jsonFiles = names.filter((name) =>
-    name.toLowerCase().endsWith('.idp.json')
+    name.toLowerCase().endsWith('.saml.json')
   );
-
   createProgressBar(jsonFiles.length, 'Importing providers...');
   let total = 0;
+  let totalErrors = 0;
   for (const file of jsonFiles) {
     const data = fs.readFileSync(file, 'utf8');
     const fileData = JSON.parse(data);
     if (validateImport(fileData.meta)) {
-      const count = Object.keys(fileData.idp).length;
-      total += count;
-      for (const idpId in fileData.idp) {
-        if ({}.hasOwnProperty.call(fileData.idp, idpId)) {
-          // eslint-disable-next-line no-await-in-loop
-          const result = await putProviderByTypeAndId(
-            fileData.idp[idpId]._type._id,
-            idpId,
-            fileData.idp[idpId]
+      // find providers in hosted and in remote and map locations
+      const hostedIds = _.keys(fileData.saml.hosted);
+      const remoteIds = _.keys(fileData.saml.remote);
+      const providerIds = hostedIds.concat(remoteIds);
+      total += providerIds.length;
+      let errors = 0;
+      for (const entityId64 of providerIds) {
+        const location = hostedIds.includes(entityId64) ? 'hosted' : 'remote';
+        const entityId = decode(entityId64);
+        const providerData = _.get(fileData, ['saml', location, entityId64]);
+        importDependencies(providerData, fileData);
+        let metaData = null;
+        if (location === 'remote') {
+          metaData = convertTextArrayToBase64Url(
+            fileData.saml.metadata[entityId64]
           );
-          if (result == null) {
-            printMessage(
-              `Error importing ${count} providers from ${file}`,
-              'error'
-            );
-          }
+        }
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await createProvider(location, providerData, metaData);
+          // updateProgressBar(`Imported ${entityId}`);
+        } catch (createProviderErr) {
+          errors += 1;
+          printMessage(`\nError importing provider ${entityId}`, 'error');
+          printMessage(createProviderErr.response.data, 'error');
         }
       }
-      updateProgressBar(`Imported ${count} provider(s) from ${file}`);
+      totalErrors += errors;
+      updateProgressBar(
+        `Imported ${providerIds.length - errors} provider(s) from ${file}`
+      );
     } else {
       printMessage(`Validation of ${file} failed!`, 'error');
     }
   }
   stopProgressBar(
-    `Finished importing ${total} provider(s) from ${jsonFiles.length} file(s).`
+    `Imported ${total - totalErrors} of ${total} provider(s) from ${
+      jsonFiles.length
+    } file(s).`
   );
 }
