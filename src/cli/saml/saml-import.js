@@ -25,7 +25,7 @@ program
   .addOption(
     new Option(
       '-i, --entity-id <entity-id>',
-      'Entity id. If specified, -a and -A are ignored. If omitted, provider is named after entity id in the file.'
+      'Entity id. If specified, only one provider is imported and the options -a and -A are ignored.'
     )
   )
   .addOption(
