@@ -1,6 +1,4 @@
-/* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
-import Table from 'cli-table3';
 // eslint-disable-next-line no-unused-vars
 import * as colors from '@colors/colors';
 import * as common from '../cmd_common.js';
@@ -12,7 +10,11 @@ import {
   removeCustomDomain,
 } from '../../api/RealmApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import {
+  printMessage,
+  createTable,
+  createKeyValueTable,
+} from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('realm')
@@ -43,31 +45,12 @@ export default function setup() {
         printMessage('Listing all realms...');
         const realms = await listRealms();
         if (options.long) {
-          const table = new Table({
-            head: [
-              'Name'.brightCyan,
-              'Status'.brightCyan,
-              'Custom Domains'.brightCyan,
-              'Parent'.brightCyan,
-            ],
-            chars: {
-              top: '',
-              'top-mid': '',
-              'top-left': '',
-              'top-right': '',
-              bottom: '',
-              'bottom-mid': '',
-              'bottom-left': '',
-              'bottom-right': '',
-              left: '',
-              'left-mid': '',
-              mid: '',
-              'mid-mid': '',
-              right: '',
-              'right-mid': '',
-            },
-            style: { 'padding-left': 0, 'padding-right': 0 },
-          });
+          const table = createTable([
+            'Name'.brightCyan,
+            'Status'.brightCyan,
+            'Custom Domains'.brightCyan,
+            'Parent'.brightCyan,
+          ]);
           realms.forEach((realmConfig) => {
             table.push([
               realmConfig.name,
@@ -108,26 +91,7 @@ export default function setup() {
         );
         const realmConfig = await getRealmByName(storage.session.getRealm());
         if (realmConfig != null) {
-          const table = new Table({
-            chars: {
-              top: '',
-              'top-mid': '',
-              'top-left': '',
-              'top-right': '',
-              bottom: '',
-              'bottom-mid': '',
-              'bottom-left': '',
-              'bottom-right': '',
-              left: '',
-              'left-mid': '',
-              mid: '',
-              'mid-mid': '',
-              right: '',
-              'right-mid': '',
-            },
-            style: { 'padding-left': 0, 'padding-right': 0 },
-            wordWrap: true,
-          });
+          const table = createKeyValueTable();
           table.push(['Name'.brightCyan, realmConfig.name]);
           table.push([
             'Status'.brightCyan,
@@ -180,26 +144,7 @@ export default function setup() {
           options.domain
         );
         if (realmConfig != null) {
-          const table = new Table({
-            chars: {
-              top: '',
-              'top-mid': '',
-              'top-left': '',
-              'top-right': '',
-              bottom: '',
-              'bottom-mid': '',
-              'bottom-left': '',
-              'bottom-right': '',
-              left: '',
-              'left-mid': '',
-              mid: '',
-              'mid-mid': '',
-              right: '',
-              'right-mid': '',
-            },
-            style: { 'padding-left': 0, 'padding-right': 0 },
-            wordWrap: true,
-          });
+          const table = createKeyValueTable();
           table.push(['Name'.brightCyan, realmConfig.name]);
           table.push([
             'Status'.brightCyan,
@@ -252,26 +197,7 @@ export default function setup() {
           options.domain
         );
         if (realmConfig != null) {
-          const table = new Table({
-            chars: {
-              top: '',
-              'top-mid': '',
-              'top-left': '',
-              'top-right': '',
-              bottom: '',
-              'bottom-mid': '',
-              'bottom-left': '',
-              'bottom-right': '',
-              left: '',
-              'left-mid': '',
-              mid: '',
-              'mid-mid': '',
-              right: '',
-              'right-mid': '',
-            },
-            style: { 'padding-left': 0, 'padding-right': 0 },
-            wordWrap: true,
-          });
+          const table = createKeyValueTable();
           table.push(['Name'.brightCyan, realmConfig.name]);
           table.push([
             'Status'.brightCyan,

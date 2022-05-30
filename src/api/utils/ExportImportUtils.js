@@ -2,6 +2,7 @@ import fs from 'fs';
 import slugify from 'slugify';
 import storage from '../../storage/SessionStorage.js';
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
+import { encode, decode, encodeBase64Url, decodeBase64Url } from './Base64.js';
 import { printMessage } from './Console.js';
 
 export function getCurrentTimestamp() {
@@ -41,17 +42,31 @@ export function getRealmString() {
     .reduce((result, item) => `${result}${titleCase(item)}`, '');
 }
 
-export function convertBase64ScriptToArray(b64text) {
+export function convertBase64TextToArray(b64text) {
   let arrayOut = [];
-  let plainText = Buffer.from(b64text, 'base64').toString();
+  let plainText = decode(b64text);
   plainText = plainText.replaceAll('\t', '    ');
   arrayOut = plainText.split('\n');
   return arrayOut;
 }
 
-export function convertArrayToBase64Script(scriptArray) {
-  const joinedText = scriptArray.join('\n');
-  const b64encodedScript = Buffer.from(joinedText).toString('base64');
+export function convertBase64UrlTextToArray(b64UTF8Text) {
+  let arrayOut = [];
+  let plainText = decodeBase64Url(b64UTF8Text);
+  plainText = plainText.replaceAll('\t', '    ');
+  arrayOut = plainText.split('\n');
+  return arrayOut;
+}
+
+export function convertTextArrayToBase64(textArray) {
+  const joinedText = textArray.join('\n');
+  const b64encodedScript = encode(joinedText);
+  return b64encodedScript;
+}
+
+export function convertTextArrayToBase64Url(textArray) {
+  const joinedText = textArray.join('\n');
+  const b64encodedScript = encodeBase64Url(joinedText);
   return b64encodedScript;
 }
 
@@ -71,7 +86,8 @@ export function checkTargetCompatibility(type, source, target) {
 }
 
 export function getTypedFilename(name, type) {
-  return `${slugify(name)}.${type}.json`;
+  const slug = slugify(name.replace(/^http(s?):\/\//, ''));
+  return `${slug}.${type}.json`;
 }
 
 export function saveToFile(type, data, identifier, filename) {
