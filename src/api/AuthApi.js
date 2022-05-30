@@ -4,7 +4,7 @@ import url from 'url';
 import util from 'util';
 import { createHash, randomBytes } from 'crypto';
 import readlineSync from 'readline-sync';
-import * as base64url from './utils/Base64URL.js';
+import { encodeBase64Url } from './utils/Base64.js';
 import { generateAmApi, generateOauth2Api } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 import * as global from '../storage/StaticStorage.js';
@@ -271,8 +271,8 @@ async function determineDeployment() {
   const forgeopsClientId = 'idm-admin-ui';
   let response = {};
 
-  const verifier = base64url.encode(randomBytes(32));
-  const challenge = base64url.encode(
+  const verifier = encodeBase64Url(randomBytes(32));
+  const challenge = encodeBase64Url(
     createHash('sha256').update(verifier).digest()
   );
   const challengeMethod = 'S256';
@@ -448,8 +448,8 @@ async function getAuthCode(
 
 async function getAccessToken() {
   try {
-    const verifier = base64url.encode(randomBytes(32));
-    const challenge = base64url.encode(
+    const verifier = encodeBase64Url(randomBytes(32));
+    const challenge = encodeBase64Url(
       createHash('sha256').update(verifier).digest()
     );
     const challengeMethod = 'S256';
