@@ -1,12 +1,15 @@
 import chalk from 'chalk';
 import { SingleBar, Presets } from 'cli-progress';
 import { createSpinner } from 'nanospinner';
+import Table from 'cli-table3';
+// eslint-disable-next-line no-unused-vars
+import * as colors from '@colors/colors';
 import storage from '../../storage/SessionStorage.js';
 
 function data(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message);
+      console.dir(message, { depth: 3 });
       break;
     default:
       console.log(message);
@@ -16,7 +19,7 @@ function data(message) {
 function text(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message);
+      console.dir(message, { depth: 3 });
       break;
     default:
       console.error(message);
@@ -26,7 +29,7 @@ function text(message) {
 function info(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message);
+      console.dir(message, { depth: 3 });
       break;
     default:
       console.error(chalk.cyanBright(message));
@@ -36,7 +39,7 @@ function info(message) {
 function warn(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message);
+      console.dir(message, { depth: 3 });
       break;
     default:
       console.error(chalk.yellow(message));
@@ -46,7 +49,7 @@ function warn(message) {
 function error(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message);
+      console.dir(message, { depth: 3 });
       break;
     default:
       console.error(chalk.redBright(message));
@@ -182,4 +185,50 @@ export function stopSpinner() {
 export function spinSpinner() {
   const spinner = storage.session.getItem('Spinner');
   if (spinner) spinner.spin();
+}
+
+export function createTable(head) {
+  return new Table({
+    head,
+    chars: {
+      top: '',
+      'top-mid': '',
+      'top-left': '',
+      'top-right': '',
+      bottom: '',
+      'bottom-mid': '',
+      'bottom-left': '',
+      'bottom-right': '',
+      left: '',
+      'left-mid': '',
+      mid: '',
+      'mid-mid': '',
+      right: '',
+      'right-mid': '',
+    },
+    style: { 'padding-left': 0, 'padding-right': 0, head: ['brightCyan'] },
+  });
+}
+
+export function createKeyValueTable() {
+  return new Table({
+    chars: {
+      top: '',
+      'top-mid': '',
+      'top-left': '',
+      'top-right': '',
+      bottom: '',
+      'bottom-mid': '',
+      'bottom-left': '',
+      'bottom-right': '',
+      left: '',
+      'left-mid': '',
+      mid: '',
+      'mid-mid': '',
+      right: '',
+      'right-mid': '',
+    },
+    style: { 'padding-left': 0, 'padding-right': 0 },
+    wordWrap: true,
+  });
 }

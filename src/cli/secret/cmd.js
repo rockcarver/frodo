@@ -1,25 +1,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 import { Command, Option } from 'commander';
-import Table from 'cli-table3';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import wordwrap from '../../api/utils/Wordwrap.js';
-import {
-  listSecrets,
-  getSecret,
-  // createSecret,
-  // setSecretDescription,
-  // deleteSecret,
-  // listSecretVersions,
-  // createNewVersionOfSecret,
-  // getVersionOfSecret,
-  // enableVersionOfSecret,
-  // disableVersionOfSecret,
-  // deleteVersionOfSecret,
-} from '../../api/SecretsApi.js';
+import { listSecrets, getSecret } from '../../api/SecretsApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import {
+  printMessage,
+  createTable,
+  createKeyValueTable,
+} from '../../api/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('secret')
@@ -50,34 +41,7 @@ export default function setup() {
         printMessage('Listing all secrets...');
         const secrets = await listSecrets();
         if (options.long) {
-          const table = new Table({
-            head: [
-              'Name'.brightCyan,
-              'AV'.brightCyan,
-              'LV'.brightCyan,
-              'Status'.brightCyan,
-              'Description'.brightCyan,
-              'Modified'.brightCyan,
-            ],
-            chars: {
-              top: '',
-              'top-mid': '',
-              'top-left': '',
-              'top-right': '',
-              bottom: '',
-              'bottom-mid': '',
-              'bottom-left': '',
-              'bottom-right': '',
-              left: '',
-              'left-mid': '',
-              mid: '',
-              'mid-mid': '',
-              right: '',
-              'right-mid': '',
-            },
-            style: { 'padding-left': 0, 'padding-right': 0 },
-            wordWrap: true,
-          });
+          const table = createTable();
 
           secrets.forEach((secret) => {
             table.push([
@@ -119,26 +83,7 @@ export default function setup() {
       if (await getTokens()) {
         printMessage(`Retrieving details of secret ${options.target}...`);
         const secret = await getSecret(options.target);
-        const table = new Table({
-          chars: {
-            top: '',
-            'top-mid': '',
-            'top-left': '',
-            'top-right': '',
-            bottom: '',
-            'bottom-mid': '',
-            'bottom-left': '',
-            'bottom-right': '',
-            left: '',
-            'left-mid': '',
-            mid: '',
-            'mid-mid': '',
-            right: '',
-            'right-mid': '',
-          },
-          style: { 'padding-left': 0, 'padding-right': 0 },
-          wordWrap: true,
-        });
+        const table = createKeyValueTable();
         table.push(['Name'.brightCyan, secret._id]);
         table.push(['Active Version'.brightCyan, secret.activeVersion]);
         table.push(['Loaded Version'.brightCyan, secret.loadedVersion]);
