@@ -4,16 +4,16 @@ import { getTokens } from '../../api/AuthApi.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 import {
-  importProvider,
-  importProvidersFromFile,
-  importProvidersFromFiles,
-  importFirstProvider,
-} from '../../ops/SamlOps.js';
+  importCircleOfTrust,
+  importCirclesOfTrustFromFile,
+  importCirclesOfTrustFromFiles,
+  importFirstCircleOfTrust,
+} from '../../ops/CirclesOfTrustOps.js';
 
-const program = new Command('frodo saml import');
+const program = new Command('frodo saml cot import');
 
 program
-  .description('Import SAML entity providers.')
+  .description('Import SAML circles of trust.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
@@ -24,26 +24,26 @@ program
   .addOption(common.insecureOption)
   .addOption(
     new Option(
-      '-i, --entity-id <entity-id>',
-      'Entity id. If specified, only one provider is imported and the options -a and -A are ignored.'
+      '-i, --cot-id <cot-id>',
+      'Circle of trust id. If specified, only one circle of trust is imported and the options -a and -A are ignored.'
     )
   )
   .addOption(
     new Option(
       '-f, --file <file>',
-      'Name of the file to import the entity provider(s) from.'
+      'Name of the file to import the circle(s) of trust from.'
     )
   )
   .addOption(
     new Option(
       '-a, --all',
-      'Import all entity providers from single file. Ignored with -i.'
+      'Import all circles of trust from single file. Ignored with -i.'
     )
   )
   .addOption(
     new Option(
       '-A, --all-separate',
-      'Import all entity providers from separate files (*.saml.json) in the current directory. Ignored with -i or -a.'
+      'Import all circles of trust from separate files (*.cot.saml.json) in the current directory. Ignored with -i or -a.'
     )
   )
   .action(
@@ -57,36 +57,36 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by id
-        if (options.file && options.entityId) {
+        if (options.file && options.cotId) {
           printMessage(
-            `Importing provider "${
-              options.entityId
+            `Importing circle of trust "${
+              options.cotId
             }" into realm "${storage.session.getRealm()}"...`
           );
-          importProvider(options.entityId, options.file);
+          importCircleOfTrust(options.cotId, options.file);
         }
         // --all -a
         else if (options.all && options.file) {
           printMessage(
-            `Importing all providers from a single file (${options.file})...`
+            `Importing all circles of trust from a single file (${options.file})...`
           );
-          importProvidersFromFile(options.file);
+          importCirclesOfTrustFromFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
           printMessage(
-            'Importing all providers from separate files (*.saml.json) in current directory...'
+            'Importing all circles of trust from separate files (*.saml.json) in current directory...'
           );
-          importProvidersFromFiles();
+          importCirclesOfTrustFromFiles();
         }
         // import first provider from file
         else if (options.file) {
           printMessage(
-            `Importing first provider from file "${
+            `Importing first circle of trust from file "${
               options.file
             }" into realm "${storage.session.getRealm()}"...`
           );
-          importFirstProvider(options.file);
+          importFirstCircleOfTrust(options.file);
         }
         // unrecognized combination of options or no options
         else {

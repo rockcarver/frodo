@@ -298,7 +298,7 @@ export async function importProvider(entityId, file) {
       if (location) {
         const providerData = _.get(fileData, ['saml', location, entityId64]);
         updateProgressBar(`Importing ${entityId}`);
-        importDependencies(providerData, fileData);
+        await importDependencies(providerData, fileData);
         let metaData = null;
         if (location === 'remote') {
           metaData = convertTextArrayToBase64Url(
@@ -349,7 +349,7 @@ export async function importFirstProvider(file) {
         const entityId = decode(entityId64);
         const providerData = _.get(fileData, ['saml', location, entityId64]);
         updateProgressBar(`Importing ${entityId}`);
-        importDependencies(providerData, fileData);
+        await importDependencies(providerData, fileData);
         let metaData = null;
         if (location === 'remote') {
           metaData = convertTextArrayToBase64Url(
@@ -391,7 +391,8 @@ export async function importProvidersFromFile(file) {
         const location = hostedIds.includes(entityId64) ? 'hosted' : 'remote';
         const entityId = decode(entityId64);
         const providerData = _.get(fileData, ['saml', location, entityId64]);
-        importDependencies(providerData, fileData);
+        // eslint-disable-next-line no-await-in-loop
+        await importDependencies(providerData, fileData);
         let metaData = null;
         if (location === 'remote') {
           metaData = convertTextArrayToBase64Url(
