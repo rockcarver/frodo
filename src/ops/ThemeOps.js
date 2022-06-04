@@ -1,4 +1,4 @@
-import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
+import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
 // import { printMessage } from './utils/Console.js';
 
@@ -10,9 +10,14 @@ function getRealmThemes(themes) {
     : [];
 }
 
+/**
+ * Get all themes
+ * @returns {Promise} a promise that resolves to an array of themes
+ */
 export async function getThemes() {
-  const themes = await getConfigEntity(THEMEREALM_ID);
-  return getRealmThemes(themes);
+  return getConfigEntity(THEMEREALM_ID).then((response) =>
+    getRealmThemes(response.data)
+  );
 }
 
 export async function getTheme(id) {

@@ -9,7 +9,7 @@ import {
   putTheme,
   putThemeByName,
   putThemes,
-} from '../../api/ThemeApi.js';
+} from '../../ops/ThemeOps.js';
 import {
   getRealmString,
   getTypedFilename,
