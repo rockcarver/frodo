@@ -361,6 +361,7 @@ export async function importFirstProvider(file) {
             stopProgressBar(`Successfully imported provider ${entityId}.`);
           })
           .catch((createProviderErr) => {
+            stopProgressBar(`Error importing provider ${entityId}`);
             printMessage(`\nError importing provider ${entityId}`, 'error');
             printMessage(createProviderErr.response.data, 'error');
           });
