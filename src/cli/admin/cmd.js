@@ -17,7 +17,7 @@ import {
   hideGenericExtensionAttributes,
   showGenericExtensionAttributes,
   repairOrgModel,
-} from '../../api/AdminApi.js';
+} from '../../ops/AdminOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 
