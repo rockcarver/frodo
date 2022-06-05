@@ -2,7 +2,8 @@ import fs from 'fs';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { listJourneys, getJourneyData } from '../../api/TreeApi.js';
+import { getTree } from '../../api/TreeApi.js';
+import { exportJourney, listJourneys } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import {
   printMessage,
@@ -60,27 +61,7 @@ program
         // export
         if (options.tree) {
           printMessage('Exporting journey...');
-          let fileName = `${options.tree}.json`;
-          if (options.file) {
-            fileName = options.file;
-          }
-          createProgressBar(1);
-          updateProgressBar(`Exporting journey - ${options.tree}`);
-          const journeyData = await getJourneyData(options.tree);
-          stopProgressBar('Done');
-          fs.writeFile(
-            fileName,
-            JSON.stringify(journeyData, null, 2),
-            (err) => {
-              if (err) {
-                return printMessage(
-                  "ERROR - can't save journey to file",
-                  'error'
-                );
-              }
-              return '';
-            }
-          );
+          exportJourney(options.tree, options.file);
         }
         // --all -a
         else if (options.all) {
@@ -92,7 +73,7 @@ program
           createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
             // eslint-disable-next-line no-await-in-loop
-            journeysMap[item.name] = await getJourneyData(item.name);
+            journeysMap[item.name] = await getTree(item.name);
             updateProgressBar(`Exporting journey - ${item.name}`);
           }
           stopProgressBar('Done');
@@ -122,7 +103,7 @@ program
           for (const item of journeyList) {
             updateProgressBar(`Exporting journey - ${item.name}`);
             // eslint-disable-next-line no-await-in-loop
-            const journeyData = await getJourneyData(item.name);
+            const journeyData = await getTree(item.name);
             const fileName = `./${item.name}.json`;
             fs.writeFile(
               fileName,

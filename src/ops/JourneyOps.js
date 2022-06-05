@@ -9,14 +9,13 @@ import {
 import { replaceAll } from '../api/utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
 import {
-  getTrees,
+  getNodes,
+  getNode,
+  putNode,
   deleteNode,
-  getNodeData,
-  getAllNodesData,
-  getAllJourneyData,
+  getTrees,
   getTree,
-  putNodeData,
-  putJourneyStructureData,
+  putTree,
 } from '../api/TreeApi.js';
 import { getEmailTemplate, putEmailTemplate } from '../api/EmailTemplateApi.js';
 import { getScript, putScript } from '../api/ScriptApi.js';
@@ -150,34 +149,6 @@ async function getSaml2NodeDependencies(
   );
 }
 
-/**
- * Adds a theme to themes array if pageNode has a stage setting with 'themeId='
- * @param {Object} pageNode pageNode config object
- * @param {Array} themes array of themes already set for export
- * @returns {Array} array of linked themes
- */
-function addThemeForPageNode(pageNode, themes) {
-  if (pageNode.stage && pageNode.stage.indexOf('themeId=') === 0) {
-    const themeId = pageNode.stage.split('=')[1];
-    const addTheme = !filter(
-      themes,
-      (t) => t._id === themeId || t.name === themeId
-    ).length;
-    // If this theme does not already exist in the themes array add it.
-    if (addTheme) {
-      const themeToAdd = find(
-        this.themesConfig.realm[this.themeRealm],
-        (t) => t._id === themeId || t.name === themeId
-      );
-      if (themeToAdd) {
-        themeToAdd.isDefault = false;
-        themes.push(themeToAdd);
-      }
-    }
-  }
-  return themes;
-}
-
 async function exportDependencies(treeObject, exportData) {
   const nodeDataPromises = [];
   const scriptPromises = [];
@@ -197,7 +168,7 @@ async function exportDependencies(treeObject, exportData) {
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
-    nodeDataPromises.push(getNodeData(nodeId, nodeInfo.nodeType));
+    nodeDataPromises.push(getNode(nodeId, nodeInfo.nodeType));
   }
   const nodeObjects = await Promise.all(nodeDataPromises);
 
@@ -264,9 +235,7 @@ async function exportDependencies(treeObject, exportData) {
     // get inner nodes (nodes inside container nodes)
     if (containerNodes.includes(nodeObject._type._id)) {
       for (const innerNode of nodeObject.nodes) {
-        innerNodeDataPromises.push(
-          getNodeData(innerNode._id, innerNode.nodeType)
-        );
+        innerNodeDataPromises.push(getNode(innerNode._id, innerNode.nodeType));
       }
       if (nodeObject.stage && nodeObject.stage.indexOf('themeId=') === 0) {
         if (!themePromise) {
@@ -447,6 +416,11 @@ async function exportDependencies(treeObject, exportData) {
   }
 }
 
+/**
+ * Export journey by id/name
+ * @param {*} journeyId journey id/name
+ * @param {*} file optional export file name
+ */
 export async function exportJourney(journeyId, file = null) {
   let fileName = file;
   if (!fileName) {
@@ -539,8 +513,10 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
     innerNodeData._id = newUuid;
 
-    // eslint-disable-next-line no-await-in-loop
-    if ((await putNodeData(newUuid, nodeType, innerNodeData)) == null) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await putNode(newUuid, nodeType, innerNodeData);
+    } catch (nodeImportError) {
       printMessage(
         `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
         'error'
@@ -575,10 +551,12 @@ export async function importJourney(id, journeyMap, noreuuid) {
       }
     }
 
-    // eslint-disable-next-line no-await-in-loop
-    if ((await putNodeData(newUuid, nodeType, nodeData)) == null) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await putNode(newUuid, nodeType, nodeData);
+    } catch (nodeImportError) {
       printMessage(
-        `importJourney ERROR: error importing inner node ${nodeId}:${newUuid} in journey ${treeId}`,
+        `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
         'error'
       );
       return null;
@@ -596,14 +574,13 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
   }
   const journeyData = JSON.parse(journeyText);
-  if ((await putJourneyStructureData(id, journeyData)) == null) {
-    printMessage(
-      `importJourney ERROR: error importing journey structure ${treeId}`,
-      'error'
-    );
+  try {
+    await putTree(id, journeyData);
+    return '';
+  } catch (importError) {
+    printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
     return null;
   }
-  return '';
 }
 
 export async function importJourneysFromFile(file = null) {}
@@ -714,7 +691,7 @@ async function resolveDependencies(
  * @param {[Object]} orphanedNodes Populates the passed array with orphaned node configuration objects
  */
 export async function findOrphanedNodes(allNodes, orphanedNodes) {
-  const allJourneys = await getAllJourneyData();
+  const allJourneys = (await getTrees()).data.result;
   showSpinner('Finding orphaned nodes...');
   const activeNodes = [];
   allJourneys.forEach(async (journey) => {
@@ -725,7 +702,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
         const node = journey.nodes[nodeId];
         if (containerNodes.includes(node.nodeType)) {
           // eslint-disable-next-line no-await-in-loop
-          const containerNode = await getNodeData(nodeId, node.nodeType);
+          const containerNode = await getNode(nodeId, node.nodeType);
           containerNode.nodes.forEach((n) => {
             activeNodes.push(n._id);
           });
@@ -733,7 +710,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
       }
     }
   });
-  (await getAllNodesData()).forEach((node) => {
+  (await getNodes()).data.result.forEach((node) => {
     spinSpinner();
     allNodes.push(node);
   });
@@ -1022,7 +999,7 @@ async function isCustom(journey) {
         return true;
       }
       if (containerNodes.includes(nodeList[node].nodeType)) {
-        results.push(getNodeData(node, nodeList[node].nodeType));
+        results.push(getNode(node, nodeList[node].nodeType));
       }
     }
   }

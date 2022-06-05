@@ -3,7 +3,8 @@ import path from 'path';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { importJourney, importAllJourneys } from '../../api/TreeApi.js';
+import { importJourney } from '../../api/TreeApi.js';
+import { importAllJourneys } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 

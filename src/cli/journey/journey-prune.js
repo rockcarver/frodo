@@ -2,7 +2,10 @@ import yesno from 'yesno';
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { findOrphanedNodes, removeOrphanedNodes } from '../../api/TreeApi.js';
+import {
+  findOrphanedNodes,
+  removeOrphanedNodes,
+} from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../api/utils/Console.js';
 
@@ -49,7 +52,7 @@ program
           });
           if (ok) {
             printMessage('Pruning.', 'text', false);
-            removeOrphanedNodes(allNodes, orphanedNodes);
+            await removeOrphanedNodes(orphanedNodes);
           }
           printMessage('done', 'text', false);
           printMessage('');
