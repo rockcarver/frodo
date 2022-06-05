@@ -1,11 +1,7 @@
-import yesno from 'yesno';
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import {
-  findOrphanedNodes,
-  removeOrphanedNodes,
-} from '../../ops/JourneyOps.js';
+import { prune } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
 
@@ -36,29 +32,7 @@ program
         printMessage(
           `Pruning orphaned configuration artifacts in realm "${storage.session.getRealm()}"...`
         );
-        const allNodes = [];
-        const orphanedNodes = [];
-        printMessage(
-          'Analyzing authentication nodes configuration artifacts...'
-        );
-        await findOrphanedNodes(allNodes, orphanedNodes);
-        printMessage(`Total nodes:       ${allNodes.length}`, 'info');
-        printMessage(`Orphaned nodes:    ${orphanedNodes.length}`, 'info');
-        // console.log(orphanedNodes);
-        if (orphanedNodes.length > 0) {
-          const ok = await yesno({
-            question:
-              'Do you want to prune (permanently delete) all the orphaned node instances?(y|n):',
-          });
-          if (ok) {
-            printMessage('Pruning.', 'text', false);
-            await removeOrphanedNodes(orphanedNodes);
-          }
-          printMessage('done', 'text', false);
-          printMessage('');
-        } else {
-          printMessage('No orphaned nodes found.');
-        }
+        prune();
       }
     }
     // end command logic inside action handler

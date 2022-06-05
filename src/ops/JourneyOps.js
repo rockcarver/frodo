@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import fs from 'fs';
+import yesno from 'yesno';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import {
@@ -6,6 +8,7 @@ import {
   getTypedFilename,
   saveJsonToFile,
   getRealmString,
+  convertTextArrayToBase64,
 } from './utils/ExportImportUtils.js';
 import { replaceAll } from './utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
@@ -17,6 +20,8 @@ import {
   getTrees,
   getTree,
   putTree,
+  getNodeTypes,
+  getNodesByType,
 } from '../api/TreeApi.js';
 import { getEmailTemplate, putEmailTemplate } from '../api/EmailTemplateApi.js';
 import { getScript, putScript } from '../api/ScriptApi.js';
@@ -40,7 +45,7 @@ import {
 import { getCirclesOfTrust } from '../api/CirclesOfTrustApi.js';
 import { encodeBase64Url } from '../api/utils/Base64.js';
 import { getSocialIdentityProviders } from '../api/SocialIdentityProvidersApi.js';
-import { getThemes } from './ThemeOps.js';
+import { getThemes, putThemes } from '../api/ThemeApi.js';
 
 const containerNodes = ['PageNode', 'CustomPageNode'];
 
@@ -489,18 +494,21 @@ export async function exportJourneysToFiles() {
 
 async function importDependencies(journeyData, fileData) {}
 
-export async function importJourney2(id, file = null) {}
-
-export async function importJourney(id, journeyMap, noreuuid) {
+export async function importTree(id, importData, noreuuid) {
   printMessage(`- ${id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
-  const treeId = journeyMap.tree._id;
+  const treeId = importData.tree._id;
 
-  if (Object.entries(journeyMap.scripts).length > 0) {
+  // Process scripts
+  if (Object.entries(importData.scripts).length > 0) {
     printMessage('  - Scripts:');
-    for (const [scriptId, scriptData] of Object.entries(journeyMap.scripts)) {
+    for (const [scriptId, scriptData] of Object.entries(importData.scripts)) {
       printMessage(`    - ${scriptId} (${scriptData.name})`, 'info', false);
+      // is the script stored as an array of strings or just b64 blob?
+      if (Array.isArray(scriptData.script)) {
+        scriptData.script = convertTextArrayToBase64(scriptData.script);
+      }
       // eslint-disable-next-line no-await-in-loop
       if ((await putScript(scriptId, scriptData)) == null) {
         printMessage(
@@ -513,13 +521,14 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
   }
 
-  if (Object.entries(journeyMap.emailTemplates).length > 0) {
+  // Process email templates
+  if (Object.entries(importData.emailTemplates).length > 0) {
     printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
-      journeyMap.emailTemplates
+      importData.emailTemplates
     )) {
       const templateLongId = templateData._id;
-      printMessage(`    - ${templateId}`, 'info', false);
+      printMessage(`    - ${templateId}`, 'info');
       if (
         // eslint-disable-next-line no-await-in-loop
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
@@ -535,12 +544,35 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
   }
 
+  // Process themes
+  if (importData.themes.length > 0) {
+    printMessage('  - Themes:');
+    const themes = {};
+    for (const theme of importData.themes) {
+      printMessage(`    - ${theme._id} (${theme.name})`, 'info');
+      themes[theme._id] = theme;
+    }
+    putThemes(themes).then((result) => {
+      if (result == null) {
+        printMessage(
+          `Error importing ${Object.keys(themes).length} themes from ${themes}`,
+          'error'
+        );
+      }
+    });
+  }
+
+  // Process social providers
+
+  // Process saml providers
+
+  // Process inner nodes
   printMessage('  - Inner nodes:');
   for (const [innerNodeId, innerNodeData] of Object.entries(
-    journeyMap.innernodes
+    importData.innerNodes
   )) {
+    delete innerNodeData._rev;
     const nodeType = innerNodeData._type._id;
-    printMessage(`    - ${innerNodeId} (${nodeType})`, 'info', false);
     if (noreuuid) {
       newUuid = innerNodeId;
     } else {
@@ -549,10 +581,12 @@ export async function importJourney(id, journeyMap, noreuuid) {
     }
     innerNodeData._id = newUuid;
 
+    printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
     try {
       // eslint-disable-next-line no-await-in-loop
       await putNode(newUuid, nodeType, innerNodeData);
     } catch (nodeImportError) {
+      printMessage(nodeImportError, 'error');
       printMessage(
         `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
         'error'
@@ -562,11 +596,12 @@ export async function importJourney(id, journeyMap, noreuuid) {
     printMessage('');
   }
 
+  // Process nodes
   printMessage('  - Nodes:');
   // eslint-disable-next-line prefer-const
-  for (let [nodeId, nodeData] of Object.entries(journeyMap.nodes)) {
+  for (let [nodeId, nodeData] of Object.entries(importData.nodes)) {
+    delete nodeData._rev;
     const nodeType = nodeData._type._id;
-    printMessage(`    - ${nodeId} (${nodeType})`, 'info', false);
     if (noreuuid) {
       newUuid = nodeId;
     } else {
@@ -587,6 +622,7 @@ export async function importJourney(id, journeyMap, noreuuid) {
       }
     }
 
+    printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
     try {
       // eslint-disable-next-line no-await-in-loop
       await putNode(newUuid, nodeType, nodeData);
@@ -600,16 +636,19 @@ export async function importJourney(id, journeyMap, noreuuid) {
     printMessage('');
   }
 
+  // Process tree
   printMessage('  - Flow');
   // eslint-disable-next-line no-param-reassign
-  journeyMap.tree._id = id;
-  let journeyText = JSON.stringify(journeyMap.tree, null, 2);
+  importData.tree._id = id;
+  let journeyText = JSON.stringify(importData.tree, null, 2);
   if (!noreuuid) {
     for (const [oldId, newId] of Object.entries(uuidMap)) {
       journeyText = replaceAll(journeyText, oldId, newId);
     }
   }
   const journeyData = JSON.parse(journeyText);
+  delete journeyData._rev;
+  printMessage(`    - Done`, 'info', false);
   try {
     await putTree(id, journeyData);
     return '';
@@ -617,6 +656,16 @@ export async function importJourney(id, journeyMap, noreuuid) {
     printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
     return null;
   }
+}
+
+export async function importJourney(id, file, noreuuid) {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) throw err;
+    const journeyData = JSON.parse(data);
+    importTree(id, journeyData, noreuuid).then((result) => {
+      if (!result == null) printMessage('Import done.');
+    });
+  });
 }
 
 export async function importJourneysFromFile(file = null) {}
@@ -723,14 +772,27 @@ async function resolveDependencies(
 
 /**
  * Find all node configuration objects that are no longer referenced by any tree
- * @param {[Object]} allNodes Populates the passed array with all nodes configuration objects
- * @param {[Object]} orphanedNodes Populates the passed array with orphaned node configuration objects
  */
-export async function findOrphanedNodes(allNodes, orphanedNodes) {
+async function findOrphanedNodes() {
+  const allNodes = [];
+  const orphanedNodes = [];
   const allJourneys = (await getTrees()).data.result;
-  showSpinner('Finding orphaned nodes...');
+
+  showSpinner(`Counting total nodes...`);
+  const types = (await getNodeTypes()).data.result;
+  for (const type of types) {
+    // eslint-disable-next-line no-await-in-loop
+    (await getNodesByType(type._id)).data.result.forEach((node) => {
+      spinSpinner();
+      allNodes.push(node);
+    });
+  }
+  stopSpinner(`${allNodes.length} total nodes`);
+
+  showSpinner('Counting active nodes...');
   const activeNodes = [];
-  allJourneys.forEach(async (journey) => {
+  for (const journey of allJourneys) {
+    // allJourneys.forEach(async (journey) => {
     for (const nodeId in journey.nodes) {
       if ({}.hasOwnProperty.call(journey.nodes, nodeId)) {
         spinSpinner();
@@ -745,28 +807,47 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
         }
       }
     }
-  });
-  (await getNodes()).data.result.forEach((node) => {
-    spinSpinner();
-    allNodes.push(node);
-  });
-  // filter nodes which are not present in activeNodes
+  }
+  stopSpinner(`${activeNodes.length} active nodes`);
+
+  showSpinner('Calculating orphaned nodes...');
   const diff = allNodes.filter((x) => !activeNodes.includes(x._id));
   diff.forEach((x) => orphanedNodes.push(x));
-  stopSpinner();
+  stopSpinner(`${orphanedNodes.length} orphaned nodes`);
+  return orphanedNodes;
 }
 
 /**
  * Remove orphaned nodes
  * @param {[Object]} orphanedNodes Pass in an array of orphaned node configuration objects to remove
  */
-export async function removeOrphanedNodes(orphanedNodes) {
+async function removeOrphanedNodes(orphanedNodes) {
   createProgressBar(orphanedNodes.length, 'Removing orphaned nodes...');
-  orphanedNodes.forEach(async (node) => {
+  for (const node of orphanedNodes) {
     updateProgressBar(`Removing ${node._id}...`);
-    await deleteNode(node._id, node._type._id);
-  });
+    // eslint-disable-next-line no-await-in-loop
+    await deleteNode(node._id, node._type._id).catch((deleteError) => {
+      printMessage(`${deleteError}`, 'error');
+    });
+  }
   stopProgressBar(`Removed ${orphanedNodes.length} orphaned nodes.`);
+}
+
+/**
+ * Prune orphaned nodes
+ */
+export async function prune() {
+  const orphanedNodes = await findOrphanedNodes();
+  if (orphanedNodes.length > 0) {
+    const ok = await yesno({
+      question: 'Prune (permanently delete) orphaned nodes? (y|n):',
+    });
+    if (ok) {
+      await removeOrphanedNodes(orphanedNodes);
+    }
+  } else {
+    printMessage('No orphaned nodes found.');
+  }
 }
 
 const OOTB_NODE_TYPES_7 = [

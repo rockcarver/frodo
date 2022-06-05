@@ -1,6 +1,6 @@
 import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
-// import { printMessage } from './utils/Console.js';
+// import { printMessage } from '../ops/utils/Console.js';
 
 const THEMEREALM_ID = 'ui/themerealm';
 
@@ -80,7 +80,7 @@ export async function putThemeByName(name, data) {
 
 export async function putThemes(data) {
   const allThemesData = data;
-  const themes = await getConfigEntity(THEMEREALM_ID);
+  const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   const allThemeIDs = Object.keys(allThemesData);
   const existingThemeIDs = [];
   const realmThemes = getRealmThemes(themes).map((theme) => {

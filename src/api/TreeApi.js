@@ -3,14 +3,18 @@ import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import { generateAmApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 
-const treeByIdURLTemplate =
-  '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
 const nodeURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/nodes/%s/%s';
-const queryAllTreesURLTemplate =
-  '%s/json%s/realm-config/authentication/authenticationtrees/trees?_queryFilter=true';
+const queryAllNodesByTypeURLTemplate =
+  '%s/json%s/realm-config/authentication/authenticationtrees/nodes/%s?_queryFilter=true';
 const queryAllNodesURLTemplate =
   '%s/json%s/realm-config/authentication/authenticationtrees/nodes?_action=nextdescendents';
+const queryAllNodeTypesURLTemplate =
+  '%s/json%s/realm-config/authentication/authenticationtrees/nodes?_action=getAllTypes';
+const treeByIdURLTemplate =
+  '%s/json%s/realm-config/authentication/authenticationtrees/trees/%s';
+const queryAllTreesURLTemplate =
+  '%s/json%s/realm-config/authentication/authenticationtrees/trees?_queryFilter=true';
 
 const apiVersion = 'protocol=2.1,resource=1.0';
 const getTreeApiConfig = () => {
@@ -20,6 +24,22 @@ const getTreeApiConfig = () => {
     apiVersion,
   };
 };
+
+export async function getNodeTypes() {
+  const urlString = util.format(
+    queryAllNodeTypesURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath()
+  );
+  return generateAmApi(getTreeApiConfig()).post(
+    urlString,
+    {},
+    {
+      withCredentials: true,
+      headers: { 'Accept-Encoding': 'gzip, deflate, br' },
+    }
+  );
+}
 
 /**
  * Get all nodes
@@ -39,6 +59,23 @@ export async function getNodes() {
       headers: { 'Accept-Encoding': 'gzip, deflate, br' },
     }
   );
+}
+
+/**
+ * Get all nodes by type
+ * @param {*} type node type
+ * @returns {Promise} a promise that resolves to an object containing an array of node objects of the requested type
+ */
+export async function getNodesByType(type) {
+  const urlString = util.format(
+    queryAllNodesByTypeURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    type
+  );
+  return generateAmApi(getTreeApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
 /**

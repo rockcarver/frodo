@@ -3,8 +3,7 @@ import path from 'path';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { importJourney } from '../../api/TreeApi.js';
-import { importAllJourneys } from '../../ops/JourneyOps.js';
+import { importJourney, importAllJourneys } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
 
@@ -44,6 +43,12 @@ program
       'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -t or -a.'
     )
   )
+  .addOption(
+    new Option(
+      '-n, --no-re-uuid',
+      'No Re-UUID. Frodo does not generate new UUIDs for any nodes during import. This results in updating (overwriting) existing trees/nodes instead of safely cloning them.'
+    )
+  )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -57,17 +62,7 @@ program
         // import
         if (options.tree) {
           printMessage('Importing journey...');
-          fs.readFile(options.file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const journeyData = JSON.parse(data);
-            importJourney(
-              options.tree,
-              journeyData,
-              options.noReUUIDOption
-            ).then((result) => {
-              if (!result == null) printMessage('Import done.');
-            });
-          });
+          importJourney(options.tree, options.file, options.noReUuid);
         }
         // --all -a
         else if (options.all && options.file) {
@@ -77,7 +72,7 @@ program
           fs.readFile(options.file, 'utf8', (err, data) => {
             if (err) throw err;
             const journeyData = JSON.parse(data);
-            importAllJourneys(journeyData.trees, options.noReUUIDOption).then(
+            importAllJourneys(journeyData.trees, options.noReUuid).then(
               (result) => {
                 if (!result == null) printMessage('done.');
               }
