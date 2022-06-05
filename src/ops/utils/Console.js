@@ -177,9 +177,11 @@ export function showSpinner(message) {
   storage.session.setItem('Spinner', spinner);
 }
 
-export function stopSpinner() {
+export function stopSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
-  if (spinner) spinner.success();
+  let options = {};
+  if (message) options = { text: message };
+  if (spinner) spinner.success(options);
 }
 
 export function spinSpinner() {
