@@ -5,6 +5,7 @@ import {
   convertBase64TextToArray,
   getTypedFilename,
   saveJsonToFile,
+  getRealmString,
 } from './utils/ExportImportUtils.js';
 import { replaceAll } from './utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
@@ -168,7 +169,9 @@ async function exportDependencies(treeObject, exportData) {
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
-    nodeDataPromises.push(getNode(nodeId, nodeInfo.nodeType));
+    nodeDataPromises.push(
+      getNode(nodeId, nodeInfo.nodeType).then((response) => response.data)
+    );
   }
   const nodeObjects = await Promise.all(nodeDataPromises);
 
@@ -235,7 +238,11 @@ async function exportDependencies(treeObject, exportData) {
     // get inner nodes (nodes inside container nodes)
     if (containerNodes.includes(nodeObject._type._id)) {
       for (const innerNode of nodeObject.nodes) {
-        innerNodeDataPromises.push(getNode(innerNode._id, innerNode.nodeType));
+        innerNodeDataPromises.push(
+          getNode(innerNode._id, innerNode.nodeType).then(
+            (response) => response.data
+          )
+        );
       }
       if (nodeObject.stage && nodeObject.stage.indexOf('themeId=') === 0) {
         if (!themePromise) {
@@ -247,7 +254,6 @@ async function exportDependencies(treeObject, exportData) {
       }
     }
   }
-  spinSpinner();
 
   // Process scripts
   const scripts = await Promise.all(scriptPromises);
@@ -257,14 +263,12 @@ async function exportDependencies(treeObject, exportData) {
       exportData.scripts[scriptObject._id] = scriptObject;
     }
   });
-  spinSpinner();
 
   // Process email templates
   const emailTemplates = await Promise.all(emailTemplatePromises);
   emailTemplates.forEach((item) => {
     exportData.emailTemplates[item._id.split('/')[1]] = item;
   });
-  spinSpinner();
 
   // Process inner nodes
   const innerNodeDataResults = await Promise.all(innerNodeDataPromises);
@@ -331,7 +335,6 @@ async function exportDependencies(treeObject, exportData) {
       }
     }
   }
-  spinSpinner();
 
   // process inner scripts
   const innerScripts = await Promise.all(innerScriptPromises);
@@ -339,14 +342,12 @@ async function exportDependencies(treeObject, exportData) {
     scriptObject.script = convertBase64TextToArray(scriptObject.script);
     exportData.scripts[scriptObject._id] = scriptObject;
   });
-  spinSpinner();
 
   // Process email templates
   const innerEmailTemplates = await Promise.all(innerEmailTemplatePromises);
   innerEmailTemplates.forEach((item) => {
     exportData.emailTemplates[item._id] = item;
   });
-  spinSpinner();
 
   // Process SAML2 providers
   const saml2NodeDependencies = await Promise.all(saml2ConfigPromises);
@@ -360,7 +361,6 @@ async function exportDependencies(treeObject, exportData) {
       });
     }
   });
-  spinSpinner();
 
   // Process socialIdentityProviders
   const socialProvidersResponse = await Promise.resolve(socialProviderPromise);
@@ -432,8 +432,8 @@ export async function exportJourney(journeyId, file = null) {
       const treeData = response.data;
       const fileData = getSingleTreeFileDataTemplate();
       fileData.tree[treeData._id] = treeData;
-      await exportDependencies(treeData, fileData);
       spinSpinner();
+      await exportDependencies(treeData, fileData);
       saveJsonToFile(fileData, fileName);
       stopSpinner();
       printMessage(
@@ -447,7 +447,28 @@ export async function exportJourney(journeyId, file = null) {
     });
 }
 
-export async function exportJourneysToFile(file = null) {}
+export async function exportJourneysToFile(file = null) {
+  let fileName = file;
+  if (!fileName) {
+    fileName = getTypedFilename(`all${getRealmString()}Journeys`, 'journey');
+  }
+  const trees = (await getTrees()).data.result;
+  const fileData = getMultipleTreesFileDataTemplate();
+  createProgressBar(trees.length, 'Exporting journeys...');
+  for (const tree of trees) {
+    // eslint-disable-next-line no-await-in-loop
+    const treeData = (await getTree(tree._id)).data;
+    const exportData = getSingleTreeFileDataTemplate();
+    delete exportData.meta;
+    exportData.tree = treeData;
+    // eslint-disable-next-line no-await-in-loop
+    await exportDependencies(treeData, exportData);
+    fileData.trees[tree._id] = exportData;
+    updateProgressBar(`${tree._id}`);
+  }
+  saveJsonToFile(fileData, fileName);
+  stopProgressBar('Done');
+}
 
 export async function exportJourneysToFiles() {}
 
@@ -702,7 +723,7 @@ export async function findOrphanedNodes(allNodes, orphanedNodes) {
         const node = journey.nodes[nodeId];
         if (containerNodes.includes(node.nodeType)) {
           // eslint-disable-next-line no-await-in-loop
-          const containerNode = await getNode(nodeId, node.nodeType);
+          const containerNode = (await getNode(nodeId, node.nodeType)).data;
           containerNode.nodes.forEach((n) => {
             activeNodes.push(n._id);
           });
@@ -999,7 +1020,12 @@ async function isCustom(journey) {
         return true;
       }
       if (containerNodes.includes(nodeList[node].nodeType)) {
-        results.push(getNode(node, nodeList[node].nodeType));
+        results.push(
+          // eslint-disable-next-line no-await-in-loop
+          (await getNode(node, nodeList[node].nodeType)).then(
+            (response) => response.data
+          )
+        );
       }
     }
   }
@@ -1029,18 +1055,7 @@ async function isCustom(journey) {
  * @param {boolean} analyze Analyze journeys/trees for custom nodes (expensive)
  */
 export async function listJourneys(long = false, analyze = false) {
-  let journeys = [];
-  try {
-    const response = await getTrees();
-    if (response.status < 200 || response.status > 399) {
-      printMessage(response, 'data');
-      printMessage(`listJourneys: ${response.status}`, 'error');
-    }
-    journeys = response.data.result;
-  } catch (error) {
-    printMessage(`listJourneys ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
-  }
+  const journeys = (await getTrees()).data.result;
   journeys.sort((a, b) => a._id.localeCompare(b._id));
   let customTrees = Array(journeys.length).fill(false);
   if (analyze) {

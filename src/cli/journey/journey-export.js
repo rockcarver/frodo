@@ -3,7 +3,11 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import { getTree } from '../../api/TreeApi.js';
-import { exportJourney, listJourneys } from '../../ops/JourneyOps.js';
+import {
+  exportJourney,
+  exportJourneysToFile,
+  listJourneys,
+} from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import {
   printMessage,
@@ -66,34 +70,7 @@ program
         // --all -a
         else if (options.all) {
           printMessage('Exporting all journeys to a single file...');
-          let fileName = 'allJourneys.json';
-          const journeysMap = {};
-          const topLevelMap = {};
-          const journeyList = await listJourneys(false);
-          createProgressBar(journeyList.length, '');
-          for (const item of journeyList) {
-            // eslint-disable-next-line no-await-in-loop
-            journeysMap[item.name] = await getTree(item.name);
-            updateProgressBar(`Exporting journey - ${item.name}`);
-          }
-          stopProgressBar('Done');
-          topLevelMap.trees = journeysMap;
-          if (options.file) {
-            fileName = options.file;
-          }
-          fs.writeFile(
-            fileName,
-            JSON.stringify(topLevelMap, null, 2),
-            (err) => {
-              if (err) {
-                return printMessage(
-                  "ERROR - can't save journeys to file",
-                  'error'
-                );
-              }
-              return '';
-            }
-          );
+          exportJourneysToFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate) {
