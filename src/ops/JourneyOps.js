@@ -431,7 +431,7 @@ export async function exportJourney(journeyId, file = null) {
     .then(async (response) => {
       const treeData = response.data;
       const fileData = getSingleTreeFileDataTemplate();
-      fileData.tree[treeData._id] = treeData;
+      fileData.tree = treeData;
       spinSpinner();
       await exportDependencies(treeData, fileData);
       saveJsonToFile(fileData, fileName);
@@ -456,6 +456,7 @@ export async function exportJourneysToFile(file = null) {
   const fileData = getMultipleTreesFileDataTemplate();
   createProgressBar(trees.length, 'Exporting journeys...');
   for (const tree of trees) {
+    updateProgressBar(`${tree._id}`);
     // eslint-disable-next-line no-await-in-loop
     const treeData = (await getTree(tree._id)).data;
     const exportData = getSingleTreeFileDataTemplate();
@@ -464,13 +465,27 @@ export async function exportJourneysToFile(file = null) {
     // eslint-disable-next-line no-await-in-loop
     await exportDependencies(treeData, exportData);
     fileData.trees[tree._id] = exportData;
-    updateProgressBar(`${tree._id}`);
   }
   saveJsonToFile(fileData, fileName);
   stopProgressBar('Done');
 }
 
-export async function exportJourneysToFiles() {}
+export async function exportJourneysToFiles() {
+  const trees = (await getTrees()).data.result;
+  createProgressBar(trees.length, 'Exporting journeys...');
+  for (const tree of trees) {
+    updateProgressBar(`${tree._id}`);
+    const fileName = getTypedFilename(`${tree._id}`, 'journey');
+    // eslint-disable-next-line no-await-in-loop
+    const treeData = (await getTree(tree._id)).data;
+    const exportData = getSingleTreeFileDataTemplate();
+    exportData.tree = treeData;
+    // eslint-disable-next-line no-await-in-loop
+    await exportDependencies(treeData, exportData);
+    saveJsonToFile(exportData, fileName);
+  }
+  stopProgressBar('Done');
+}
 
 async function importDependencies(journeyData, fileData) {}
 

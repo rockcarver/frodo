@@ -1,20 +1,13 @@
-import fs from 'fs';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { getTree } from '../../api/TreeApi.js';
 import {
   exportJourney,
   exportJourneysToFile,
-  listJourneys,
+  exportJourneysToFiles,
 } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
-import {
-  printMessage,
-  createProgressBar,
-  updateProgressBar,
-  stopProgressBar,
-} from '../../ops/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo journey export');
 
@@ -75,28 +68,7 @@ program
         // --all-separate -A
         else if (options.allSeparate) {
           printMessage('Exporting all journeys to separate files...');
-          const journeyList = await listJourneys(false);
-          createProgressBar(journeyList.length, '');
-          for (const item of journeyList) {
-            updateProgressBar(`Exporting journey - ${item.name}`);
-            // eslint-disable-next-line no-await-in-loop
-            const journeyData = await getTree(item.name);
-            const fileName = `./${item.name}.json`;
-            fs.writeFile(
-              fileName,
-              JSON.stringify(journeyData, null, 2),
-              (err) => {
-                if (err) {
-                  return printMessage(
-                    `ERROR - can't save journey ${item.name} to file`,
-                    'error'
-                  );
-                }
-                return '';
-              }
-            );
-          }
-          stopProgressBar('Done');
+          exportJourneysToFiles();
         }
         // unrecognized combination of options or no options
         else {
