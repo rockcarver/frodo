@@ -8,8 +8,8 @@ import { encodeBase64Url } from './utils/Base64.js';
 import { generateAmApi, generateOauth2Api } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 import * as global from '../storage/StaticStorage.js';
-import DataProtection from './utils/DataProtection.js';
-import { printMessage } from './utils/Console.js';
+import DataProtection from '../ops/utils/DataProtection.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const dataProtection = new DataProtection();
 const adminClientPassword = 'doesnotmatter';

@@ -7,7 +7,7 @@ import {
   exportProvidersToFiles,
 } from '../../ops/IdpOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo idp export');
 

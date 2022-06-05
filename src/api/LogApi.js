@@ -1,10 +1,10 @@
 import util from 'util';
 import { generateLogApi, generateLogKeysApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
-import { getCurrentTimestamp } from './utils/ExportImportUtils.js';
+import { getCurrentTimestamp } from '../ops/utils/ExportImportUtils.js';
 import { saveConnection } from './AuthApi.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const miscNoise = [
   'text/plain',

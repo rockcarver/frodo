@@ -7,7 +7,7 @@ import {
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from '../api/utils/Console.js';
+} from './utils/Console.js';
 import {
   getProviders,
   findProviders,
@@ -25,7 +25,7 @@ import {
   getTypedFilename,
   saveJsonToFile,
   validateImport,
-} from '../api/utils/ExportImportUtils.js';
+} from './utils/ExportImportUtils.js';
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {

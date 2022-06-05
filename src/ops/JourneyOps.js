@@ -5,8 +5,8 @@ import {
   convertBase64TextToArray,
   getTypedFilename,
   saveJsonToFile,
-} from '../api/utils/ExportImportUtils.js';
-import { replaceAll } from '../api/utils/ApiUtils.js';
+} from './utils/ExportImportUtils.js';
+import { replaceAll } from './utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
 import {
   getNodes,
@@ -29,8 +29,8 @@ import {
   stopSpinner,
   createTable,
   spinSpinner,
-} from '../api/utils/Console.js';
-import wordwrap from '../api/utils/Wordwrap.js';
+} from './utils/Console.js';
+import wordwrap from './utils/Wordwrap.js';
 import {
   getProviderByLocationAndId,
   getProviders,

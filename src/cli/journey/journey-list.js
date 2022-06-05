@@ -3,7 +3,7 @@ import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import { listJourneys } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo journey list');
 

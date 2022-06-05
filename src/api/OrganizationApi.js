@@ -3,7 +3,7 @@ import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import { queryManagedObjects } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const organizationURLTemplate = '%s/openidm/managed/%s/%s';
 const organizationQueryTemplate = '%s/openidm/managed/%s?_queryId=query-all';

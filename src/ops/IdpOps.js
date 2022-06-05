@@ -11,13 +11,13 @@ import {
   getTypedFilename,
   saveJsonToFile,
   validateImport,
-} from '../api/utils/ExportImportUtils.js';
+} from './utils/ExportImportUtils.js';
 import {
   printMessage,
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from '../api/utils/Console.js';
+} from './utils/Console.js';
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {

@@ -2,7 +2,7 @@ import util from 'util';
 import { generateAmApi } from './BaseApi.js';
 import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const oauth2ApplicationURLTemplate =
   '%s/json%s/realm-config/agents/OAuth2Client/%s';

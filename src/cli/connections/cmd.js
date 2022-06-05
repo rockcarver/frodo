@@ -6,7 +6,7 @@ import {
   getConnectionFileName,
 } from '../../api/AuthApi.js';
 import * as common from '../cmd_common.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 import storage from '../../storage/SessionStorage.js';
 
 export default function setup() {

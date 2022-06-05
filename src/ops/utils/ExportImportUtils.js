@@ -2,7 +2,7 @@ import fs from 'fs';
 import slugify from 'slugify';
 import storage from '../../storage/SessionStorage.js';
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
-import { encode, decode, encodeBase64Url, decodeBase64Url } from './Base64.js';
+import { encode, decode, encodeBase64Url, decodeBase64Url } from '../../api/utils/Base64.js';
 import { printMessage } from './Console.js';
 
 export function getCurrentTimestamp() {

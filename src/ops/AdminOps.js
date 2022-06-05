@@ -4,7 +4,7 @@ import {
   putOAuth2Client,
 } from '../api/OAuth2ClientApi.js';
 import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
-import { isEqualJson, getRealmManagedUser } from '../api/utils/ApiUtils.js';
+import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
 import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
 import { getOAuth2Provider } from '../api/AmServiceApi.js';
 import { createSecret } from '../api/SecretsApi.js';
@@ -13,7 +13,7 @@ import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type:
 // eslint-disable-next-line no-unused-vars
 import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
 import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
-import { printMessage } from '../api/utils/Console.js';
+import { printMessage } from './utils/Console.js';
 
 const protectedClients = ['ui', 'idm-provisioning'];
 const protectedSubjects = ['amadmin', 'autoid-resource-server'];

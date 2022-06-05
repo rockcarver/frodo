@@ -2,7 +2,7 @@ import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const emailTemplateURLTemplate = '%s/openidm/config/emailTemplate/%s';
 const emailTemplateQueryTemplate =

@@ -12,9 +12,9 @@ import {
   saveToFile,
   validateImport,
   checkTargetCompatibility,
-} from '../../api/utils/ExportImportUtils.js';
+} from '../../ops/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 export default function setup() {
   const application = new Command('application')

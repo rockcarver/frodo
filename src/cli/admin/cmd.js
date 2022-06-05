@@ -19,7 +19,7 @@ import {
   repairOrgModel,
 } from '../../ops/AdminOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('admin')

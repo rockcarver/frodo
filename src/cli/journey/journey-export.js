@@ -10,7 +10,7 @@ import {
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from '../../api/utils/Console.js';
+} from '../../ops/utils/Console.js';
 
 const program = new Command('frodo journey export');
 

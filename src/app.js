@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { initConnections } from './api/AuthApi.js';
 import storage from './storage/SessionStorage.js';
 import pkg from '../package.json' assert { type: 'json' };
-import { printMessage } from './api/utils/Console.js';
+import { printMessage } from './ops/utils/Console.js';
 
 // commands
 import admin from './cli/admin/cmd.js';

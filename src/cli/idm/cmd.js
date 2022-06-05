@@ -15,7 +15,7 @@ import {
   printMessage,
   showSpinner,
   stopSpinner,
-} from '../../api/utils/Console.js';
+} from '../../ops/utils/Console.js';
 
 export default function setup() {
   const idm = new Command('idm');

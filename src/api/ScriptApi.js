@@ -1,11 +1,9 @@
 import util from 'util';
 import { generateAmApi } from './BaseApi.js';
-import {
-  getCurrentRealmPath,
-  applyNameCollisionPolicy,
-} from './utils/ApiUtils.js';
+import { getCurrentRealmPath } from './utils/ApiUtils.js';
+import { applyNameCollisionPolicy } from '../ops/utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const scriptURLTemplate = '%s/json%s/scripts/%s';
 const scriptListURLTemplate = '%s/json%s/scripts?_queryFilter=true';
