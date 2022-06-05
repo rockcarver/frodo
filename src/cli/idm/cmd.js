@@ -63,7 +63,7 @@ export default function setup() {
       storage.session.setAllowInsecureConnection(options.insecure);
       printMessage('Exporting an IDM configuration object...');
       if (await getTokens()) {
-        const configEntity = await getConfigEntity(command.opts().name);
+        const configEntity = (await getConfigEntity(command.opts().name)).data;
         if (command.opts().file) {
           fs.writeFile(
             command.opts().file,
@@ -115,7 +115,9 @@ export default function setup() {
           const entityPromises = [];
           configEntities.configurations.forEach((x) => {
             // console.log(`- ${x._id}`);
-            entityPromises.push(getConfigEntity(x._id));
+            entityPromises.push(
+              getConfigEntity(x._id).then((response) => response.data)
+            );
           });
           Promise.all(entityPromises).then((result) => {
             // console.log(result);
@@ -182,7 +184,9 @@ export default function setup() {
             configEntities.configurations.forEach((x) => {
               if (entriesToExport.includes(x._id)) {
                 // console.log(`- ${x._id}`);
-                entityPromises.push(getConfigEntity(x._id));
+                entityPromises.push(
+                  getConfigEntity(x._id).then((response) => response.data)
+                );
               }
             });
             Promise.all(entityPromises).then((result) => {
