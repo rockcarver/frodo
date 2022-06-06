@@ -2,7 +2,7 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import {
-  exportJourney,
+  exportJourneyToFile,
   exportJourneysToFile,
   exportJourneysToFiles,
 } from '../../ops/JourneyOps.js';
@@ -58,7 +58,7 @@ program
         // export
         if (options.tree) {
           printMessage('Exporting journey...');
-          exportJourney(options.tree, options.file);
+          exportJourneyToFile(options.tree, options.file);
         }
         // --all -a
         else if (options.all) {

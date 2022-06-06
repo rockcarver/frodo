@@ -85,6 +85,7 @@ function getSingleTreeFileDataTemplate() {
   };
 }
 
+// use a function vs a template variable to avoid problems in loops
 function getMultipleTreesFileDataTemplate() {
   return {
     meta: {},
@@ -92,6 +93,13 @@ function getMultipleTreesFileDataTemplate() {
   };
 }
 
+/**
+ * Helper to get all SAML2 dependencies for a given node object
+ * @param {Object} nodeObject node object
+ * @param {[Object]} allProviders array of all saml2 providers objects
+ * @param {[Object]} allCirclesOfTrust array of all circle of trust objects
+ * @returns {Promise} a promise that resolves to an object containing a saml2 dependencies
+ */
 async function getSaml2NodeDependencies(
   nodeObject,
   allProviders,
@@ -165,6 +173,11 @@ async function getSaml2NodeDependencies(
   );
 }
 
+/**
+ * Helper to add all dependencies for a given tree object to the export data
+ * @param {Object} treeObject tree object
+ * @param {Object} exportData export data
+ */
 async function exportDependencies(treeObject, exportData) {
   const nodeDataPromises = [];
   const scriptPromises = [];
@@ -432,11 +445,11 @@ async function exportDependencies(treeObject, exportData) {
 }
 
 /**
- * Export journey by id/name
- * @param {*} journeyId journey id/name
- * @param {*} file optional export file name
+ * Export journey by id/name to file
+ * @param {String} journeyId journey id/name
+ * @param {String} file optional export file name
  */
-export async function exportJourney(journeyId, file = null) {
+export async function exportJourneyToFile(journeyId, file = null) {
   let fileName = file;
   if (!fileName) {
     fileName = getTypedFilename(journeyId, 'journey');
@@ -462,10 +475,35 @@ export async function exportJourney(journeyId, file = null) {
     });
 }
 
+/**
+ * Get data for journey by id/name
+ * @param {String} journeyId journey id/name
+ * @returns
+ */
+export async function getJourneyData(journeyId) {
+  showSpinner(`${journeyId}`);
+  const journeyData = getSingleTreeFileDataTemplate();
+  const treeData = (
+    await getTree(journeyId).catch((err) => {
+      stopSpinner();
+      printMessage(err, 'error');
+    })
+  ).data;
+  journeyData.tree = treeData;
+  spinSpinner();
+  await exportDependencies(treeData, journeyData);
+  stopSpinner();
+  return journeyData;
+}
+
+/**
+ * Export all journeys to file
+ * @param {String} file optional export file name
+ */
 export async function exportJourneysToFile(file = null) {
   let fileName = file;
   if (!fileName) {
-    fileName = getTypedFilename(`all${getRealmString()}Journeys`, 'journey');
+    fileName = getTypedFilename(`all${getRealmString()}Journeys`, 'journeys');
   }
   const trees = (await getTrees()).data.result;
   const fileData = getMultipleTreesFileDataTemplate();
@@ -482,9 +520,12 @@ export async function exportJourneysToFile(file = null) {
     fileData.trees[tree._id] = exportData;
   }
   saveJsonToFile(fileData, fileName);
-  stopProgressBar('Done');
+  stopProgressBar(`Exported to ${fileName}`);
 }
 
+/**
+ * Export all journeys to separate files
+ */
 export async function exportJourneysToFiles() {
   const trees = (await getTrees()).data.result;
   createProgressBar(trees.length, 'Exporting journeys...');
@@ -502,19 +543,26 @@ export async function exportJourneysToFiles() {
   stopProgressBar('Done');
 }
 
-async function importDependencies(journeyData, fileData) {}
-
-export async function importTree(id, importData, noreuuid) {
-  printMessage(`- ${id}\n`, 'info', false);
+/**
+ * Helper to import a tree with all dependencies from an import data object (typically read from a file)
+ * @param {String} id tree id/name
+ * @param {Object} importData import data object containing tree and all its dependencies
+ * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ * @param {boolean} verbose verbose output
+ * @returns {String} empty string on success, null otherwise
+ */
+async function importTree(id, importData, noreuuid, verbose = false) {
+  if (verbose) printMessage(`\n- ${id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
   const treeId = importData.tree._id;
 
   // Process scripts
   if (Object.entries(importData.scripts).length > 0) {
-    printMessage('  - Scripts:');
+    if (verbose) printMessage('  - Scripts:');
     for (const [scriptId, scriptData] of Object.entries(importData.scripts)) {
-      printMessage(`    - ${scriptId} (${scriptData.name})`, 'info', false);
+      if (verbose)
+        printMessage(`    - ${scriptId} (${scriptData.name})`, 'info', false);
       // is the script stored as an array of strings or just b64 blob?
       if (Array.isArray(scriptData.script)) {
         scriptData.script = convertTextArrayToBase64(scriptData.script);
@@ -527,18 +575,18 @@ export async function importTree(id, importData, noreuuid) {
         );
         return null;
       }
-      printMessage('');
+      if (verbose) printMessage('');
     }
   }
 
   // Process email templates
   if (Object.entries(importData.emailTemplates).length > 0) {
-    printMessage('  - Email templates:');
+    if (verbose) printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
       importData.emailTemplates
     )) {
       const templateLongId = templateData._id;
-      printMessage(`    - ${templateId}`, 'info');
+      if (verbose) printMessage(`    - ${templateId}`, 'info');
       if (
         // eslint-disable-next-line no-await-in-loop
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
@@ -550,16 +598,16 @@ export async function importTree(id, importData, noreuuid) {
         );
         return null;
       }
-      printMessage('');
+      if (verbose) printMessage('');
     }
   }
 
   // Process themes
   if (importData.themes.length > 0) {
-    printMessage('  - Themes:');
+    if (verbose) printMessage('  - Themes:');
     const themes = {};
     for (const theme of importData.themes) {
-      printMessage(`    - ${theme._id} (${theme.name})`, 'info');
+      if (verbose) printMessage(`    - ${theme._id} (${theme.name})`, 'info');
       themes[theme._id] = theme;
     }
     await putThemes(themes).then((result) => {
@@ -574,11 +622,11 @@ export async function importTree(id, importData, noreuuid) {
 
   // Process social providers
   if (Object.entries(importData.socialIdentityProviders).length > 0) {
-    printMessage('  - OAuth2/OIDC (social) identity providers:');
+    if (verbose) printMessage('  - OAuth2/OIDC (social) identity providers:');
     for (const [providerId, providerData] of Object.entries(
       importData.socialIdentityProviders
     )) {
-      printMessage(`    - ${providerId}`, 'info');
+      if (verbose) printMessage(`    - ${providerId}`, 'info');
       if (
         // eslint-disable-next-line no-await-in-loop
         (await putProviderByTypeAndId(
@@ -598,12 +646,12 @@ export async function importTree(id, importData, noreuuid) {
 
   // Process saml providers
   if (Object.entries(importData.saml2Entities).length > 0) {
-    printMessage('  - SAML2 entity providers:');
+    if (verbose) printMessage('  - SAML2 entity providers:');
     for (const [, providerData] of Object.entries(importData.saml2Entities)) {
       delete providerData._rev;
       const { entityId } = providerData;
       const { entityLocation } = providerData;
-      printMessage(`    - ${entityLocation} ${entityId}`, 'info');
+      if (verbose) printMessage(`    - ${entityLocation} ${entityId}`, 'info');
       let metaData = null;
       if (entityLocation === 'remote') {
         if (Array.isArray(providerData.base64EntityXML)) {
@@ -641,10 +689,10 @@ export async function importTree(id, importData, noreuuid) {
 
   // Process circles of trust
   if (Object.entries(importData.circlesOfTrust).length > 0) {
-    printMessage('  - SAML2 circles of trust:');
+    if (verbose) printMessage('  - SAML2 circles of trust:');
     for (const [cotId, cotData] of Object.entries(importData.circlesOfTrust)) {
       delete cotData._rev;
-      printMessage(`    - ${cotId}`, 'info');
+      if (verbose) printMessage(`    - ${cotId}`, 'info');
       // eslint-disable-next-line no-await-in-loop
       await createCircleOfTrust(cotData)
         // eslint-disable-next-line no-unused-vars
@@ -673,7 +721,7 @@ export async function importTree(id, importData, noreuuid) {
 
   // Process inner nodes
   if (Object.entries(importData.innerNodes).length > 0) {
-    printMessage('  - Inner nodes:');
+    if (verbose) printMessage('  - Inner nodes:');
     for (const [innerNodeId, innerNodeData] of Object.entries(
       importData.innerNodes
     )) {
@@ -687,7 +735,8 @@ export async function importTree(id, importData, noreuuid) {
       }
       innerNodeData._id = newUuid;
 
-      printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
+      if (verbose)
+        printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
       try {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, innerNodeData);
@@ -699,12 +748,12 @@ export async function importTree(id, importData, noreuuid) {
         );
         return null;
       }
-      printMessage('');
+      if (verbose) printMessage('');
     }
   }
 
   // Process nodes
-  printMessage('  - Nodes:');
+  if (verbose) printMessage('  - Nodes:');
   // eslint-disable-next-line prefer-const
   for (let [nodeId, nodeData] of Object.entries(importData.nodes)) {
     delete nodeData._rev;
@@ -729,7 +778,7 @@ export async function importTree(id, importData, noreuuid) {
       }
     }
 
-    printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
+    if (verbose) printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
     try {
       // eslint-disable-next-line no-await-in-loop
       await putNode(newUuid, nodeType, nodeData);
@@ -740,11 +789,11 @@ export async function importTree(id, importData, noreuuid) {
       );
       return null;
     }
-    printMessage('');
+    if (verbose) printMessage('');
   }
 
   // Process tree
-  printMessage('  - Flow');
+  if (verbose) printMessage('  - Flow');
   // eslint-disable-next-line no-param-reassign
   importData.tree._id = id;
   let journeyText = JSON.stringify(importData.tree, null, 2);
@@ -755,7 +804,7 @@ export async function importTree(id, importData, noreuuid) {
   }
   const journeyData = JSON.parse(journeyText);
   delete journeyData._rev;
-  printMessage(`    - Done`, 'info', false);
+  if (verbose) printMessage(`    - Done`, 'info', true);
   try {
     await putTree(id, journeyData);
     return '';
@@ -765,54 +814,20 @@ export async function importTree(id, importData, noreuuid) {
   }
 }
 
-export async function importJourney(id, file, noreuuid) {
+/**
+ * Import a journey from file
+ * @param {String} id journey id/name
+ * @param {String} file import file name
+ * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ */
+export async function importJourneyFromFile(id, file, noreuuid) {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) throw err;
     const journeyData = JSON.parse(data);
-    importTree(id, journeyData, noreuuid).then((result) => {
+    importTree(id, journeyData, noreuuid, true).then((result) => {
       if (!result == null) printMessage('Import done.');
     });
   });
-}
-
-export async function importJourneysFromFile(file = null) {}
-
-export async function importJourneysFromFiles() {}
-
-export function describeTree(journeyData) {
-  const treeMap = {};
-  const nodeTypeMap = {};
-  const scriptsMap = {};
-  const emailTemplatesMap = {};
-  treeMap.treeName = journeyData.tree._id;
-  for (const [, nodeData] of Object.entries(journeyData.nodes)) {
-    if (nodeTypeMap[nodeData._type._id]) {
-      nodeTypeMap[nodeData._type._id] += 1;
-    } else {
-      nodeTypeMap[nodeData._type._id] = 1;
-    }
-  }
-
-  for (const [, nodeData] of Object.entries(journeyData.innernodes)) {
-    if (nodeTypeMap[nodeData._type._id]) {
-      nodeTypeMap[nodeData._type._id] += 1;
-    } else {
-      nodeTypeMap[nodeData._type._id] = 1;
-    }
-  }
-
-  for (const [, scriptData] of Object.entries(journeyData.scripts)) {
-    scriptsMap[scriptData.name] = scriptData.description;
-  }
-
-  for (const [id, data] of Object.entries(journeyData.emailTemplates)) {
-    emailTemplatesMap[id] = data.displayName;
-  }
-
-  treeMap.nodeTypes = nodeTypeMap;
-  treeMap.scripts = scriptsMap;
-  treeMap.emailTemplates = emailTemplatesMap;
-  return treeMap;
 }
 
 async function resolveDependencies(
@@ -875,6 +890,101 @@ async function resolveDependencies(
     );
   }
   stopSpinner();
+}
+
+/**
+ * Helper to import multiple trees from a tree map
+ * @param {Object} treesMap map of trees object
+ * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ */
+async function importAllTrees(treesMap, noreuuid) {
+  const installedJourneys = (await getTrees()).data.result.map((x) => x._id);
+  const unresolvedJourneys = [];
+  const resolvedJourneys = [];
+  await resolveDependencies(
+    installedJourneys,
+    treesMap,
+    unresolvedJourneys,
+    resolvedJourneys
+  );
+  createProgressBar(resolvedJourneys.length, 'Importing');
+  for (const tree of resolvedJourneys) {
+    updateProgressBar(`${tree}`);
+    // eslint-disable-next-line no-await-in-loop
+    await importTree(tree, treesMap[tree], noreuuid, false);
+  }
+  stopProgressBar('Done');
+}
+
+/**
+ * Import all journeys from file
+ * @param {*} file import file name
+ * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ */
+export async function importJourneysFromFile(file, noreuuid) {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) throw err;
+    const fileData = JSON.parse(data);
+    importAllTrees(fileData.trees, noreuuid);
+  });
+}
+
+/**
+ * Import all journeys from separate files
+ * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ */
+export async function importJourneysFromFiles(noreuuid) {
+  const names = fs.readdirSync('.');
+  const jsonFiles = names.filter((name) =>
+    name.toLowerCase().endsWith('.journey.json')
+  );
+  const allJourneysData = { trees: {} };
+  jsonFiles.forEach((file) => {
+    const journeyData = JSON.parse(fs.readFileSync(file, 'utf8'));
+    allJourneysData.trees[journeyData.tree._id] = journeyData;
+  });
+  importAllTrees(allJourneysData.trees, noreuuid);
+}
+
+/**
+ * Describe a tree
+ * @param {Object} treeData tree
+ * @returns {Object} an object describing the tree
+ */
+export function describeTree(treeData) {
+  const treeMap = {};
+  const nodeTypeMap = {};
+  const scriptsMap = {};
+  const emailTemplatesMap = {};
+  treeMap.treeName = treeData.tree._id;
+  for (const [, nodeData] of Object.entries(treeData.nodes)) {
+    if (nodeTypeMap[nodeData._type._id]) {
+      nodeTypeMap[nodeData._type._id] += 1;
+    } else {
+      nodeTypeMap[nodeData._type._id] = 1;
+    }
+  }
+
+  for (const [, nodeData] of Object.entries(treeData.innerNodes)) {
+    if (nodeTypeMap[nodeData._type._id]) {
+      nodeTypeMap[nodeData._type._id] += 1;
+    } else {
+      nodeTypeMap[nodeData._type._id] = 1;
+    }
+  }
+
+  for (const [, scriptData] of Object.entries(treeData.scripts)) {
+    scriptsMap[scriptData.name] = scriptData.description;
+  }
+
+  for (const [id, data] of Object.entries(treeData.emailTemplates)) {
+    emailTemplatesMap[id] = data.displayName;
+  }
+
+  treeMap.nodeTypes = nodeTypeMap;
+  treeMap.scripts = scriptsMap;
+  treeMap.emailTemplates = emailTemplatesMap;
+  return treeMap;
 }
 
 /**
@@ -1291,23 +1401,4 @@ export async function listJourneys(long = false, analyze = false) {
     });
     printMessage(table.toString());
   }
-}
-
-export async function importAllJourneys(journeyMap, noreuuid) {
-  const installedJourneys = (await listJourneys(false)).map((x) => x.name);
-  const unresolvedJourneys = [];
-  const resolvedJourneys = [];
-  await resolveDependencies(
-    installedJourneys,
-    journeyMap,
-    unresolvedJourneys,
-    resolvedJourneys
-  );
-  createProgressBar(resolvedJourneys.length);
-  for (const tree of resolvedJourneys) {
-    updateProgressBar(`Importing ${tree}`);
-    // eslint-disable-next-line no-await-in-loop
-    await importJourney(tree, journeyMap[tree], noreuuid);
-  }
-  stopProgressBar('Done');
 }

@@ -1,9 +1,11 @@
-import fs from 'fs';
-import path from 'path';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { importJourney, importAllJourneys } from '../../ops/JourneyOps.js';
+import {
+  importJourneyFromFile,
+  importJourneysFromFile,
+  importJourneysFromFiles,
+} from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
 
@@ -62,47 +64,21 @@ program
         // import
         if (options.tree) {
           printMessage('Importing journey...');
-          importJourney(options.tree, options.file, options.noReUuid);
+          importJourneyFromFile(options.tree, options.file, options.noReUuid);
         }
         // --all -a
         else if (options.all && options.file) {
           printMessage(
             `Importing all journeys from a single file (${options.file})...`
           );
-          fs.readFile(options.file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const journeyData = JSON.parse(data);
-            importAllJourneys(journeyData.trees, options.noReUuid).then(
-              (result) => {
-                if (!result == null) printMessage('done.');
-              }
-            );
-          });
+          importJourneysFromFile(options.file, options.noReUuid);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
           printMessage(
             'Importing all journeys from separate files in current directory...'
           );
-          const allJourneysData = { trees: {} };
-          fs.readdir('.', (err1, files) => {
-            const jsonFiles = files.filter(
-              (el) => path.extname(el) === '.json'
-            );
-
-            jsonFiles.forEach((file) => {
-              // console.log(`Importing ${path.parse(file).name}...`);
-              allJourneysData.trees[path.parse(file).name] = JSON.parse(
-                fs.readFileSync(file, 'utf8')
-              );
-            });
-            importAllJourneys(
-              allJourneysData.trees,
-              options.noReUUIDOption
-            ).then((result) => {
-              if (!result == null) printMessage('done.');
-            });
-          });
+          importJourneysFromFiles(options.noReUuid);
         }
         // unrecognized combination of options or no options
         else {
