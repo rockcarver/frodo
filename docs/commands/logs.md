@@ -1,0 +1,2 @@
+# `logs` command
+Todo
