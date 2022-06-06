@@ -9,11 +9,11 @@ import {
   saveJsonToFile,
   getRealmString,
   convertTextArrayToBase64,
+  convertTextArrayToBase64Url,
 } from './utils/ExportImportUtils.js';
 import { replaceAll } from './utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
 import {
-  getNodes,
   getNode,
   putNode,
   deleteNode,
@@ -41,10 +41,20 @@ import {
   getProviderByLocationAndId,
   getProviders,
   getProviderMetadata,
+  createProvider,
+  findProviders,
+  updateProvider,
 } from '../api/Saml2Api.js';
-import { getCirclesOfTrust } from '../api/CirclesOfTrustApi.js';
+import {
+  createCircleOfTrust,
+  getCirclesOfTrust,
+  updateCircleOfTrust,
+} from '../api/CirclesOfTrustApi.js';
 import { encodeBase64Url } from '../api/utils/Base64.js';
-import { getSocialIdentityProviders } from '../api/SocialIdentityProvidersApi.js';
+import {
+  getSocialIdentityProviders,
+  putProviderByTypeAndId,
+} from '../api/SocialIdentityProvidersApi.js';
 import { getThemes, putThemes } from '../api/ThemeApi.js';
 
 const containerNodes = ['PageNode', 'CustomPageNode'];
@@ -552,7 +562,7 @@ export async function importTree(id, importData, noreuuid) {
       printMessage(`    - ${theme._id} (${theme.name})`, 'info');
       themes[theme._id] = theme;
     }
-    putThemes(themes).then((result) => {
+    await putThemes(themes).then((result) => {
       if (result == null) {
         printMessage(
           `Error importing ${Object.keys(themes).length} themes from ${themes}`,
@@ -563,37 +573,134 @@ export async function importTree(id, importData, noreuuid) {
   }
 
   // Process social providers
+  if (Object.entries(importData.socialIdentityProviders).length > 0) {
+    printMessage('  - OAuth2/OIDC (social) identity providers:');
+    for (const [providerId, providerData] of Object.entries(
+      importData.socialIdentityProviders
+    )) {
+      printMessage(`    - ${providerId}`, 'info');
+      if (
+        // eslint-disable-next-line no-await-in-loop
+        (await putProviderByTypeAndId(
+          providerData._type._id,
+          providerId,
+          providerData
+        )) == null
+      ) {
+        printMessage(
+          `importJourney ERROR: error importing provider ${providerId} in journey ${treeId}`,
+          'error'
+        );
+        return null;
+      }
+    }
+  }
 
   // Process saml providers
+  if (Object.entries(importData.saml2Entities).length > 0) {
+    printMessage('  - SAML2 entity providers:');
+    for (const [, providerData] of Object.entries(importData.saml2Entities)) {
+      delete providerData._rev;
+      const { entityId } = providerData;
+      const { entityLocation } = providerData;
+      printMessage(`    - ${entityLocation} ${entityId}`, 'info');
+      let metaData = null;
+      if (entityLocation === 'remote') {
+        if (Array.isArray(providerData.base64EntityXML)) {
+          metaData = convertTextArrayToBase64Url(providerData.base64EntityXML);
+        } else {
+          metaData = providerData.base64EntityXML;
+        }
+      }
+      delete providerData.entityLocation;
+      delete providerData.base64EntityXML;
+      // create the provider if it doesn't already exist, or just update it
+      if (
+        // eslint-disable-next-line no-await-in-loop
+        (await findProviders(`entityId eq '${entityId}'`, 'location')).data
+          .resultCount === 0
+      ) {
+        // eslint-disable-next-line no-await-in-loop
+        await createProvider(entityLocation, providerData, metaData).catch(
+          (createProviderErr) => {
+            printMessage(`\nError creating provider ${entityId}`, 'error');
+            printMessage(createProviderErr.response.data, 'error');
+          }
+        );
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        await updateProvider(entityLocation, providerData).catch(
+          (updateProviderErr) => {
+            printMessage(`\nError updating provider ${entityId}`, 'error');
+            printMessage(updateProviderErr.response.data, 'error');
+          }
+        );
+      }
+    }
+  }
+
+  // Process circles of trust
+  if (Object.entries(importData.circlesOfTrust).length > 0) {
+    printMessage('  - SAML2 circles of trust:');
+    for (const [cotId, cotData] of Object.entries(importData.circlesOfTrust)) {
+      delete cotData._rev;
+      printMessage(`    - ${cotId}`, 'info');
+      // eslint-disable-next-line no-await-in-loop
+      await createCircleOfTrust(cotData)
+        // eslint-disable-next-line no-unused-vars
+        .catch(async (createCotErr) => {
+          if (
+            createCotErr.response.status === 409 ||
+            createCotErr.response.status === 500
+          ) {
+            await updateCircleOfTrust(cotId, cotData).catch(
+              async (updateCotErr) => {
+                printMessage(
+                  `\nError creating/updating circle of trust ${cotId}`,
+                  'error'
+                );
+                printMessage(createCotErr.response.data, 'error');
+                printMessage(updateCotErr.response.data, 'error');
+              }
+            );
+          } else {
+            printMessage(`\nError creating circle of trust ${cotId}`, 'error');
+            printMessage(createCotErr.response.data, 'error');
+          }
+        });
+    }
+  }
 
   // Process inner nodes
-  printMessage('  - Inner nodes:');
-  for (const [innerNodeId, innerNodeData] of Object.entries(
-    importData.innerNodes
-  )) {
-    delete innerNodeData._rev;
-    const nodeType = innerNodeData._type._id;
-    if (noreuuid) {
-      newUuid = innerNodeId;
-    } else {
-      newUuid = uuidv4();
-      uuidMap[innerNodeId] = newUuid;
-    }
-    innerNodeData._id = newUuid;
+  if (Object.entries(importData.innerNodes).length > 0) {
+    printMessage('  - Inner nodes:');
+    for (const [innerNodeId, innerNodeData] of Object.entries(
+      importData.innerNodes
+    )) {
+      delete innerNodeData._rev;
+      const nodeType = innerNodeData._type._id;
+      if (noreuuid) {
+        newUuid = innerNodeId;
+      } else {
+        newUuid = uuidv4();
+        uuidMap[innerNodeId] = newUuid;
+      }
+      innerNodeData._id = newUuid;
 
-    printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      await putNode(newUuid, nodeType, innerNodeData);
-    } catch (nodeImportError) {
-      printMessage(nodeImportError, 'error');
-      printMessage(
-        `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
-        'error'
-      );
-      return null;
+      printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await putNode(newUuid, nodeType, innerNodeData);
+      } catch (nodeImportError) {
+        printMessage(nodeImportError, 'error');
+        printMessage(
+          `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
+          'error'
+        );
+        return null;
+      }
+      printMessage('');
     }
-    printMessage('');
   }
 
   // Process nodes

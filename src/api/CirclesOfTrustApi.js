@@ -71,17 +71,17 @@ export async function createCircleOfTrust(cotData) {
 /**
  * Update SAML2 circle of trust
  * @param {String} cotId Entity provider location (hosted or remote)
- * @param {Object} providerData Object representing a SAML entity provider
- * @returns {Promise} a promise that resolves to a saml2 entity provider object
+ * @param {Object} cotData Object representing a SAML2 circle of trust
+ * @returns {Promise} a promise that resolves to a saml2 circle of trust object
  */
-export async function updateCircleOfTrust(cotId, providerData) {
+export async function updateCircleOfTrust(cotId, cotData) {
   const urlString = util.format(
     circleOfTrustByIdURLTemplate,
     storage.session.getTenant(),
     getCurrentRealmPath(),
     cotId
   );
-  return generateAmApi(getApiConfig()).put(urlString, providerData, {
+  return generateAmApi(getApiConfig()).put(urlString, cotData, {
     withCredentials: true,
   });
 }
