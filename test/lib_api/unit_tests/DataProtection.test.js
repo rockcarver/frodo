@@ -1,4 +1,4 @@
-import DataProtection from '../../../src/api/utils/DataProtection';
+import DataProtection from '../../../src/ops/utils/DataProtection';
 
 test('DataProtection to encrypt', async () => {
   // Note this test checks that encyption happned not that encryption is correct

@@ -3,14 +3,14 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import wordwrap from '../../api/utils/Wordwrap.js';
+import wordwrap from '../../ops/utils/Wordwrap.js';
 import { listSecrets, getSecret } from '../../api/SecretsApi.js';
 import storage from '../../storage/SessionStorage.js';
 import {
   printMessage,
   createTable,
   createKeyValueTable,
-} from '../../api/utils/Console.js';
+} from '../../ops/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('secret')

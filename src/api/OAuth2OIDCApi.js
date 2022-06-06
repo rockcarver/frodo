@@ -4,7 +4,7 @@ import { generateOauth2Api } from './BaseApi.js';
 import { getCurrentRealmPath } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
 import { encode } from './utils/Base64.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const oauth2AccessTokenURLTemplate = '%s/oauth2%s/access_token';
 const apiVersion = 'protocol=2.1,resource=1.0';

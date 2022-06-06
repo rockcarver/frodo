@@ -7,7 +7,7 @@ import {
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from '../api/utils/Console.js';
+} from './utils/Console.js';
 import {
   getProviders,
   findProviders,
@@ -25,7 +25,7 @@ import {
   getTypedFilename,
   saveJsonToFile,
   validateImport,
-} from '../api/utils/ExportImportUtils.js';
+} from './utils/ExportImportUtils.js';
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {
@@ -45,18 +45,7 @@ function getFileDataTemplate() {
  * @param {String} long Long list format with details
  */
 export async function listProviders(long = false) {
-  let providerList = [];
-  try {
-    const response = await getProviders();
-    if (response.status < 200 || response.status > 399) {
-      printMessage(response, 'data');
-      printMessage(`listProviders: ${response.status}`, 'error');
-    }
-    providerList = response.data.result;
-  } catch (error) {
-    printMessage(`listProviders ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
-  }
+  const providerList = (await getProviders()).data.result;
   providerList.sort((a, b) => a._id.localeCompare(b._id));
   if (!long) {
     providerList.forEach((item) => {
@@ -210,10 +199,7 @@ export async function exportProvidersToFile(file = null) {
  */
 export async function exportProvidersToFiles() {
   const found = await getProviders();
-  if (found.status < 200 || found.status > 399) {
-    printMessage(found, 'data');
-    printMessage(`exportProvidersToFile: ${found.status}`, 'error');
-  } else if (found.data.resultCount > 0) {
+  if (found.data.resultCount > 0) {
     createProgressBar(found.data.resultCount, 'Exporting providers');
     for (const stubData of found.data.result) {
       updateProgressBar(`Exporting provider ${stubData.entityId}`);
@@ -361,6 +347,7 @@ export async function importFirstProvider(file) {
             stopProgressBar(`Successfully imported provider ${entityId}.`);
           })
           .catch((createProviderErr) => {
+            stopProgressBar(`Error importing provider ${entityId}`);
             printMessage(`\nError importing provider ${entityId}`, 'error');
             printMessage(createProviderErr.response.data, 'error');
           });

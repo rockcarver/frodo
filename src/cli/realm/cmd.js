@@ -14,7 +14,7 @@ import {
   printMessage,
   createTable,
   createKeyValueTable,
-} from '../../api/utils/Console.js';
+} from '../../ops/utils/Console.js';
 
 export default function setup() {
   const journey = new Command('realm')

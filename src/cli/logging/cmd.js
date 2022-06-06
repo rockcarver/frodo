@@ -7,7 +7,7 @@ import {
   tailLogs,
 } from '../../api/LogApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 export default function setup() {
   const logs = new Command('logs');

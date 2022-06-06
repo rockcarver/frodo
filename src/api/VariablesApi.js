@@ -3,7 +3,7 @@ import { encode } from './utils/Base64.js';
 import { getTenantURL, getCurrentRealmPath } from './utils/ApiUtils.js';
 import { generateESVApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const variablesListURLTemplate = '%s/environment/variables';
 const variableURLTemplate = '%s/environment/variables/%s';

@@ -10,9 +10,9 @@ import {
 import {
   saveToFile,
   validateImport,
-} from '../../api/utils/ExportImportUtils.js';
+} from '../../ops/utils/ExportImportUtils.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 export default function setup() {
   const emailTemplate = new Command('email_templates')

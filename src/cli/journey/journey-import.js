@@ -1,11 +1,13 @@
-import fs from 'fs';
-import path from 'path';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { importJourney, importAllJourneys } from '../../api/TreeApi.js';
+import {
+  importJourneyFromFile,
+  importJourneysFromFile,
+  importJourneysFromFiles,
+} from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo command sub');
 
@@ -43,6 +45,12 @@ program
       'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -t or -a.'
     )
   )
+  .addOption(
+    new Option(
+      '-n, --no-re-uuid',
+      'No Re-UUID. Frodo does not generate new UUIDs for any nodes during import. This results in updating (overwriting) existing trees/nodes instead of safely cloning them.'
+    )
+  )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -56,57 +64,21 @@ program
         // import
         if (options.tree) {
           printMessage('Importing journey...');
-          fs.readFile(options.file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const journeyData = JSON.parse(data);
-            importJourney(
-              options.tree,
-              journeyData,
-              options.noReUUIDOption
-            ).then((result) => {
-              if (!result == null) printMessage('Import done.');
-            });
-          });
+          importJourneyFromFile(options.tree, options.file, options.noReUuid);
         }
         // --all -a
         else if (options.all && options.file) {
           printMessage(
             `Importing all journeys from a single file (${options.file})...`
           );
-          fs.readFile(options.file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const journeyData = JSON.parse(data);
-            importAllJourneys(journeyData.trees, options.noReUUIDOption).then(
-              (result) => {
-                if (!result == null) printMessage('done.');
-              }
-            );
-          });
+          importJourneysFromFile(options.file, options.noReUuid);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
           printMessage(
             'Importing all journeys from separate files in current directory...'
           );
-          const allJourneysData = { trees: {} };
-          fs.readdir('.', (err1, files) => {
-            const jsonFiles = files.filter(
-              (el) => path.extname(el) === '.json'
-            );
-
-            jsonFiles.forEach((file) => {
-              // console.log(`Importing ${path.parse(file).name}...`);
-              allJourneysData.trees[path.parse(file).name] = JSON.parse(
-                fs.readFileSync(file, 'utf8')
-              );
-            });
-            importAllJourneys(
-              allJourneysData.trees,
-              options.noReUUIDOption
-            ).then((result) => {
-              if (!result == null) printMessage('done.');
-            });
-          });
+          importJourneysFromFiles(options.noReUuid);
         }
         // unrecognized combination of options or no options
         else {

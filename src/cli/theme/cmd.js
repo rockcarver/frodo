@@ -1,28 +1,19 @@
-import fs from 'fs';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import {
-  getThemes,
-  getTheme,
-  getThemeByName,
-  putTheme,
-  putThemeByName,
-  putThemes,
-} from '../../api/ThemeApi.js';
-import {
-  getRealmString,
-  getTypedFilename,
-  saveToFile,
-  validateImport,
-} from '../../api/utils/ExportImportUtils.js';
+import { getThemes } from '../../api/ThemeApi.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../ops/utils/Console.js';
 import {
-  printMessage,
-  createProgressBar,
-  updateProgressBar,
-  stopProgressBar,
-} from '../../api/utils/Console.js';
+  exportThemeById,
+  exportThemeByName,
+  exportThemesToFile,
+  exportThemesToFiles,
+  importFirstThemeFromFile,
+  importThemeById,
+  importThemeByName,
+  importThemesFromFile,
+} from '../../ops/ThemeOps.js';
 
 export default function setup() {
   const themeCmd = new Command('theme')
@@ -112,84 +103,32 @@ export default function setup() {
       // let themeData = null;
       if (await getTokens()) {
         // export by name
-        if (command.opts().theme) {
+        if (options.theme) {
           printMessage(
             `Exporting theme "${
-              command.opts().theme
+              options.theme
             }" from realm "${storage.session.getRealm()}"...`
           );
-          let fileName = getTypedFilename(command.opts().theme, 'theme');
-          if (command.opts().file) {
-            fileName = command.opts().file;
-          }
-          createProgressBar(1, `Exporting ${command.opts().theme}`);
-          const themeData = await getThemeByName(command.opts().theme);
-          if (themeData.length === 0) {
-            stopProgressBar(`Theme ${command.opts().theme} not found!`);
-            printMessage(`Theme ${command.opts().theme} not found!`, 'error');
-          } else {
-            updateProgressBar(`Writing file ${fileName}`);
-            saveToFile('theme', themeData, '_id', fileName);
-            stopProgressBar(
-              `Successfully exported theme ${command.opts().theme}.`
-            );
-          }
+          exportThemeByName(options.theme, options.file);
         }
         // export by id
-        else if (command.opts().themeId) {
+        else if (options.themeId) {
           printMessage(
             `Exporting theme "${
-              command.opts().themeId
+              options.themeId
             }" from realm "${storage.session.getRealm()}"...`
           );
-          let fileName = getTypedFilename(command.opts().themeId, 'theme');
-          if (command.opts().file) {
-            fileName = command.opts().file;
-          }
-          createProgressBar(1, `Exporting ${command.opts().themeId}`);
-          const themeData = await getTheme(command.opts().themeId);
-          if (themeData.length === 0) {
-            stopProgressBar(`Theme ${command.opts().themeId} not found!`);
-            printMessage(`Theme ${command.opts().themeId} not found!`, 'error');
-          } else {
-            updateProgressBar(`Writing file ${fileName}`);
-            saveToFile('theme', themeData, '_id', fileName);
-            stopProgressBar(
-              `Successfully exported theme ${command.opts().themeId}.`
-            );
-          }
+          exportThemeById(options.themeId, options.file);
         }
         // --all -a
-        else if (command.opts().all) {
+        else if (options.all) {
           printMessage('Exporting all themes to a single file...');
-          let fileName = getTypedFilename(
-            `all${getRealmString()}Themes`,
-            'theme'
-          );
-          if (command.opts().file) {
-            fileName = command.opts().file;
-          }
-          const allThemesData = await getThemes();
-          createProgressBar(allThemesData.length, 'Exporting themes');
-          for (const themeData of allThemesData) {
-            updateProgressBar(`Exporting theme ${themeData.name}`);
-          }
-          saveToFile('theme', allThemesData, '_id', fileName);
-          stopProgressBar(
-            `${allThemesData.length} themes exported to ${fileName}.`
-          );
+          exportThemesToFile(options.file);
         }
         // --all-separate -A
-        else if (command.opts().allSeparate) {
+        else if (options.allSeparate) {
           printMessage('Exporting all themes to separate files...');
-          const allThemesData = await getThemes();
-          createProgressBar(allThemesData.length, 'Exporting themes');
-          for (const themeData of allThemesData) {
-            updateProgressBar(`Writing theme ${themeData.name}`);
-            const fileName = getTypedFilename(themeData.name, 'theme');
-            saveToFile('theme', themeData, '_id', fileName);
-          }
-          stopProgressBar(`${allThemesData.length} themes exported.`);
+          exportThemesToFiles();
         }
         // unrecognized combination of options or no options
         else {
@@ -251,223 +190,44 @@ export default function setup() {
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by name
-        if (command.opts().file && command.opts().theme) {
+        if (options.file && options.theme) {
           printMessage(
             `Importing theme with name "${
-              command.opts().theme
+              options.theme
             }" into realm "${storage.session.getRealm()}"...`
           );
-          fs.readFile(command.opts().file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const themeData = JSON.parse(data);
-            if (validateImport(themeData.meta)) {
-              createProgressBar(1, 'Importing theme...');
-              let found = false;
-              for (const id in themeData.theme) {
-                if ({}.hasOwnProperty.call(themeData.theme, id)) {
-                  if (themeData.theme[id].name === command.opts().theme) {
-                    found = true;
-                    updateProgressBar(`Importing ${themeData.theme[id].name}`);
-                    putThemeByName(
-                      command.opts().theme,
-                      themeData.theme[id]
-                    ).then((result) => {
-                      if (result == null) {
-                        stopProgressBar(
-                          `Error importing theme ${themeData.theme[id].name}`
-                        );
-                        printMessage(
-                          `Error importing theme ${themeData.theme[id].name}`,
-                          'error'
-                        );
-                      } else {
-                        stopProgressBar(
-                          `Successfully imported theme ${command.opts().theme}.`
-                        );
-                      }
-                    });
-                    break;
-                  }
-                }
-              }
-              if (!found) {
-                stopProgressBar(`Theme ${command.opts().theme} not found!`);
-              }
-            } else {
-              printMessage('Import validation failed...', 'error');
-            }
-          });
+          importThemeByName(options.theme, options.file);
         }
         // import by id
-        else if (command.opts().file && command.opts().themeId) {
+        else if (options.file && options.themeId) {
           printMessage(
             `Importing theme with id "${
-              command.opts().themeId
+              options.themeId
             }" into realm "${storage.session.getRealm()}"...`
           );
-          fs.readFile(command.opts().file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const themeData = JSON.parse(data);
-            if (validateImport(themeData.meta)) {
-              createProgressBar(1, 'Importing theme...');
-              let found = false;
-              for (const id in themeData.theme) {
-                if ({}.hasOwnProperty.call(themeData.theme, id)) {
-                  if (id === command.opts().themeId) {
-                    found = true;
-                    updateProgressBar(`Importing ${themeData.theme[id]._id}`);
-                    putTheme(id, themeData.theme[id]).then((result) => {
-                      if (result == null) {
-                        stopProgressBar(
-                          `Error importing theme ${themeData.theme[id]._id}`
-                        );
-                        printMessage(
-                          `Error importing theme ${themeData.theme[id]._id}`,
-                          'error'
-                        );
-                      } else {
-                        stopProgressBar(
-                          `Successfully imported theme ${
-                            command.opts().themeId
-                          }.`
-                        );
-                      }
-                    });
-                    break;
-                  }
-                }
-              }
-              if (!found) {
-                stopProgressBar(`Theme ${command.opts().themeId} not found!`);
-              }
-            } else {
-              printMessage('Import validation failed...', 'error');
-            }
-          });
+          importThemeById(options.themeId, options.file);
         }
         // --all -a
-        else if (command.opts().all && command.opts().file) {
+        else if (options.all && options.file) {
           printMessage(
-            `Importing all themes from a single file (${
-              command.opts().file
-            })...`
+            `Importing all themes from a single file (${options.file})...`
           );
-          fs.readFile(command.opts().file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const fileData = JSON.parse(data);
-            if (validateImport(fileData.meta)) {
-              createProgressBar(
-                Object.keys(fileData.theme).length,
-                'Importing themes...'
-              );
-              for (const id in fileData.theme) {
-                if ({}.hasOwnProperty.call(fileData.theme, id)) {
-                  updateProgressBar(`Importing ${fileData.theme[id].name}`);
-                }
-              }
-              putThemes(fileData.theme).then((result) => {
-                if (result == null) {
-                  stopProgressBar(
-                    `Error importing ${
-                      Object.keys(fileData.theme).length
-                    } themes!`
-                  );
-                  printMessage(
-                    `Error importing ${
-                      Object.keys(fileData.theme).length
-                    } themes from ${command.opts().file}`,
-                    'error'
-                  );
-                } else {
-                  stopProgressBar(
-                    `Successfully imported ${
-                      Object.keys(fileData.theme).length
-                    } themes.`
-                  );
-                }
-              });
-            } else {
-              printMessage('Import validation failed...', 'error');
-            }
-          });
+          importThemesFromFile(options.file);
         }
         // --all-separate -A
-        else if (command.opts().allSeparate && !command.opts().file) {
+        else if (options.allSeparate && !options.file) {
           printMessage(
             'Importing all themes from separate files in current directory...'
           );
-          const names = fs.readdirSync('.');
-          const jsonFiles = names.filter((name) =>
-            name.toLowerCase().endsWith('.theme.json')
-          );
-
-          createProgressBar(jsonFiles.length, 'Importing themes...');
-          let fileData = null;
-          let count = 0;
-          let total = 0;
-          let files = 0;
-          for (const file of jsonFiles) {
-            const data = fs.readFileSync(file, 'utf8');
-            fileData = JSON.parse(data);
-            if (validateImport(fileData.meta)) {
-              count = Object.keys(fileData.theme).length;
-              // eslint-disable-next-line no-await-in-loop
-              const result = await putThemes(fileData.theme);
-              if (result == null) {
-                printMessage(
-                  `Error importing ${count} themes from ${file}`,
-                  'error'
-                );
-              } else {
-                files += 1;
-                total += count;
-                updateProgressBar(`Imported ${count} theme(s) from ${file}`);
-              }
-            } else {
-              printMessage(`Validation of ${file} failed!`, 'error');
-            }
-          }
-          stopProgressBar(
-            `Finished importing ${total} theme(s) from ${files} file(s).`
-          );
         }
         // import single theme from file
-        else if (command.opts().file) {
+        else if (options.file) {
           printMessage(
             `Importing first theme from file "${
-              command.opts().file
+              options.file
             }" into realm "${storage.session.getRealm()}"...`
           );
-          fs.readFile(command.opts().file, 'utf8', (err, data) => {
-            if (err) throw err;
-            const themeData = JSON.parse(data);
-            if (validateImport(themeData.meta)) {
-              createProgressBar(1, 'Importing theme...');
-              for (const id in themeData.theme) {
-                if ({}.hasOwnProperty.call(themeData.theme, id)) {
-                  updateProgressBar(`Importing ${themeData.theme[id].name}`);
-                  putTheme(id, themeData.theme[id]).then((result) => {
-                    if (result == null) {
-                      stopProgressBar(
-                        `Error importing theme ${themeData.theme[id].name}`
-                      );
-                      printMessage(
-                        `Error importing theme ${themeData.theme[id].name}`,
-                        'error'
-                      );
-                    } else {
-                      stopProgressBar(
-                        `Successfully imported theme ${themeData.theme[id].name}`
-                      );
-                    }
-                  });
-                  break;
-                }
-              }
-            } else {
-              printMessage('Import validation failed...', 'error');
-            }
-          });
+          importFirstThemeFromFile(options.file);
         }
         // unrecognized combination of options or no options
         else {

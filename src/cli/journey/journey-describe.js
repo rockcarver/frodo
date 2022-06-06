@@ -6,14 +6,14 @@ import {
   listJourneys,
   getJourneyData,
   describeTree,
-} from '../../api/TreeApi.js';
+} from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import {
   printMessage,
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from '../../api/utils/Console.js';
+} from '../../ops/utils/Console.js';
 
 const program = new Command('frodo command sub');
 
@@ -82,16 +82,22 @@ program
         printMessage(`\nJourney: ${item.treeName}`, 'info');
         printMessage('========');
         printMessage('\nNodes:', 'info');
-        for (const [name, count] of Object.entries(item.nodeTypes)) {
-          printMessage(`- ${name}: ${count}`, 'info');
+        if (Object.entries(item.nodeTypes).length) {
+          for (const [name, count] of Object.entries(item.nodeTypes)) {
+            printMessage(`- ${name}: ${count}`, 'info');
+          }
         }
-        printMessage('\nScripts:', 'info');
-        for (const [name, desc] of Object.entries(item.scripts)) {
-          printMessage(`- ${name}: ${desc}`, 'info');
+        if (Object.entries(item.scripts).length) {
+          printMessage('\nScripts:', 'info');
+          for (const [name, desc] of Object.entries(item.scripts)) {
+            printMessage(`- ${name}: ${desc}`, 'info');
+          }
         }
-        printMessage('\nEmail Templates:', 'info');
-        for (const [id] of Object.entries(item.emailTemplates)) {
-          printMessage(`- ${id}`, 'info');
+        if (Object.entries(item.emailTemplates).length) {
+          printMessage('\nEmail Templates:', 'info');
+          for (const [id] of Object.entries(item.emailTemplates)) {
+            printMessage(`- ${id}`, 'info');
+          }
         }
       }
     }

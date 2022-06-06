@@ -2,7 +2,7 @@ import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from './utils/Console.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const idmAllConfigURLTemplate = '%s/openidm/config';
 const idmConfigURLTemplate = '%s/openidm/config/%s';
@@ -33,37 +33,18 @@ export async function getAllConfigEntities() {
   }
 }
 
+/**
+ * Get an IDM config entity
+ * @param {String} id the desired config entity
+ * @returns {Promise} a promise that resolves to an object containing an IDM config entity
+ */
 export async function getConfigEntity(id) {
-  try {
-    const urlString = util.format(
-      idmConfigURLTemplate,
-      getTenantURL(storage.session.getTenant()),
-      id
-    );
-    const response = await generateIdmApi().get(urlString);
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `getConfigEntity ERROR: get config entities call returned ${response.status}`,
-        'error'
-      );
-      return null;
-    }
-    return response.data;
-  } catch (e) {
-    if (
-      e.response.data.code === 403 &&
-      e.response.data.message ===
-        'This operation is not available in ForgeRock Identity Cloud.'
-    ) {
-      // ignore errors related to forbidden responses from ID Cloud
-      return null;
-    }
-    printMessage(
-      `getConfigEntity ERROR: get config entities data error - ${e}`,
-      'error'
-    );
-    return null;
-  }
+  const urlString = util.format(
+    idmConfigURLTemplate,
+    getTenantURL(storage.session.getTenant()),
+    id
+  );
+  return generateIdmApi().get(urlString);
 }
 
 export async function putConfigEntity(id, data) {

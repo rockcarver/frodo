@@ -2,7 +2,7 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../api/utils/Console.js';
+import { printMessage } from '../../ops/utils/Console.js';
 import { listProviders } from '../../ops/SamlOps.js';
 
 const program = new Command('frodo command sub');

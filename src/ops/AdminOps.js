@@ -2,13 +2,13 @@ import {
   listOAuth2Clients,
   getOAuth2Client,
   putOAuth2Client,
-} from './OAuth2ClientApi.js';
-import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
-import { isEqualJson, getRealmManagedUser } from './utils/ApiUtils.js';
-import { getRealmManagedOrganization } from './OrganizationApi.js';
-import { getOAuth2Provider } from './AmServiceApi.js';
-import { createSecret } from './SecretsApi.js';
-import { clientCredentialsGrant } from './OAuth2OIDCApi.js';
+} from '../api/OAuth2ClientApi.js';
+import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
+import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
+import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
+import { getOAuth2Provider } from '../api/AmServiceApi.js';
+import { createSecret } from '../api/SecretsApi.js';
+import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
 // eslint-disable-next-line no-unused-vars
 import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
@@ -71,7 +71,7 @@ export async function listOAuth2CustomClients() {
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   const subjects = authentication.rsFilter.staticUserMapping
     .map((mapping) => mapping.subject)
     .filter((subject) => !protectedSubjects.includes(subject));
@@ -117,7 +117,7 @@ export async function listOAuth2AdminClients() {
     })
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   const subjects = authentication.rsFilter.staticUserMapping
     .filter((mapping) => {
       let isPrivileged = false;
@@ -182,7 +182,7 @@ export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   let subjects = authentication.rsFilter.staticUserMapping
     .filter((mapping) => {
       let isPrivileged = false;
@@ -293,7 +293,7 @@ function addClientCredentialsGrantType(clientId, client) {
 }
 
 async function addAdminStaticUserMapping(name) {
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   let needsAdminMapping = true;
   let addRoles = [];
   const mappings = authentication.rsFilter.staticUserMapping.map((mapping) => {
@@ -358,7 +358,7 @@ async function addAdminStaticUserMapping(name) {
  */
 export async function addAutoIdStaticUserMapping() {
   const name = 'autoid-resource-server';
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   let needsAdminMapping = true;
   let addRoles = [];
   const mappings = authentication.rsFilter.staticUserMapping.map((mapping) => {
@@ -498,7 +498,7 @@ function removeClientCredentialsGrantType(clientId, client) {
 }
 
 async function removeAdminStaticUserMapping(name) {
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   let finalRoles = [];
   let removeMapping = false;
   let modified = false;
@@ -603,7 +603,7 @@ export async function createLongLivedToken(
 }
 
 export async function removeStaticUserMapping(subject) {
-  const authentication = await getConfigEntity('authentication');
+  const authentication = (await getConfigEntity('authentication')).data;
   let removeMapping = false;
   const mappings = authentication.rsFilter.staticUserMapping.filter(
     (mapping) => {
@@ -628,7 +628,7 @@ export async function hideGenericExtensionAttributes(
   includeCustomized,
   dryRun
 ) {
-  const managed = await getConfigEntity('managed');
+  const managed = (await getConfigEntity('managed')).data;
   const propertyNames = Object.keys(GENERIC_EXTENSION_ATTRIBUTES);
   const updatedObjects = managed.objects.map((object) => {
     // ignore all other objects
@@ -669,7 +669,7 @@ export async function showGenericExtensionAttributes(
   includeCustomized,
   dryRun
 ) {
-  const managed = await getConfigEntity('managed');
+  const managed = (await getConfigEntity('managed')).data;
   const propertyNames = Object.keys(GENERIC_EXTENSION_ATTRIBUTES);
   const updatedObjects = managed.objects.map((object) => {
     // ignore all other objects
@@ -707,7 +707,7 @@ export async function showGenericExtensionAttributes(
 }
 
 async function repairOrgModelUser(dryRun) {
-  const managed = await getConfigEntity('managed');
+  const managed = (await getConfigEntity('managed')).data;
   const RDVPs = ['memberOfOrgIDs'];
   let repairData = false;
   const updatedObjects = managed.objects.map((object) => {
@@ -736,7 +736,7 @@ async function repairOrgModelUser(dryRun) {
 }
 
 async function repairOrgModelOrg(dryRun) {
-  const managed = await getConfigEntity('managed');
+  const managed = (await getConfigEntity('managed')).data;
   const RDVPs = [
     'adminIDs',
     'ownerIDs',

@@ -4,7 +4,7 @@ import {
   saveToFile,
   validateImport,
   checkTargetCompatibility
-} from '../../../src/api/utils/ExportImportUtils'
+} from '../../../src/ops/utils/ExportImportUtils'
 import { resolve } from 'path';
 import { rmSync, existsSync, readFileSync } from 'fs';
 // Warning! implimentation file contains non determinisitc functions which are either; not reasonable to test or imposible
