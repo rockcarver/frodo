@@ -48,8 +48,14 @@ program
   .addOption(
     new Option(
       '-n, --no-re-uuid',
-      'No Re-UUID. Frodo does not generate new UUIDs for any nodes during import. This results in updating (overwriting) existing trees/nodes instead of safely cloning them.'
-    )
+      "No Re-UUID. Frodo won't generate new UUIDs for any nodes during import. Updates (overwrites) existing trees/nodes instead of clone."
+    ).default(false, 'off')
+  )
+  .addOption(
+    new Option(
+      '-v, --verbose',
+      'Verbose output during command execution. If specified, may or may not produce additional output.'
+    ).default(false, 'off')
   )
   .action(
     // implement command logic inside action handler
@@ -64,21 +70,30 @@ program
         // import
         if (options.tree) {
           printMessage('Importing journey...');
-          importJourneyFromFile(options.tree, options.file, options.noReUuid);
+          importJourneyFromFile(options.tree, options.file, {
+            noReUuid: options.noReUuid,
+            verbose: options.verbose,
+          });
         }
         // --all -a
         else if (options.all && options.file) {
           printMessage(
             `Importing all journeys from a single file (${options.file})...`
           );
-          importJourneysFromFile(options.file, options.noReUuid);
+          importJourneysFromFile(options.file, {
+            noReUuid: options.noReUuid,
+            verbose: options.verbose,
+          });
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
           printMessage(
             'Importing all journeys from separate files in current directory...'
           );
-          importJourneysFromFiles(options.noReUuid);
+          importJourneysFromFiles({
+            noReUuid: options.noReUuid,
+            verbose: options.verbose,
+          });
         }
         // unrecognized combination of options or no options
         else {
