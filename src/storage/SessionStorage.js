@@ -1,4 +1,6 @@
 /* eslint-disable no-return-assign */
+import pkg from '../../package.json' assert { type: 'json' };
+
 const _sessionStorage = {};
 
 export default {
@@ -30,7 +32,8 @@ export default {
     setAmVersion: (value) => (_sessionStorage.amVersion = value),
     getAmVersion: () => _sessionStorage.amVersion,
     setFrodoVersion: (value) => (_sessionStorage.frodoVersion = value),
-    getFrodoVersion: () => _sessionStorage.frodoVersion,
+    getFrodoVersion: () =>
+      _sessionStorage.frodoVersion || `v${pkg.version} [${process.version}]`,
     setAllowInsecureConnection: (value) => (_sessionStorage.insecure = value),
     getAllowInsecureConnection: () => _sessionStorage.insecure,
   },

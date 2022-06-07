@@ -10,7 +10,7 @@ axiosRetry(axios, {
   // retryCondition: (_error) => true // retry no matter what
 });
 
-export const timeout = 20000;
+export const timeout = 30000;
 export const amApiVersion = 'resource=1.0';
 
 /**
