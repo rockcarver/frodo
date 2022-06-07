@@ -8,7 +8,7 @@ Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheu
 
 1. Download you platform specific binary zip from the [release page](https://github.com/rockcarver/frodo/releases) and unzip it to a directory.
 2. Open a terminal and change to the above directory.
-3. Run `frodo info` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` will connect, print information about the environment on the console and also save the connection details.
+3. Run `frodo info` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` will connect, print information about the environment on the console and also save the [connection](#connections) details.
 ```console
 $ frodo info https://openam-example-use1-dev.id.forgerock.io/am username@example.com 5uP3r-53cr3t
 Printing versions and tokens...
@@ -30,7 +30,6 @@ Bearer token: eyJ0eXAiOiJKV1QiL <snip> 68SEpHUg
 - [Usage](#usage)
 - [Request features or report issues](#feature-requests)
 - [Contributing](#contributing)
-- [Developing](#developing)
 
 ## Features
 
@@ -129,18 +128,26 @@ npm i -g
 
 You can invoke `frodo` from the terminal as long as you're in the directory or sourced/added it to the path.
 
-To get started run the command below to get tenant info. This command will also create a connection file and stores it on disk, more on connections later.
+To get started, refer to [Quick Start](#quick-start).
 
-```console
-frodo info https://openam-example-use1-dev.id.forgerock.io/am <username> <password>
-```
+### Connections
+A connection is essentially a set of ForgeRock environment URL, admin username and admin password. It can also optionally contain a logging API key and corresponding API secret for that environment. All connections are stored in `~/.frodo/.frodorc` file. Password is stored encrypted for obvious reasons. `.frodorc` can house information for multiple connections.
 
-Once `frodo` saves a connection, you don't have to provide the `host`, `username`, and `password` arguments. You can reference your connection using any unique substring from your host
+`frodo` automatically creates a new "connection" in the file when any command, which connects to a ForgeRock environment, is successfully executed. You can also use the `connections` cli option to manage this information.
+
+Only one set of username and password is storeed for a given environment. If you connect to an existing saved environment (as part of a `frodo` command) with a different set of username/password, `frodo` will update the saved connection information for that environment with the new credentials.
+
+Once `frodo` saves a connection, you don't have to provide the `host`, `username`, and `password` arguments. You can reference your connection using any unique substring from your host. This is the most common way users would run frodo. For example, if `https://openam-example-use1-dev.id.forgerock.io/am` and `https://openam-example-use1-staging.id.forgerock.io/am` are two saved ForgeRock connections from previous commands, one would simply use:
 
 ```console
 frodo info example-use1-dev
 ```
+OR
+```console
+frodo info example-use1-staging
+```
 
+### cli options
 You interact with `frodo` using commands and options. You can see the list of options by using the `help` command
 
 ```console
@@ -151,17 +158,26 @@ frodo help
 Usage: frodo [options] [command]
 
 Options:
-  -v, --version                            output the version number
-  -h, --help                               display help for command
+-v, --version                            output the version number
+-h, --help                               display help for command
 
 Commands:
-  connections                              Manage connection profiles.
-  info [options] <host> [user] [password]  Print versions and tokens.
-  journey                                  Manage journeys/trees.
-  script                                   Manage scripts.
-  idm                                      Manage IDM configuration.
-  logs <host>                              View Identity Cloud logs.
-  help [command]                           display help for command
+admin                                    Platform admin tasks.
+application                              Manage applications.
+connections                              Manage connection profiles.
+email_templates                          Manage email templates.
+idm                                      Manage IDM configuration.
+idp                                      Manage (social) identity providers.
+info [options] <host> [user] [password]  Print versions and tokens.
+journey                                  Manage journeys/trees.
+logs <host>                              View Identity Cloud logs. If valid tenant admin credentials are specified, a log API key and secret
+are automatically created for that admin user.
+realm                                    Manage realms.
+saml                                     Manage SAML entity providers and circles of trust.
+script                                   Manage scripts.
+secret                                   Manage Identity Cloud secrets.
+theme                                    Manage themes.
+help [command]                           display help for command
 ```
 
 Or to view options for a specific command
@@ -215,17 +231,8 @@ Options:
   -h, --help         Help
 ```
 
-### Commands
-Detailed information on each command
-
-- [connections](docs/commands/connections.md)
-- [idm](docs/commands/idm.md)
-- [info](docs/commands/info.md)
-- [journey](docs/commands/journey.md)
-- [logs](docs/commands/logs.md)
-
 ## Feature requests
 Please use the repository's [issues](https://github.com/rockcarver/frodo/issues) to request new features/enhancements or report bugs/issues.
 
 ## Contributing
-If you would like to contribute to frodo, please refer to [contribution instrctions](docs/contribute.md).
+If you would like to contribute to frodo, please refer to [contribution instructions](docs/contribute.md).

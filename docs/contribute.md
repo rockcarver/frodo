@@ -2,8 +2,8 @@
 Any direct commits to the repository are not allowed. Pull requests (PR) are most welcome. Please fork this repo and develop and test in that fork. Once you feel ready, please create a PR. For any major changes, please open an [issue](https://github.com/rockcarver/frodo/issues) first to discuss what and why you'd like to change.
 
 ## Developing
-### Setting up your build environment
-Rather than detailing the process of contributing to a github open-source project here, here are a couple of excellent resources for getting started. These are great reads not only for someone new to contributing to a github project, but even regular contributors may fine some great tidbits of information.
+### Forking this repo
+Please refer to these couple of excellent resources for getting started with forking the repo and contributing to github open source projects in general. These are great reads not only for someone new to this, even regular github contributors may find some great tidbits of information.
 
 - [https://github.com/firstcontributions/first-contributions](https://github.com/firstcontributions/first-contributions)
 Also take a look at [Additional material](https://github.com/firstcontributions/first-contributions/blob/master/additional-material/git_workflow_scenarios/additional-material.md) towards the end, as there are some good tips on that page.
