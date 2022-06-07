@@ -103,7 +103,7 @@ Node 18 or newer and npm.
 #### Clone this repo
 
 ```console
-git clone git@github.com:rockcarver/frodo.git
+git clone https://github.com/rockcarver/frodo.git
 ```
 
 #### Install via NPM
