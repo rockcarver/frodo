@@ -2,7 +2,6 @@
 
 import { Command } from 'commander';
 import { initConnections } from './api/AuthApi.js';
-import storage from './storage/SessionStorage.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { printMessage } from './ops/utils/Console.js';
 
@@ -26,8 +25,6 @@ const program = new Command(pkg.name).version(
   `v${pkg.version} [${process.version}]`,
   '-v, --version'
 );
-
-storage.session.setFrodoVersion(`v${pkg.version} [${process.version}]`);
 
 (async () => {
   try {
