@@ -6,7 +6,7 @@ Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheu
 
 ## Quick start
 
-1. Download you platform specific binary zip from the [release page](https://github.com/rockcarver/frodo/releases) and unzip it to a directory.
+1. Download the platform specific binary archive from the [release page](https://github.com/rockcarver/frodo/releases) and unzip it to a directory.
 2. Open a terminal and change to the above directory.
 3. Run `frodo info` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` will connect, print information about the environment on the console and also save the [connection](#connections) details.
 ```console
