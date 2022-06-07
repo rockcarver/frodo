@@ -45,6 +45,12 @@ program
       'Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.'
     )
   )
+  .addOption(
+    new Option(
+      '--use-string-arrays',
+      'Where applicable, use string arrays to store multi-line text (e.g. scripts).'
+    ).default(false, 'off')
+  )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -58,17 +64,23 @@ program
         // export
         if (options.tree) {
           printMessage('Exporting journey...');
-          exportJourneyToFile(options.tree, options.file);
+          exportJourneyToFile(options.tree, options.file, {
+            useStringArrays: options.useStringArrays,
+          });
         }
         // --all -a
         else if (options.all) {
           printMessage('Exporting all journeys to a single file...');
-          exportJourneysToFile(options.file);
+          exportJourneysToFile(options.file, {
+            useStringArrays: options.useStringArrays,
+          });
         }
         // --all-separate -A
         else if (options.allSeparate) {
           printMessage('Exporting all journeys to separate files...');
-          exportJourneysToFiles();
+          exportJourneysToFiles({
+            useStringArrays: options.useStringArrays,
+          });
         }
         // unrecognized combination of options or no options
         else {

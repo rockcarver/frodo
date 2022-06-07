@@ -1,4 +1,19 @@
 /**
+ * Regex to determine if a string is Base64-encoded
+ */
+const base64regex =
+  /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+
+/**
+ * Is input Base64-encoded
+ * @param {String} input
+ * @returns {boolean} true if input is Base64-encoded, false otherwise
+ */
+export function isBase64Encoded(input) {
+  return base64regex.test(input);
+}
+
+/**
  * Base64-encode a string
  * @param {String} input String to base64-encode
  * @returns {String} Base64-encoded input string

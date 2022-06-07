@@ -50,7 +50,12 @@ import {
   getCirclesOfTrust,
   updateCircleOfTrust,
 } from '../api/CirclesOfTrustApi.js';
-import { encodeBase64Url } from '../api/utils/Base64.js';
+import {
+  decode,
+  encode,
+  encodeBase64Url,
+  isBase64Encoded,
+} from '../api/utils/Base64.js';
 import {
   getSocialIdentityProviders,
   putProviderByTypeAndId,
@@ -178,7 +183,7 @@ async function getSaml2NodeDependencies(
  * @param {Object} treeObject tree object
  * @param {Object} exportData export data
  */
-async function exportDependencies(treeObject, exportData) {
+async function exportDependencies(treeObject, exportData, options) {
   const nodeDataPromises = [];
   const scriptPromises = [];
   const emailTemplatePromises = [];
@@ -187,13 +192,15 @@ async function exportDependencies(treeObject, exportData) {
   const innerEmailTemplatePromises = [];
   const saml2ConfigPromises = [];
   let socialProviderPromise = null;
-  const socialIdentityProviderTransFormScriptPromises = [];
+  const socialProviderTransformScriptPromises = [];
   let themePromise = null;
 
   let allSaml2Providers = null;
   let allCirclesOfTrust = null;
   let filteredSocialProviders = null;
   let themes = null;
+
+  const { useStringArrays } = options;
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
@@ -287,7 +294,11 @@ async function exportDependencies(treeObject, exportData) {
   const scripts = await Promise.all(scriptPromises);
   scripts.forEach((scriptObject) => {
     if (scriptObject) {
-      scriptObject.script = convertBase64TextToArray(scriptObject.script);
+      if (useStringArrays) {
+        scriptObject.script = convertBase64TextToArray(scriptObject.script);
+      } else {
+        scriptObject.script = JSON.stringify(decode(scriptObject.script));
+      }
       exportData.scripts[scriptObject._id] = scriptObject;
     }
   });
@@ -367,7 +378,11 @@ async function exportDependencies(treeObject, exportData) {
   // process inner scripts
   const innerScripts = await Promise.all(innerScriptPromises);
   innerScripts.forEach((scriptObject) => {
-    scriptObject.script = convertBase64TextToArray(scriptObject.script);
+    if (useStringArrays) {
+      scriptObject.script = convertBase64TextToArray(scriptObject.script);
+    } else {
+      scriptObject.script = JSON.stringify(decode(scriptObject.script));
+    }
     exportData.scripts[scriptObject._id] = scriptObject;
   });
 
@@ -401,24 +416,27 @@ async function exportDependencies(treeObject, exportData) {
         (!filteredSocialProviders ||
           filteredSocialProviders.includes(socialProvider._id))
       ) {
-        socialIdentityProviderTransFormScriptPromises.push(
+        socialProviderTransformScriptPromises.push(
           getScript(socialProvider.transform)
         );
         exportData.socialIdentityProviders[socialProvider._id] = socialProvider;
       }
     });
     // socialIdentityProvider objects have a "transform" property which refers to a script. Get those scripts here.
-    await Promise.all(socialIdentityProviderTransFormScriptPromises).then(
+    await Promise.all(socialProviderTransformScriptPromises).then(
       (socialIdentityProviderTransFormScriptPromiseResults) => {
         socialIdentityProviderTransFormScriptPromiseResults.forEach(
           (scriptObject) => {
             if (scriptObject) {
-              // Decode the base64 encoded script text and convert it to an array of strings so it is valid json.
-              // The reason for this is to be able to search an export file for text in a script.
-              // It will be put back to it's original base64 encoded state upon import.
-              scriptObject.script = convertBase64TextToArray(
-                scriptObject.script
-              );
+              if (useStringArrays) {
+                scriptObject.script = convertBase64TextToArray(
+                  scriptObject.script
+                );
+              } else {
+                scriptObject.script = JSON.stringify(
+                  decode(scriptObject.script)
+                );
+              }
               // Add each script object to exportData.
               exportData.scripts[scriptObject._id] = scriptObject;
             }
@@ -449,7 +467,7 @@ async function exportDependencies(treeObject, exportData) {
  * @param {String} journeyId journey id/name
  * @param {String} file optional export file name
  */
-export async function exportJourneyToFile(journeyId, file = null) {
+export async function exportJourneyToFile(journeyId, file, options) {
   let fileName = file;
   if (!fileName) {
     fileName = getTypedFilename(journeyId, 'journey');
@@ -461,7 +479,7 @@ export async function exportJourneyToFile(journeyId, file = null) {
       const fileData = getSingleTreeFileDataTemplate();
       fileData.tree = treeData;
       spinSpinner();
-      await exportDependencies(treeData, fileData);
+      await exportDependencies(treeData, fileData, options);
       saveJsonToFile(fileData, fileName);
       stopSpinner();
       printMessage(
@@ -500,7 +518,7 @@ export async function getJourneyData(journeyId) {
  * Export all journeys to file
  * @param {String} file optional export file name
  */
-export async function exportJourneysToFile(file = null) {
+export async function exportJourneysToFile(file, options) {
   let fileName = file;
   if (!fileName) {
     fileName = getTypedFilename(`all${getRealmString()}Journeys`, 'journeys');
@@ -516,7 +534,7 @@ export async function exportJourneysToFile(file = null) {
     delete exportData.meta;
     exportData.tree = treeData;
     // eslint-disable-next-line no-await-in-loop
-    await exportDependencies(treeData, exportData);
+    await exportDependencies(treeData, exportData, options);
     fileData.trees[tree._id] = exportData;
   }
   saveJsonToFile(fileData, fileName);
@@ -526,7 +544,7 @@ export async function exportJourneysToFile(file = null) {
 /**
  * Export all journeys to separate files
  */
-export async function exportJourneysToFiles() {
+export async function exportJourneysToFiles(options) {
   const trees = (await getTrees()).data.result;
   createProgressBar(trees.length, 'Exporting journeys...');
   for (const tree of trees) {
@@ -537,7 +555,7 @@ export async function exportJourneysToFiles() {
     const exportData = getSingleTreeFileDataTemplate();
     exportData.tree = treeData;
     // eslint-disable-next-line no-await-in-loop
-    await exportDependencies(treeData, exportData);
+    await exportDependencies(treeData, exportData, options);
     saveJsonToFile(exportData, fileName);
   }
   stopProgressBar('Done');
@@ -547,11 +565,12 @@ export async function exportJourneysToFiles() {
  * Helper to import a tree with all dependencies from an import data object (typically read from a file)
  * @param {String} id tree id/name
  * @param {Object} importData import data object containing tree and all its dependencies
- * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
- * @param {boolean} verbose verbose output
+ * @param {Object} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
  * @returns {String} empty string on success, null otherwise
  */
-async function importTree(id, importData, noreuuid, verbose = false) {
+async function importTree(id, importData, options) {
+  const { noReUuid } = options;
+  const { verbose } = options;
   if (verbose) printMessage(`\n- ${id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
@@ -560,17 +579,19 @@ async function importTree(id, importData, noreuuid, verbose = false) {
   // Process scripts
   if (Object.entries(importData.scripts).length > 0) {
     if (verbose) printMessage('  - Scripts:');
-    for (const [scriptId, scriptData] of Object.entries(importData.scripts)) {
+    for (const [scriptId, scriptObject] of Object.entries(importData.scripts)) {
       if (verbose)
-        printMessage(`    - ${scriptId} (${scriptData.name})`, 'info', false);
+        printMessage(`    - ${scriptId} (${scriptObject.name})`, 'info', false);
       // is the script stored as an array of strings or just b64 blob?
-      if (Array.isArray(scriptData.script)) {
-        scriptData.script = convertTextArrayToBase64(scriptData.script);
+      if (Array.isArray(scriptObject.script)) {
+        scriptObject.script = convertTextArrayToBase64(scriptObject.script);
+      } else if (!isBase64Encoded(scriptObject.script)) {
+        scriptObject.script = encode(JSON.parse(scriptObject.script));
       }
       // eslint-disable-next-line no-await-in-loop
-      if ((await putScript(scriptId, scriptData)) == null) {
+      if ((await putScript(scriptId, scriptObject)) == null) {
         printMessage(
-          `importJourney ERROR: error importing script ${scriptData.name} (${scriptId}) in journey ${treeId}`,
+          `importJourney ERROR: error importing script ${scriptObject.name} (${scriptId}) in journey ${treeId}`,
           'error'
         );
         return null;
@@ -727,7 +748,7 @@ async function importTree(id, importData, noreuuid, verbose = false) {
     )) {
       delete innerNodeData._rev;
       const nodeType = innerNodeData._type._id;
-      if (noreuuid) {
+      if (noReUuid) {
         newUuid = innerNodeId;
       } else {
         newUuid = uuidv4();
@@ -758,7 +779,7 @@ async function importTree(id, importData, noreuuid, verbose = false) {
   for (let [nodeId, nodeData] of Object.entries(importData.nodes)) {
     delete nodeData._rev;
     const nodeType = nodeData._type._id;
-    if (noreuuid) {
+    if (noReUuid) {
       newUuid = nodeId;
     } else {
       newUuid = uuidv4();
@@ -767,7 +788,7 @@ async function importTree(id, importData, noreuuid, verbose = false) {
     nodeData._id = newUuid;
     // console.log(uuidMap);
 
-    if (nodeType === 'PageNode' && !noreuuid) {
+    if (nodeType === 'PageNode' && !noReUuid) {
       for (const [, inPageNodeData] of Object.entries(nodeData.nodes)) {
         const currentId = inPageNodeData._id;
         // console.log(nodeData);
@@ -797,7 +818,7 @@ async function importTree(id, importData, noreuuid, verbose = false) {
   // eslint-disable-next-line no-param-reassign
   importData.tree._id = id;
   let journeyText = JSON.stringify(importData.tree, null, 2);
-  if (!noreuuid) {
+  if (!noReUuid) {
     for (const [oldId, newId] of Object.entries(uuidMap)) {
       journeyText = replaceAll(journeyText, oldId, newId);
     }
@@ -816,17 +837,22 @@ async function importTree(id, importData, noreuuid, verbose = false) {
 
 /**
  * Import a journey from file
- * @param {String} id journey id/name
+ * @param {String} journeyId journey id/name
  * @param {String} file import file name
- * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
  */
-export async function importJourneyFromFile(id, file, noreuuid) {
+export async function importJourneyFromFile(journeyId, file, options) {
+  createProgressBar(1, `${journeyId}`);
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) throw err;
     const journeyData = JSON.parse(data);
-    importTree(id, journeyData, noreuuid, true).then((result) => {
-      if (!result == null) printMessage('Import done.');
-    });
+    importTree(journeyId, journeyData, options)
+      .then(() => {
+        updateProgressBar();
+      })
+      .finally(() => {
+        stopProgressBar();
+      });
   });
 }
 
@@ -895,9 +921,9 @@ async function resolveDependencies(
 /**
  * Helper to import multiple trees from a tree map
  * @param {Object} treesMap map of trees object
- * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
  */
-async function importAllTrees(treesMap, noreuuid) {
+async function importAllTrees(treesMap, options) {
   const installedJourneys = (await getTrees()).data.result.map((x) => x._id);
   const unresolvedJourneys = [];
   const resolvedJourneys = [];
@@ -911,7 +937,7 @@ async function importAllTrees(treesMap, noreuuid) {
   for (const tree of resolvedJourneys) {
     updateProgressBar(`${tree}`);
     // eslint-disable-next-line no-await-in-loop
-    await importTree(tree, treesMap[tree], noreuuid, false);
+    await importTree(tree, treesMap[tree], options);
   }
   stopProgressBar('Done');
 }
@@ -919,21 +945,21 @@ async function importAllTrees(treesMap, noreuuid) {
 /**
  * Import all journeys from file
  * @param {*} file import file name
- * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
  */
-export async function importJourneysFromFile(file, noreuuid) {
+export async function importJourneysFromFile(file, options) {
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) throw err;
     const fileData = JSON.parse(data);
-    importAllTrees(fileData.trees, noreuuid);
+    importAllTrees(fileData.trees, options);
   });
 }
 
 /**
  * Import all journeys from separate files
- * @param {boolean} noreuuid do not re-uuid all node objects (this will cause existing node objects to be overwritten)
+ * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
  */
-export async function importJourneysFromFiles(noreuuid) {
+export async function importJourneysFromFiles(options) {
   const names = fs.readdirSync('.');
   const jsonFiles = names.filter((name) =>
     name.toLowerCase().endsWith('.journey.json')
@@ -943,7 +969,7 @@ export async function importJourneysFromFiles(noreuuid) {
     const journeyData = JSON.parse(fs.readFileSync(file, 'utf8'));
     allJourneysData.trees[journeyData.tree._id] = journeyData;
   });
-  importAllTrees(allJourneysData.trees, noreuuid);
+  importAllTrees(allJourneysData.trees, options);
 }
 
 /**
