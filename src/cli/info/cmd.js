@@ -39,7 +39,7 @@ export default function setup() {
         if (storage.session.getBearerToken()) {
           output.bearerToken = storage.session.getBearerToken();
         }
-        printMessage(output, 'data');
+        printMessage(JSON.stringify(output, null, 2), 'data');
       }
     });
   info.showHelpAfterError();
