@@ -200,7 +200,7 @@ async function exportDependencies(treeObject, exportData, options) {
   let filteredSocialProviders = null;
   let themes = null;
 
-  const { useStringArrays } = options;
+  const { useStringArrays } = options.useStringArrays;
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
@@ -509,7 +509,7 @@ export async function getJourneyData(journeyId) {
   ).data;
   journeyData.tree = treeData;
   spinSpinner();
-  await exportDependencies(treeData, journeyData);
+  await exportDependencies(treeData, journeyData, { useStringArrays: true });
   stopSpinner();
   return journeyData;
 }

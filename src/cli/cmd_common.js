@@ -81,32 +81,6 @@ export const insecureOption = new Option(
   'Allow insecure connections when using SSL/TLS'
 ).default(false, "Don't allow insecure connections");
 
-export const noReUUIDOption = new Option(
-  '-n',
-  'No Re-UUID, i.e., import does not generate new UUIDs \
-for (inner)nodes. Used to update existing trees/nodes instead of cloning them.'
-);
-export const noReUUIDOptionM = new Option(
-  '-n',
-  'No Re-UUID, i.e., import does not generate new UUIDs \
-for (inner)nodes. Used to update existing trees/nodes instead of cloning them.'
-);
-
-export const versionOption = new Option(
-  '-o, --version <version>',
-  "Override version. Notation: 'X.Y.Z' e.g. '7.1.0'. Override detected version \
-with any version. This is helpful in order to check if journeys in one environment would be compatible running \
-in another environment (e.g. in preparation of migrating from on-prem to ForgeRock Identity Cloud. Only impacts \
-these actions: -d, -l."
-);
-export const versionOptionM = new Option(
-  '-o, --version <version>',
-  "Override version. Notation: 'X.Y.Z' e.g. '7.1.0'. Override detected version \
-with any version. This is helpful in order to check if journeys in one environment would be compatible running \
-in another environment (e.g. in preparation of migrating from on-prem to ForgeRock Identity Cloud. Only impacts \
-these actions: -d, -l."
-);
-
 export const nameOption = new Option(
   '-N, --name <name>',
   'Config entity name to be exported or imported/updated. Examples are \
@@ -180,8 +154,6 @@ bearer token: \n\
 treeOptionM.makeOptionMandatory();
 fileOptionM.makeOptionMandatory();
 deploymentOptionM.makeOptionMandatory();
-noReUUIDOptionM.makeOptionMandatory();
-versionOptionM.makeOptionMandatory();
 nameOptionM.makeOptionMandatory();
 dirOptionM.makeOptionMandatory();
 entitiesFileOptionM.makeOptionMandatory();

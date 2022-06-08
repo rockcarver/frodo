@@ -23,7 +23,7 @@ program
   .addOption(common.insecureOption)
   .addOption(
     new Option(
-      '-t, --tree <tree>',
+      '-i, --journey-id <journey>',
       'Name of a journey/tree. If specified, -a and -A are ignored.'
     )
   )
@@ -62,9 +62,9 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // export
-        if (options.tree) {
+        if (options.journeyId) {
           printMessage('Exporting journey...');
-          exportJourneyToFile(options.tree, options.file, {
+          exportJourneyToFile(options.journeyId, options.file, {
             useStringArrays: options.useStringArrays,
           });
         }
