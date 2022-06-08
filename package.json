@@ -69,6 +69,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/plugin-syntax-import-assertions": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "babel-plugin-transform-import-meta": "^2.1.1",
     "cjs-to-es6": "^1.1.1",
     "del": "^6.0.0",
     "eslint": "^8.10.0",

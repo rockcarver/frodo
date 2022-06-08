@@ -18,6 +18,7 @@ gulp.task('transpile', () =>
               importInterop: 'babel',
             },
           ],
+          ['babel-plugin-transform-import-meta'],
         ],
       })
     )
