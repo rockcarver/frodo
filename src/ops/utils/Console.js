@@ -49,7 +49,7 @@ function warn(message) {
 function error(message) {
   switch (typeof message) {
     case 'object':
-      console.dir(message, { depth: 3 });
+      console.dir(message, { depth: 4 });
       break;
     default:
       console.error(chalk.redBright(message));
@@ -179,14 +179,21 @@ export function showSpinner(message) {
 
 export function stopSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
-  let options = {};
-  if (message) options = { text: message };
-  if (spinner) spinner.success(options);
+  if (spinner) {
+    let options = {};
+    if (message) options = { text: message };
+    spinner.success(options);
+  }
 }
 
-export function spinSpinner() {
+export function spinSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
-  if (spinner) spinner.spin();
+  if (spinner) {
+    let options = {};
+    if (message) options = { text: message };
+    spinner.update(options);
+    spinner.spin();
+  }
 }
 
 export function createTable(head) {

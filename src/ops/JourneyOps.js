@@ -11,7 +11,7 @@ import {
   convertTextArrayToBase64,
   convertTextArrayToBase64Url,
 } from './utils/ExportImportUtils.js';
-import { replaceAll } from './utils/OpsUtils.js';
+import { getRealmManagedUser, replaceAll } from './utils/OpsUtils.js';
 import storage from '../storage/SessionStorage.js';
 import {
   getNode,
@@ -200,7 +200,7 @@ async function exportDependencies(treeObject, exportData, options) {
   let filteredSocialProviders = null;
   let themes = null;
 
-  const { useStringArrays } = options;
+  const { useStringArrays } = options.useStringArrays;
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
@@ -509,7 +509,7 @@ export async function getJourneyData(journeyId) {
   ).data;
   journeyData.tree = treeData;
   spinSpinner();
-  await exportDependencies(treeData, journeyData);
+  await exportDependencies(treeData, journeyData, { useStringArrays: true });
   stopSpinner();
   return journeyData;
 }
@@ -563,23 +563,22 @@ export async function exportJourneysToFiles(options) {
 
 /**
  * Helper to import a tree with all dependencies from an import data object (typically read from a file)
- * @param {String} id tree id/name
- * @param {Object} importData import data object containing tree and all its dependencies
- * @param {Object} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
+ * @param {Object} treeObject tree object containing tree and all its dependencies
+ * @param {Object} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  * @returns {String} empty string on success, null otherwise
  */
-async function importTree(id, importData, options) {
-  const { noReUuid } = options;
+async function importTree(treeObject, options) {
+  const { reUuid } = options;
   const { verbose } = options;
-  if (verbose) printMessage(`\n- ${id}\n`, 'info', false);
+  if (verbose) printMessage(`\n- ${treeObject.tree._id}\n`, 'info', false);
   let newUuid = '';
   const uuidMap = {};
-  const treeId = importData.tree._id;
+  const treeId = treeObject.tree._id;
 
   // Process scripts
-  if (Object.entries(importData.scripts).length > 0) {
+  if (Object.entries(treeObject.scripts).length > 0) {
     if (verbose) printMessage('  - Scripts:');
-    for (const [scriptId, scriptObject] of Object.entries(importData.scripts)) {
+    for (const [scriptId, scriptObject] of Object.entries(treeObject.scripts)) {
       if (verbose)
         printMessage(`    - ${scriptId} (${scriptObject.name})`, 'info', false);
       // is the script stored as an array of strings or just b64 blob?
@@ -601,13 +600,13 @@ async function importTree(id, importData, options) {
   }
 
   // Process email templates
-  if (Object.entries(importData.emailTemplates).length > 0) {
+  if (Object.entries(treeObject.emailTemplates).length > 0) {
     if (verbose) printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
-      importData.emailTemplates
+      treeObject.emailTemplates
     )) {
       const templateLongId = templateData._id;
-      if (verbose) printMessage(`    - ${templateId}`, 'info');
+      if (verbose) printMessage(`    - ${templateId}`, 'info', false);
       if (
         // eslint-disable-next-line no-await-in-loop
         (await putEmailTemplate(templateId, templateLongId, templateData)) ==
@@ -624,10 +623,10 @@ async function importTree(id, importData, options) {
   }
 
   // Process themes
-  if (importData.themes.length > 0) {
+  if (treeObject.themes.length > 0) {
     if (verbose) printMessage('  - Themes:');
     const themes = {};
-    for (const theme of importData.themes) {
+    for (const theme of treeObject.themes) {
       if (verbose) printMessage(`    - ${theme._id} (${theme.name})`, 'info');
       themes[theme._id] = theme;
     }
@@ -642,10 +641,10 @@ async function importTree(id, importData, options) {
   }
 
   // Process social providers
-  if (Object.entries(importData.socialIdentityProviders).length > 0) {
+  if (Object.entries(treeObject.socialIdentityProviders).length > 0) {
     if (verbose) printMessage('  - OAuth2/OIDC (social) identity providers:');
     for (const [providerId, providerData] of Object.entries(
-      importData.socialIdentityProviders
+      treeObject.socialIdentityProviders
     )) {
       if (verbose) printMessage(`    - ${providerId}`, 'info');
       if (
@@ -666,9 +665,9 @@ async function importTree(id, importData, options) {
   }
 
   // Process saml providers
-  if (Object.entries(importData.saml2Entities).length > 0) {
+  if (Object.entries(treeObject.saml2Entities).length > 0) {
     if (verbose) printMessage('  - SAML2 entity providers:');
-    for (const [, providerData] of Object.entries(importData.saml2Entities)) {
+    for (const [, providerData] of Object.entries(treeObject.saml2Entities)) {
       delete providerData._rev;
       const { entityId } = providerData;
       const { entityLocation } = providerData;
@@ -709,9 +708,9 @@ async function importTree(id, importData, options) {
   }
 
   // Process circles of trust
-  if (Object.entries(importData.circlesOfTrust).length > 0) {
+  if (Object.entries(treeObject.circlesOfTrust).length > 0) {
     if (verbose) printMessage('  - SAML2 circles of trust:');
-    for (const [cotId, cotData] of Object.entries(importData.circlesOfTrust)) {
+    for (const [cotId, cotData] of Object.entries(treeObject.circlesOfTrust)) {
       delete cotData._rev;
       if (verbose) printMessage(`    - ${cotId}`, 'info');
       // eslint-disable-next-line no-await-in-loop
@@ -741,14 +740,14 @@ async function importTree(id, importData, options) {
   }
 
   // Process inner nodes
-  if (Object.entries(importData.innerNodes).length > 0) {
-    if (verbose) printMessage('  - Inner nodes:');
+  if (Object.entries(treeObject.innerNodes).length > 0) {
+    if (verbose) printMessage('  - Inner nodes:', 'text', true);
     for (const [innerNodeId, innerNodeData] of Object.entries(
-      importData.innerNodes
+      treeObject.innerNodes
     )) {
       delete innerNodeData._rev;
       const nodeType = innerNodeData._type._id;
-      if (noReUuid) {
+      if (!reUuid) {
         newUuid = innerNodeId;
       } else {
         newUuid = uuidv4();
@@ -757,7 +756,29 @@ async function importTree(id, importData, options) {
       innerNodeData._id = newUuid;
 
       if (verbose)
-        printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
+        printMessage(
+          `    - ${newUuid}${reUuid ? '*' : ''} (${nodeType})`,
+          'info',
+          false
+        );
+
+      // If the node has an identityResource config setting
+      // and the identityResource ends in 'user'
+      // and the node's identityResource is the same as the tree's identityResource
+      // change it to the current realm managed user identityResource otherwise leave it alone.
+      if (
+        innerNodeData.identityResource &&
+        innerNodeData.identityResource.endsWith('user') &&
+        innerNodeData.identityResource === treeObject.tree.identityResource
+      ) {
+        innerNodeData.identityResource = `managed/${getRealmManagedUser()}`;
+        if (verbose)
+          printMessage(
+            `\n      - identityResource: ${innerNodeData.identityResource}`,
+            'info',
+            false
+          );
+      }
       try {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, innerNodeData);
@@ -776,34 +797,55 @@ async function importTree(id, importData, options) {
   // Process nodes
   if (verbose) printMessage('  - Nodes:');
   // eslint-disable-next-line prefer-const
-  for (let [nodeId, nodeData] of Object.entries(importData.nodes)) {
+  for (let [nodeId, nodeData] of Object.entries(treeObject.nodes)) {
     delete nodeData._rev;
     const nodeType = nodeData._type._id;
-    if (noReUuid) {
+    if (!reUuid) {
       newUuid = nodeId;
     } else {
       newUuid = uuidv4();
       uuidMap[nodeId] = newUuid;
     }
     nodeData._id = newUuid;
-    // console.log(uuidMap);
 
-    if (nodeType === 'PageNode' && !noReUuid) {
+    if (nodeType === 'PageNode' && reUuid) {
       for (const [, inPageNodeData] of Object.entries(nodeData.nodes)) {
         const currentId = inPageNodeData._id;
-        // console.log(nodeData);
         nodeData = JSON.parse(
           replaceAll(JSON.stringify(nodeData), currentId, uuidMap[currentId])
         );
-        // console.log(nodeData);
       }
     }
 
-    if (verbose) printMessage(`    - ${newUuid} (${nodeType})`, 'info', false);
+    if (verbose)
+      printMessage(
+        `    - ${newUuid}${reUuid ? '*' : ''} (${nodeType})`,
+        'info',
+        false
+      );
+
+    // If the node has an identityResource config setting
+    // and the identityResource ends in 'user'
+    // and the node's identityResource is the same as the tree's identityResource
+    // change it to the current realm managed user identityResource otherwise leave it alone.
+    if (
+      nodeData.identityResource &&
+      nodeData.identityResource.endsWith('user') &&
+      nodeData.identityResource === treeObject.tree.identityResource
+    ) {
+      nodeData.identityResource = `managed/${getRealmManagedUser()}`;
+      if (verbose)
+        printMessage(
+          `\n      - identityResource: ${nodeData.identityResource}`,
+          'info',
+          false
+        );
+    }
     try {
       // eslint-disable-next-line no-await-in-loop
       await putNode(newUuid, nodeType, nodeData);
     } catch (nodeImportError) {
+      printMessage(nodeImportError, 'error');
       printMessage(
         `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
         'error'
@@ -815,21 +857,38 @@ async function importTree(id, importData, options) {
 
   // Process tree
   if (verbose) printMessage('  - Flow');
-  // eslint-disable-next-line no-param-reassign
-  importData.tree._id = id;
-  let journeyText = JSON.stringify(importData.tree, null, 2);
-  if (!noReUuid) {
+
+  if (reUuid) {
+    let journeyText = JSON.stringify(treeObject.tree, null, 2);
     for (const [oldId, newId] of Object.entries(uuidMap)) {
       journeyText = replaceAll(journeyText, oldId, newId);
     }
+    treeObject.tree = JSON.parse(journeyText);
   }
-  const journeyData = JSON.parse(journeyText);
-  delete journeyData._rev;
-  if (verbose) printMessage(`    - Done`, 'info', true);
+
+  // If the tree has an identityResource config setting
+  // and the identityResource ends in 'user'
+  // Set the identityResource for the tree to the selected resource.
+  if (
+    treeObject.tree.identityResource &&
+    treeObject.tree.identityResource.endsWith('user')
+  ) {
+    treeObject.tree.identityResource = `managed/${getRealmManagedUser()}`;
+    if (verbose)
+      printMessage(
+        `    - identityResource: ${treeObject.tree.identityResource}`,
+        'info',
+        false
+      );
+  }
+
+  delete treeObject.tree._rev;
+  if (verbose) printMessage(`\n    - Done`, 'info', true);
   try {
-    await putTree(id, journeyData);
+    await putTree(treeObject.tree._id, treeObject.tree);
     return '';
   } catch (importError) {
+    printMessage(importError, 'error');
     printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
     return null;
   }
@@ -839,20 +898,67 @@ async function importTree(id, importData, options) {
  * Import a journey from file
  * @param {String} journeyId journey id/name
  * @param {String} file import file name
- * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneyFromFile(journeyId, file, options) {
   createProgressBar(1, `${journeyId}`);
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) throw err;
-    const journeyData = JSON.parse(data);
-    importTree(journeyId, journeyData, options)
-      .then(() => {
-        updateProgressBar();
-      })
-      .finally(() => {
-        stopProgressBar();
-      });
+    let journeyData = JSON.parse(data);
+    // check if this is a file with multiple trees and get journey by id
+    if (journeyData.trees && journeyData.trees[journeyId]) {
+      journeyData = journeyData.trees[journeyId];
+    } else if (journeyData.trees) {
+      journeyData = null;
+    }
+    // if a journeyId was specified, only import the matching journey
+    if (journeyData && journeyId === journeyData.tree._id) {
+      importTree(journeyData, options)
+        .then(() => {
+          updateProgressBar();
+        })
+        .finally(() => {
+          stopProgressBar();
+        });
+    } else {
+      stopProgressBar(`${journeyId} not found!`);
+    }
+  });
+}
+
+export async function importFirstJourneyFromFile(file, options) {
+  fs.readFile(file, 'utf8', async (err, data) => {
+    if (err) throw err;
+    let journeyData = _.cloneDeep(JSON.parse(data));
+    let journeyId = null;
+    // single tree
+    if (journeyData.tree) {
+      journeyId = _.cloneDeep(journeyData.tree._id);
+    }
+    // multiple trees, so get the first tree
+    else if (journeyData.trees) {
+      for (const treeId in journeyData.trees) {
+        if (Object.hasOwnProperty.call(journeyData.trees, treeId)) {
+          journeyId = treeId;
+          journeyData = journeyData.trees[treeId];
+          break;
+        }
+      }
+    }
+    // if a journeyId was specified, only import the matching journey
+    if (journeyData && journeyId) {
+      createProgressBar(1, `${journeyId}`);
+      importTree(journeyData, options)
+        .then(() => {
+          updateProgressBar();
+          stopProgressBar();
+        })
+        .catch((importError) => {
+          stopProgressBar(`${importError}`);
+        });
+    } else {
+      stopProgressBar(`No journeys found!`);
+    }
   });
 }
 
@@ -921,7 +1027,7 @@ async function resolveDependencies(
 /**
  * Helper to import multiple trees from a tree map
  * @param {Object} treesMap map of trees object
- * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 async function importAllTrees(treesMap, options) {
   const installedJourneys = (await getTrees()).data.result.map((x) => x._id);
@@ -937,7 +1043,7 @@ async function importAllTrees(treesMap, options) {
   for (const tree of resolvedJourneys) {
     updateProgressBar(`${tree}`);
     // eslint-disable-next-line no-await-in-loop
-    await importTree(tree, treesMap[tree], options);
+    await importTree(treesMap[tree], options);
   }
   stopProgressBar('Done');
 }
@@ -945,7 +1051,7 @@ async function importAllTrees(treesMap, options) {
 /**
  * Import all journeys from file
  * @param {*} file import file name
- * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneysFromFile(file, options) {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -957,7 +1063,7 @@ export async function importJourneysFromFile(file, options) {
 
 /**
  * Import all journeys from separate files
- * @param {boolean} options noReUuid:boolean: do not re-uuid all node objects, verbose:boolean: verbose output
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneysFromFiles(options) {
   const names = fs.readdirSync('.');
@@ -1026,8 +1132,8 @@ async function findOrphanedNodes() {
   for (const type of types) {
     // eslint-disable-next-line no-await-in-loop
     (await getNodesByType(type._id)).data.result.forEach((node) => {
-      spinSpinner();
       allNodes.push(node);
+      spinSpinner(`${allNodes.length} total nodes`);
     });
   }
   stopSpinner(`${allNodes.length} total nodes`);
@@ -1038,14 +1144,15 @@ async function findOrphanedNodes() {
     // allJourneys.forEach(async (journey) => {
     for (const nodeId in journey.nodes) {
       if ({}.hasOwnProperty.call(journey.nodes, nodeId)) {
-        spinSpinner();
         activeNodes.push(nodeId);
+        spinSpinner(`${activeNodes.length} active nodes`);
         const node = journey.nodes[nodeId];
         if (containerNodes.includes(node.nodeType)) {
           // eslint-disable-next-line no-await-in-loop
           const containerNode = (await getNode(nodeId, node.nodeType)).data;
           containerNode.nodes.forEach((n) => {
             activeNodes.push(n._id);
+            spinSpinner(`${activeNodes.length} active nodes`);
           });
         }
       }

@@ -5,6 +5,7 @@ import {
   importJourneyFromFile,
   importJourneysFromFile,
   importJourneysFromFiles,
+  importFirstJourneyFromFile,
 } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
@@ -23,7 +24,7 @@ program
   .addOption(common.insecureOption)
   .addOption(
     new Option(
-      '-t, --tree <tree>',
+      '-i, --journey-id <journey>',
       'Name of a journey/tree. If specified, -a and -A are ignored.'
     )
   )
@@ -36,24 +37,24 @@ program
   .addOption(
     new Option(
       '-a, --all',
-      'Import all the journeys/trees from single file. Ignored with -t.'
+      'Import all the journeys/trees from single file. Ignored with -i.'
     )
   )
   .addOption(
     new Option(
       '-A, --all-separate',
-      'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -t or -a.'
+      'Import all the journeys/trees from separate files (*.json) in the current directory. Ignored with -i or -a.'
     )
   )
   .addOption(
     new Option(
-      '-n, --no-re-uuid',
-      "No Re-UUID. Frodo won't generate new UUIDs for any nodes during import. Updates (overwrites) existing trees/nodes instead of clone."
+      '--re-uuid',
+      'Generate new UUIDs for all nodes during import.'
     ).default(false, 'off')
   )
   .addOption(
     new Option(
-      '-v, --verbose',
+      '--verbose',
       'Verbose output during command execution. If specified, may or may not produce additional output.'
     ).default(false, 'off')
   )
@@ -68,10 +69,10 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import
-        if (options.tree) {
+        if (options.journeyId) {
           printMessage('Importing journey...');
-          importJourneyFromFile(options.tree, options.file, {
-            noReUuid: options.noReUuid,
+          importJourneyFromFile(options.journeyId, options.file, {
+            reUuid: options.reUuid,
             verbose: options.verbose,
           });
         }
@@ -81,7 +82,7 @@ program
             `Importing all journeys from a single file (${options.file})...`
           );
           importJourneysFromFile(options.file, {
-            noReUuid: options.noReUuid,
+            reUuid: options.reUuid,
             verbose: options.verbose,
           });
         }
@@ -91,7 +92,15 @@ program
             'Importing all journeys from separate files in current directory...'
           );
           importJourneysFromFiles({
-            noReUuid: options.noReUuid,
+            reUuid: options.reUuid,
+            verbose: options.verbose,
+          });
+        }
+        // import single journey in file
+        else if (options.file) {
+          printMessage('Importing journey...');
+          importFirstJourneyFromFile(options.file, {
+            reUuid: options.reUuid,
             verbose: options.verbose,
           });
         }

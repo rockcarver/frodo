@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
 import {
@@ -29,9 +29,24 @@ program
   .addArgument(common.passwordArgument)
   .addOption(common.deploymentOption)
   .addOption(common.insecureOption)
-  .addOption(common.treeOption)
-  .addOption(common.fileOption)
-  .addOption(common.versionOption)
+  .addOption(
+    new Option(
+      '-i, --journey-id <journey>',
+      'Name of a journey/tree. If specified, -a and -A are ignored.'
+    )
+  )
+  .addOption(
+    new Option(
+      '-f, --file <file>',
+      'Name of the file to write the exported journey(s) to. Ignored with -A.'
+    )
+  )
+  // .addOption(
+  //   new Option(
+  //     '-o, --override-version <version>',
+  //     "Override version. Notation: 'X.Y.Z' e.g. '7.1.0'. Override detected version with any version. This is helpful in order to check if journeys in one environment would be compatible running in another environment (e.g. in preparation of migrating from on-prem to ForgeRock Identity Cloud. Only impacts these actions: -d, -l."
+  //   )
+  // )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -63,7 +78,7 @@ program
         printMessage(
           `Describing journey(s) in realm "${storage.session.getRealm()}"...`
         );
-        if (typeof options.tree === 'undefined') {
+        if (typeof options.journeyId === 'undefined') {
           const journeyList = await listJourneys(false);
           createProgressBar(journeyList.length, '');
           for (const item of journeyList) {
@@ -74,7 +89,7 @@ program
           }
           stopProgressBar('Done');
         } else {
-          const journeyData = await getJourneyData(options.tree);
+          const journeyData = await getJourneyData(options.journeyId);
           treeDescription.push(describeTree(journeyData));
         }
       }
