@@ -1,4 +1,5 @@
 import storage from '../../storage/SessionStorage.js';
+import * as global from '../../storage/StaticStorage.js';
 
 // TODO: do we really need this? if yes: document
 export function escapeRegExp(str) {
