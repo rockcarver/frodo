@@ -576,7 +576,7 @@ async function importTree(treeObject, options) {
   const treeId = treeObject.tree._id;
 
   // Process scripts
-  if (Object.entries(treeObject.scripts).length > 0) {
+  if (treeObject.scripts && Object.entries(treeObject.scripts).length > 0) {
     if (verbose) printMessage('  - Scripts:');
     for (const [scriptId, scriptObject] of Object.entries(treeObject.scripts)) {
       if (verbose)
@@ -600,7 +600,10 @@ async function importTree(treeObject, options) {
   }
 
   // Process email templates
-  if (Object.entries(treeObject.emailTemplates).length > 0) {
+  if (
+    treeObject.emailTemplates &&
+    Object.entries(treeObject.emailTemplates).length > 0
+  ) {
     if (verbose) printMessage('  - Email templates:');
     for (const [templateId, templateData] of Object.entries(
       treeObject.emailTemplates
@@ -623,7 +626,7 @@ async function importTree(treeObject, options) {
   }
 
   // Process themes
-  if (treeObject.themes.length > 0) {
+  if (treeObject.themes && treeObject.themes.length > 0) {
     if (verbose) printMessage('  - Themes:');
     const themes = {};
     for (const theme of treeObject.themes) {
@@ -641,7 +644,10 @@ async function importTree(treeObject, options) {
   }
 
   // Process social providers
-  if (Object.entries(treeObject.socialIdentityProviders).length > 0) {
+  if (
+    treeObject.socialIdentityProviders &&
+    Object.entries(treeObject.socialIdentityProviders).length > 0
+  ) {
     if (verbose) printMessage('  - OAuth2/OIDC (social) identity providers:');
     for (const [providerId, providerData] of Object.entries(
       treeObject.socialIdentityProviders
@@ -665,7 +671,10 @@ async function importTree(treeObject, options) {
   }
 
   // Process saml providers
-  if (Object.entries(treeObject.saml2Entities).length > 0) {
+  if (
+    treeObject.saml2Entities &&
+    Object.entries(treeObject.saml2Entities).length > 0
+  ) {
     if (verbose) printMessage('  - SAML2 entity providers:');
     for (const [, providerData] of Object.entries(treeObject.saml2Entities)) {
       delete providerData._rev;
@@ -708,7 +717,10 @@ async function importTree(treeObject, options) {
   }
 
   // Process circles of trust
-  if (Object.entries(treeObject.circlesOfTrust).length > 0) {
+  if (
+    treeObject.circlesOfTrust &&
+    Object.entries(treeObject.circlesOfTrust).length > 0
+  ) {
     if (verbose) printMessage('  - SAML2 circles of trust:');
     for (const [cotId, cotData] of Object.entries(treeObject.circlesOfTrust)) {
       delete cotData._rev;
@@ -740,11 +752,23 @@ async function importTree(treeObject, options) {
   }
 
   // Process inner nodes
-  if (Object.entries(treeObject.innerNodes).length > 0) {
+  let innerNodes = {};
+  if (
+    treeObject.innerNodes &&
+    Object.entries(treeObject.innerNodes).length > 0
+  ) {
+    innerNodes = treeObject.innerNodes;
+  }
+  // old export file format
+  else if (
+    treeObject.innernodes &&
+    Object.entries(treeObject.innernodes).length > 0
+  ) {
+    innerNodes = treeObject.innernodes;
+  }
+  if (Object.entries(innerNodes).length > 0) {
     if (verbose) printMessage('  - Inner nodes:', 'text', true);
-    for (const [innerNodeId, innerNodeData] of Object.entries(
-      treeObject.innerNodes
-    )) {
+    for (const [innerNodeId, innerNodeData] of Object.entries(innerNodes)) {
       delete innerNodeData._rev;
       const nodeType = innerNodeData._type._id;
       if (!reUuid) {
@@ -794,65 +818,67 @@ async function importTree(treeObject, options) {
     }
   }
 
-  // Process nodes
-  if (verbose) printMessage('  - Nodes:');
-  // eslint-disable-next-line prefer-const
-  for (let [nodeId, nodeData] of Object.entries(treeObject.nodes)) {
-    delete nodeData._rev;
-    const nodeType = nodeData._type._id;
-    if (!reUuid) {
-      newUuid = nodeId;
-    } else {
-      newUuid = uuidv4();
-      uuidMap[nodeId] = newUuid;
-    }
-    nodeData._id = newUuid;
-
-    if (nodeType === 'PageNode' && reUuid) {
-      for (const [, inPageNodeData] of Object.entries(nodeData.nodes)) {
-        const currentId = inPageNodeData._id;
-        nodeData = JSON.parse(
-          replaceAll(JSON.stringify(nodeData), currentId, uuidMap[currentId])
-        );
+  // Process nodesif (
+  if (treeObject.nodes && Object.entries(treeObject.nodes).length > 0) {
+    if (verbose) printMessage('  - Nodes:');
+    // eslint-disable-next-line prefer-const
+    for (let [nodeId, nodeData] of Object.entries(treeObject.nodes)) {
+      delete nodeData._rev;
+      const nodeType = nodeData._type._id;
+      if (!reUuid) {
+        newUuid = nodeId;
+      } else {
+        newUuid = uuidv4();
+        uuidMap[nodeId] = newUuid;
       }
-    }
+      nodeData._id = newUuid;
 
-    if (verbose)
-      printMessage(
-        `    - ${newUuid}${reUuid ? '*' : ''} (${nodeType})`,
-        'info',
-        false
-      );
+      if (nodeType === 'PageNode' && reUuid) {
+        for (const [, inPageNodeData] of Object.entries(nodeData.nodes)) {
+          const currentId = inPageNodeData._id;
+          nodeData = JSON.parse(
+            replaceAll(JSON.stringify(nodeData), currentId, uuidMap[currentId])
+          );
+        }
+      }
 
-    // If the node has an identityResource config setting
-    // and the identityResource ends in 'user'
-    // and the node's identityResource is the same as the tree's identityResource
-    // change it to the current realm managed user identityResource otherwise leave it alone.
-    if (
-      nodeData.identityResource &&
-      nodeData.identityResource.endsWith('user') &&
-      nodeData.identityResource === treeObject.tree.identityResource
-    ) {
-      nodeData.identityResource = `managed/${getRealmManagedUser()}`;
       if (verbose)
         printMessage(
-          `\n      - identityResource: ${nodeData.identityResource}`,
+          `    - ${newUuid}${reUuid ? '*' : ''} (${nodeType})`,
           'info',
           false
         );
+
+      // If the node has an identityResource config setting
+      // and the identityResource ends in 'user'
+      // and the node's identityResource is the same as the tree's identityResource
+      // change it to the current realm managed user identityResource otherwise leave it alone.
+      if (
+        nodeData.identityResource &&
+        nodeData.identityResource.endsWith('user') &&
+        nodeData.identityResource === treeObject.tree.identityResource
+      ) {
+        nodeData.identityResource = `managed/${getRealmManagedUser()}`;
+        if (verbose)
+          printMessage(
+            `\n      - identityResource: ${nodeData.identityResource}`,
+            'info',
+            false
+          );
+      }
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await putNode(newUuid, nodeType, nodeData);
+      } catch (nodeImportError) {
+        printMessage(nodeImportError, 'error');
+        printMessage(
+          `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
+          'error'
+        );
+        return null;
+      }
+      if (verbose) printMessage('');
     }
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      await putNode(newUuid, nodeType, nodeData);
-    } catch (nodeImportError) {
-      printMessage(nodeImportError, 'error');
-      printMessage(
-        `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
-        'error'
-      );
-      return null;
-    }
-    if (verbose) printMessage('');
   }
 
   // Process tree
