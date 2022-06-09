@@ -41,9 +41,10 @@
       "no-warnings"
     ],
     "scripts": [
-      "storage/**/*.js",
-      "api/**/*.js",
-      "modules/**/*.js"
+      "src/api/**/*.js",
+      "src/cli/**/*.js",
+      "src/ops/**/*.js",
+      "src/storage/**/*.js"
     ]
   },
   "dependencies": {
