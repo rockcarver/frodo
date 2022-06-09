@@ -1,4 +1,3 @@
-import { saveConnection } from '../api/AuthApi.js';
 import { printMessage } from './utils/Console.js';
 import { getCurrentTimestamp } from './utils/ExportImportUtils.js';
 import {
