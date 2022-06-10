@@ -136,10 +136,107 @@ const saml = [
 
 const noise = miscNoise.concat(samlNoise).concat(journeysNoise);
 
-export function resolveLevel(levelName) {
-  const levels = ['FATAL', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'];
-  levels.splice(levels.indexOf(levelName) + 1, levels.length);
-  return levels;
+const numLogLevelMap = {
+  0: ['SEVERE', 'ERROR', 'FATAL'],
+  1: ['WARNING', 'WARN', 'CONFIG'],
+  2: ['INFO', 'INFORMATION'],
+  3: ['DEBUG', 'FINE', 'FINER', 'FINEST'],
+  4: ['ALL'],
+};
+
+const logLevelMap = {
+  SEVERE: ['SEVERE', 'ERROR', 'FATAL'],
+  ERROR: ['SEVERE', 'ERROR', 'FATAL'],
+  FATAL: ['SEVERE', 'ERROR', 'FATAL'],
+  WARN: ['SEVERE', 'ERROR', 'FATAL', 'WARNING', 'WARN', 'CONFIG'],
+  WARNING: ['SEVERE', 'ERROR', 'FATAL', 'WARNING', 'WARN', 'CONFIG'],
+  CONFIG: ['SEVERE', 'ERROR', 'FATAL', 'WARNING', 'WARN', 'CONFIG'],
+  INFO: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+  ],
+  INFORMATION: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+  ],
+  DEBUG: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+    'DEBUG',
+    'FINE',
+    'FINER',
+    'FINEST',
+  ],
+  FINE: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+    'DEBUG',
+    'FINE',
+    'FINER',
+    'FINEST',
+  ],
+  FINER: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+    'DEBUG',
+    'FINE',
+    'FINER',
+    'FINEST',
+  ],
+  FINEST: [
+    'SEVERE',
+    'ERROR',
+    'FATAL',
+    'WARNING',
+    'WARN',
+    'CONFIG',
+    'INFO',
+    'INFORMATION',
+    'DEBUG',
+    'FINE',
+    'FINER',
+    'FINEST',
+  ],
+  ALL: ['ALL'],
+};
+
+export function resolveLevel(level) {
+  //   const levels = ['FATAL', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'];
+  //   levels.splice(levels.indexOf(levelName) + 1, levels.length);
+  if (Number.isNaN(parseInt(level, 10))) {
+    return logLevelMap[level];
+  }
+  return logLevelMap[numLogLevelMap[level][0]];
 }
 
 export async function getLogSources() {
@@ -160,7 +257,7 @@ export async function getLogSources() {
   return sources;
 }
 
-export async function tailLogs(source, levels, cookie) {
+export async function tailLogs(source, levels, txid, cookie) {
   try {
     const response = await LogApi.tail(source, cookie);
     if (response.status < 200 || response.status > 399) {
@@ -180,7 +277,10 @@ export async function tailLogs(source, levels, cookie) {
         (el) =>
           !noise.includes(el.payload.logger) &&
           !noise.includes(el.type) &&
-          levels.includes(el.payload.level)
+          (levels[0] === 'ALL' || levels.includes(el.payload.level)) &&
+          (typeof txid === 'undefined' ||
+            txid === null ||
+            el.payload.transactionId.includes(txid))
       );
     }
 
@@ -189,7 +289,7 @@ export async function tailLogs(source, levels, cookie) {
     });
 
     setTimeout(() => {
-      tailLogs(source, levels, logsObject.result.pagedResultsCookie);
+      tailLogs(source, levels, txid, logsObject.result.pagedResultsCookie);
     }, 5000);
     return null;
   } catch (e) {
