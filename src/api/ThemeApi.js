@@ -1,6 +1,5 @@
 import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
-// import { printMessage } from '../ops/utils/Console.js';
 
 const THEMEREALM_ID = 'ui/themerealm';
 
@@ -50,8 +49,7 @@ export async function putTheme(id, data) {
     realmThemes.push(themeData);
   }
   themes.realm[storage.session.getRealm()] = realmThemes;
-  const result = await putConfigEntity(THEMEREALM_ID, themes);
-  return result;
+  return putConfigEntity(THEMEREALM_ID, themes);
 }
 
 export async function putThemeByName(name, data) {
@@ -74,8 +72,7 @@ export async function putThemeByName(name, data) {
     realmThemes.push(themeData);
   }
   themes.realm[storage.session.getRealm()] = realmThemes;
-  const result = await putConfigEntity(THEMEREALM_ID, themes);
-  return result;
+  return putConfigEntity(THEMEREALM_ID, themes);
 }
 
 export async function putThemes(data) {
@@ -101,6 +98,5 @@ export async function putThemes(data) {
     realmThemes.push(allThemesData[themeId]);
   });
   themes.realm[storage.session.getRealm()] = realmThemes;
-  const result = await putConfigEntity(THEMEREALM_ID, themes);
-  return result;
+  return putConfigEntity(THEMEREALM_ID, themes);
 }
