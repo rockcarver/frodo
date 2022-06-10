@@ -1,7 +1,7 @@
 import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
-import { queryManagedObjects } from './IdmConfigApi.js';
+import { queryAllManagedObjectsByType } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
 import { printMessage } from '../ops/utils/Console.js';
 
@@ -47,6 +47,7 @@ export async function listOrganizations() {
   }
 }
 
+// TODO: Move to ops layer
 export async function listOrganizationsTopDown() {
   const orgs = [];
   let result = {
@@ -59,11 +60,17 @@ export async function listOrganizationsTopDown() {
   };
   do {
     // eslint-disable-next-line no-await-in-loop
-    result = await queryManagedObjects(
+    result = await queryAllManagedObjectsByType(
       getRealmManagedOrganization(),
       ['name', 'parent/*/name', 'children/*/name'],
       result.pagedResultsCookie
-    );
+    ).catch((queryAllManagedObjectsByTypeError) => {
+      printMessage(queryAllManagedObjectsByTypeError, 'error');
+      printMessage(
+        `Error querying ${getRealmManagedOrganization()} objects: ${queryAllManagedObjectsByTypeError}`,
+        'error'
+      );
+    });
     orgs.concat(result.result);
     printMessage('.', 'text', false);
   } while (result.pagedResultsCookie);

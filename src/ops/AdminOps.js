@@ -327,7 +327,12 @@ async function addAdminStaticUserMapping(name) {
     printMessage(
       `Adding admin roles to static user mapping for client "${name}"...`
     );
-    await putConfigEntity('authentication', authentication);
+    await putConfigEntity('authentication', authentication).catch(
+      (putConfigEntityError) => {
+        printMessage(putConfigEntityError, 'error');
+        printMessage(`Error: ${putConfigEntityError}`, 'error');
+      }
+    );
   } else {
     printMessage(
       `Static user mapping for client "${name}" already has admin roles.`
@@ -392,7 +397,12 @@ export async function addAutoIdStaticUserMapping() {
     printMessage(
       `Adding required roles to static user mapping for AutoId client "${name}"...`
     );
-    await putConfigEntity('authentication', authentication);
+    await putConfigEntity('authentication', authentication).catch(
+      (putConfigEntityError) => {
+        printMessage(putConfigEntityError, 'error');
+        printMessage(`Error: ${putConfigEntityError}`, 'error');
+      }
+    );
   } else {
     printMessage(
       `Static user mapping for AutoId client "${name}" already has all required roles.`
@@ -525,7 +535,12 @@ async function removeAdminStaticUserMapping(name) {
         `Removing admin roles from static user mapping for client "${name}"...`
       );
     }
-    await putConfigEntity('authentication', authentication);
+    await putConfigEntity('authentication', authentication).catch(
+      (putConfigEntityError) => {
+        printMessage(putConfigEntityError, 'error');
+        printMessage(`Error: ${putConfigEntityError}`, 'error');
+      }
+    );
   } else {
     printMessage(
       `Static user mapping for client "${name}" has no admin roles.`
@@ -618,7 +633,12 @@ export async function removeStaticUserMapping(subject) {
   authentication.rsFilter.staticUserMapping = mappings;
   if (removeMapping) {
     printMessage(`Removing static user mapping for subject "${subject}"...`);
-    await putConfigEntity('authentication', authentication);
+    await putConfigEntity('authentication', authentication).catch(
+      (putConfigEntityError) => {
+        printMessage(putConfigEntityError, 'error');
+        printMessage(`Error: ${putConfigEntityError}`, 'error');
+      }
+    );
   } else {
     printMessage(`No static user mapping for subject "${subject}" found.`);
   }
@@ -661,7 +681,10 @@ export async function hideGenericExtensionAttributes(
   if (dryRun) {
     printMessage('Dry-run only. Changes are not saved.');
   } else {
-    await putConfigEntity('managed', managed);
+    await putConfigEntity('managed', managed).catch((putConfigEntityError) => {
+      printMessage(putConfigEntityError, 'error');
+      printMessage(`Error: ${putConfigEntityError}`, 'error');
+    });
   }
 }
 
@@ -702,7 +725,10 @@ export async function showGenericExtensionAttributes(
   if (dryRun) {
     printMessage('Dry-run only. Changes are not saved.');
   } else {
-    await putConfigEntity('managed', managed);
+    await putConfigEntity('managed', managed).catch((putConfigEntityError) => {
+      printMessage(putConfigEntityError, 'error');
+      printMessage(`Error: ${putConfigEntityError}`, 'error');
+    });
   }
 }
 
@@ -730,7 +756,10 @@ async function repairOrgModelUser(dryRun) {
   });
   managed.objects = updatedObjects;
   if (!dryRun) {
-    await putConfigEntity('managed', managed);
+    await putConfigEntity('managed', managed).catch((putConfigEntityError) => {
+      printMessage(putConfigEntityError, 'error');
+      printMessage(`Error: ${putConfigEntityError}`, 'error');
+    });
   }
   return repairData;
 }
@@ -765,7 +794,10 @@ async function repairOrgModelOrg(dryRun) {
   });
   managed.objects = updatedObjects;
   if (!dryRun) {
-    await putConfigEntity('managed', managed);
+    await putConfigEntity('managed', managed).catch((putConfigEntityError) => {
+      printMessage(putConfigEntityError, 'error');
+      printMessage(`Error: ${putConfigEntityError}`, 'error');
+    });
   }
   return repairData;
 }
