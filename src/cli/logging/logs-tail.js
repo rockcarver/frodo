@@ -18,8 +18,15 @@ program
   .addOption(
     new Option(
       '-l, --level <level>',
-      'Set log level filter. Follows the same rule as logback levels'
-    ).default('DEBUG', 'Fetch all levels')
+      'Set log level filter. You can specify the level as a number or a string. \
+Following values are possible (values on the same line are equivalent): \
+\n0, SEVERE, FATAL, or ERROR\n1, WARNING, WARN or CONFIG\
+\n2, INFO or INFORMATION\n3, DEBUG, FINE, FINER or FINEST\
+\n4 or ALL'
+    ).default('ERROR', `${resolveLevel('ERROR')}`)
+  )
+  .addOption(
+    new Option('-t, --transaction-id <txid>', 'Filter by transactionId')
   )
   .action(async (host, user, password, options, command) => {
     let credsFromParameters = true;
@@ -56,12 +63,13 @@ program
     printMessage(
       `Tailing ID Cloud logs from the following sources: ${
         command.opts().sources
-      } and levels ${resolveLevel(command.opts().level)}...`
+      } and levels [${resolveLevel(command.opts().level)}]...`
     );
     if (credsFromParameters) await saveConnection(); // save new values if they were specified on CLI
     await tailLogs(
       command.opts().sources,
       resolveLevel(command.opts().level),
+      command.opts().transactionId,
       null
     );
   });
