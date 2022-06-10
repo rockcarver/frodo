@@ -14,15 +14,16 @@ import { getTypedFilename } from './utils/ExportImportUtils.js';
  * List all IDM configuration objects
  */
 export async function listAllConfigEntities() {
-  const configEntities = await getAllConfigEntities().catch(
-    (getAllConfigEntitiesError) => {
-      printMessage(getAllConfigEntitiesError, 'error');
-      printMessage(
-        `Error getting config entities: ${getAllConfigEntitiesError}`,
-        'error'
-      );
-    }
-  );
+  let configEntities = [];
+  try {
+    configEntities = (await getAllConfigEntities()).data;
+  } catch (getAllConfigEntitiesError) {
+    printMessage(getAllConfigEntitiesError, 'error');
+    printMessage(
+      `Error getting config entities: ${getAllConfigEntitiesError}`,
+      'error'
+    );
+  }
   if ('configurations' in configEntities) {
     configEntities.configurations.forEach((configEntity) => {
       printMessage(`${configEntity._id}`, 'data');
@@ -54,15 +55,16 @@ export async function exportConfigEntity(id, file) {
  * @param {String} directory export directory
  */
 export async function exportAllRawConfigEntities(directory) {
-  const configEntities = await getAllConfigEntities().catch(
-    (getAllConfigEntitiesError) => {
-      printMessage(getAllConfigEntitiesError, 'error');
-      printMessage(
-        `Error getting config entities: ${getAllConfigEntitiesError}`,
-        'error'
-      );
-    }
-  );
+  let configEntities = [];
+  try {
+    configEntities = (await getAllConfigEntities()).data;
+  } catch (getAllConfigEntitiesError) {
+    printMessage(getAllConfigEntitiesError, 'error');
+    printMessage(
+      `Error getting config entities: ${getAllConfigEntitiesError}`,
+      'error'
+    );
+  }
   if ('configurations' in configEntities) {
     if (!fs.existsSync(directory)) {
       fs.mkdirSync(directory);
@@ -136,15 +138,16 @@ export async function exportAllConfigEntities(
     // read list of configs to parameterize for environment specific values
     const envParams = propertiesReader(envFile);
 
-    const configEntities = await getAllConfigEntities().catch(
-      (getAllConfigEntitiesError) => {
-        printMessage(getAllConfigEntitiesError, 'error');
-        printMessage(
-          `Error getting config entities: ${getAllConfigEntitiesError}`,
-          'error'
-        );
-      }
-    );
+    let configEntities = [];
+    try {
+      configEntities = (await getAllConfigEntities()).data;
+    } catch (getAllConfigEntitiesError) {
+      printMessage(getAllConfigEntitiesError, 'error');
+      printMessage(
+        `Error getting config entities: ${getAllConfigEntitiesError}`,
+        'error'
+      );
+    }
     if ('configurations' in configEntities) {
       // create export directory if not exist
       if (!fs.existsSync(directory)) {

@@ -2,7 +2,6 @@ import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from '../ops/utils/Console.js';
 
 const idmAllConfigURLTemplate = '%s/openidm/config';
 const idmConfigURLTemplate = '%s/openidm/config/%s';
