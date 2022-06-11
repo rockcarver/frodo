@@ -818,7 +818,7 @@ async function importTree(treeObject, options) {
     }
   }
 
-  // Process nodesif (
+  // Process nodes
   if (treeObject.nodes && Object.entries(treeObject.nodes).length > 0) {
     if (verbose) printMessage('  - Nodes:');
     // eslint-disable-next-line prefer-const
@@ -909,14 +909,42 @@ async function importTree(treeObject, options) {
   }
 
   delete treeObject.tree._rev;
-  if (verbose) printMessage(`\n    - Done`, 'info', true);
   try {
     await putTree(treeObject.tree._id, treeObject.tree);
+    if (verbose) printMessage(`\n    - Done`, 'info', true);
     return '';
   } catch (importError) {
-    printMessage(importError, 'error');
-    printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
-    return null;
+    if (
+      importError.response.status === 400 &&
+      importError.response.data.message === 'Invalid attribute specified.'
+    ) {
+      const { validAttributes } = importError.response.data.detail;
+      validAttributes.push('_id');
+      Object.keys(treeObject.tree).forEach((attribute) => {
+        if (!validAttributes.includes(attribute)) {
+          if (verbose)
+            printMessage(
+              `\n    - Removing invalid attribute: ${attribute}`,
+              'info',
+              false
+            );
+          delete treeObject.tree[attribute];
+        }
+      });
+      try {
+        await putTree(treeObject.tree._id, treeObject.tree);
+        if (verbose) printMessage(`\n    - Done`, 'info', true);
+        return '';
+      } catch (importError2) {
+        printMessage(importError2, 'error');
+        printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
+        return null;
+      }
+    } else {
+      printMessage(importError, 'error');
+      printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
+      return null;
+    }
   }
 }
 
