@@ -98,18 +98,26 @@ export async function getProvider(entityId) {
 }
 
 /**
- * Get a SAML2 entity provider's metadata by entity id
+ * Get a SAML2 entity provider's metadata URL by entity id
  * @param {String} entityId SAML2 entity id
- * @returns {Promise} a promise that resolves to an object containing a SAML2 metadata
+ * @returns {String} the URL to get the metadata from
  */
-export async function getProviderMetadata(entityId) {
-  const urlString = util.format(
+export function getProviderMetadataUrl(entityId) {
+  return util.format(
     metadataByEntityIdURLTemplate,
     storage.session.getTenant(),
     encodeURIComponent(entityId),
     storage.session.getRealm()
   );
-  return generateAmApi(getApiConfig()).get(urlString, {
+}
+
+/**
+ * Get a SAML2 entity provider's metadata by entity id
+ * @param {String} entityId SAML2 entity id
+ * @returns {Promise} a promise that resolves to an object containing a SAML2 metadata
+ */
+export async function getProviderMetadata(entityId) {
+  return generateAmApi(getApiConfig()).get(getProviderMetadataUrl(entityId), {
     withCredentials: true,
   });
 }
