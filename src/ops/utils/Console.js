@@ -6,6 +6,10 @@ import Table from 'cli-table3';
 import * as colors from '@colors/colors';
 import storage from '../../storage/SessionStorage.js';
 
+/**
+ * Output a data message
+ * @param {Object} message the message
+ */
 function data(message) {
   switch (typeof message) {
     case 'object':
@@ -16,6 +20,10 @@ function data(message) {
   }
 }
 
+/**
+ * Output a text message
+ * @param {Object} message the message
+ */
 function text(message) {
   switch (typeof message) {
     case 'object':
@@ -26,6 +34,10 @@ function text(message) {
   }
 }
 
+/**
+ * Output an info message
+ * @param {Object} message the message
+ */
 function info(message) {
   switch (typeof message) {
     case 'object':
@@ -36,6 +48,10 @@ function info(message) {
   }
 }
 
+/**
+ * Output a warn message
+ * @param {Object} message the message
+ */
 function warn(message) {
   switch (typeof message) {
     case 'object':
@@ -46,6 +62,10 @@ function warn(message) {
   }
 }
 
+/**
+ * Output an error message
+ * @param {Object} message the message
+ */
 function error(message) {
   switch (typeof message) {
     case 'object':
@@ -118,9 +138,9 @@ export function printMessage(message, type = 'text', newline = true) {
  * Example:
  * [========================================] 100% | 49/49 | Analyzing journey - transactional_auth
  *
- * @param {int} total The total number of entries to track progress for
- * @param {string} [message] The string message to show at the end ("Analyzing journey - transactional_auth"
- * in the example). default is empty string.
+ * @param {Number} total The total number of entries to track progress for
+ * @param {String} message optional progress bar message
+ * @param {Object} options progress bar configuration options
  *
  */
 export function createProgressBar(
@@ -146,9 +166,7 @@ export function createProgressBar(
 
 /**
  * Updates the progress bar by 1
- *
- * @param {string} message The string message to show at the end ("Analyzing journey - transactional_auth"
- * in the example)
+ * @param {string} message optional message to update the progress bar
  *
  */
 export function updateProgressBar(message = null) {
@@ -162,6 +180,7 @@ export function updateProgressBar(message = null) {
 
 /**
  * Stop and hide the progress bar
+ * @param {*} message optional message to update the progress bar
  */
 export function stopProgressBar(message = null) {
   const pBar = storage.session.getItem('progressBar');
@@ -172,11 +191,19 @@ export function stopProgressBar(message = null) {
   pBar.stop();
 }
 
+/**
+ * Create the spinner
+ * @param {String} message optional spinner message
+ */
 export function showSpinner(message) {
   const spinner = createSpinner(message).start();
   storage.session.setItem('Spinner', spinner);
 }
 
+/**
+ * Stop the spinner
+ * @param {String} message optional message to update the spinner
+ */
 export function stopSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
   if (spinner) {
@@ -186,6 +213,10 @@ export function stopSpinner(message = null) {
   }
 }
 
+/**
+ * Spin the spinner
+ * @param {String} message optional message to update the spinner
+ */
 export function spinSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
   if (spinner) {
@@ -196,6 +227,11 @@ export function spinSpinner(message = null) {
   }
 }
 
+/**
+ * Create an empty table
+ * @param {[String]} head header row as an array of strings
+ * @returns {CliTable3} an empty table
+ */
 export function createTable(head) {
   return new Table({
     head,
@@ -219,6 +255,10 @@ export function createTable(head) {
   });
 }
 
+/**
+ * Create a new key/value table
+ * @returns {CliTable3} an empty key/value table
+ */
 export function createKeyValueTable() {
   return new Table({
     chars: {
@@ -240,4 +280,101 @@ export function createKeyValueTable() {
     style: { 'padding-left': 0, 'padding-right': 0 },
     wordWrap: true,
   });
+}
+
+/**
+ * Helper function to determine the total depth of an object
+ * @param {Object} object input object
+ * @returns {Number} total depth of the input object
+ */
+function getObjectDepth(object) {
+  return Object(object) === object
+    ? 1 + Math.max(-1, ...Object.values(object).map(getObjectDepth))
+    : 0;
+}
+
+/**
+ * Helper function to determine if an object has values
+ * @param {Object} object input object
+ * @returns {boolean} true of the object or any of its sub-objects contain values, false otherwise
+ */
+function hasValues(object) {
+  let has = false;
+  const keys = Object.keys(object);
+  for (const key of keys) {
+    if (Object(object[key]) !== object[key]) {
+      return true;
+    }
+    has = has || hasValues(object[key]);
+  }
+  return has;
+}
+
+/**
+ * Helper function (recursive) to add rows to an object table
+ * @param {Object} object object to render
+ * @param {Number} depth total depth of initial object
+ * @param {Number} level current level
+ * @param {CliTable3} table the object table to add the rows to
+ * @returns the updated object table
+ */
+function addRows(object, depth, level, table) {
+  const space = '  ';
+  const keys = Object.keys(object);
+  for (const key of keys) {
+    if (Object(object[key]) !== object[key]) {
+      if (level === 1) {
+        table.push([key.brightCyan, object[key]]);
+      } else {
+        table.push([{ hAlign: 'right', content: key.gray }, object[key]]);
+      }
+    }
+  }
+  for (const key of keys) {
+    if (Object(object[key]) === object[key]) {
+      // only print header if there are any values below
+      if (hasValues(object[key])) {
+        let indention = new Array(level).fill(space).join('');
+        if (level < 3) indention = `\n${indention}`;
+        table.push([indention.concat(key.brightCyan), '']);
+      }
+      // eslint-disable-next-line no-param-reassign
+      table = addRows(object[key], depth, level + 1, table);
+    }
+  }
+  return table;
+}
+
+/**
+ * Create and populate an object table from any JSON object. Use for describe commands.
+ * @param {Object} object JSON object to create
+ * @returns {CliTable3} a table that can be printed to the console
+ */
+export function createObjectTable(object) {
+  // eslint-disable-next-line no-param-reassign
+  const depth = getObjectDepth(object);
+  // eslint-disable-next-line no-param-reassign
+  const level = 0;
+  // eslint-disable-next-line no-param-reassign
+  const table = new Table({
+    chars: {
+      top: '',
+      'top-mid': '',
+      'top-left': '',
+      'top-right': '',
+      bottom: '',
+      'bottom-mid': '',
+      'bottom-left': '',
+      'bottom-right': '',
+      left: '',
+      'left-mid': '',
+      mid: '',
+      'mid-mid': '',
+      right: '',
+      'right-mid': '',
+    },
+    style: { 'padding-left': 0, 'padding-right': 0, head: ['brightCyan'] },
+  });
+  addRows(object, depth, level + 1, table);
+  return table;
 }
