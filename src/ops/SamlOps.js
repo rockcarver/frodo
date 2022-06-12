@@ -7,6 +7,7 @@ import {
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
+  createObjectTable,
 } from './utils/Console.js';
 import {
   getProviders,
@@ -14,6 +15,7 @@ import {
   getProviderByLocationAndId,
   getProviderMetadata,
   createProvider,
+  getProviderMetadataUrl,
 } from '../api/Saml2Api.js';
 import { getScript, putScript } from '../api/ScriptApi.js';
 import {
@@ -24,8 +26,16 @@ import {
   getRealmString,
   getTypedFilename,
   saveJsonToFile,
+  saveTextToFile,
   validateImport,
 } from './utils/ExportImportUtils.js';
+
+const roleMap = {
+  identityProvider: 'IDP',
+  serviceProvider: 'SP',
+  attributeQueryProvider: 'AttrQuery',
+  xacmlPolicyEnforcementPoint: 'XACML PEP',
+};
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {
@@ -57,12 +67,6 @@ export async function listProviders(long = false) {
       'Location'.brightCyan,
       'Role(s)'.brightCyan,
     ]);
-    const roleMap = {
-      identityProvider: 'IDP',
-      serviceProvider: 'SP',
-      attributeQueryProvider: 'AttrQuery',
-      xacmlPolicyEnforcementPoint: 'XACML PEP',
-    };
     providerList.forEach((provider) => {
       table.push([
         provider.entityId,
@@ -145,6 +149,82 @@ export async function exportProvider(entityId, file = null) {
           })
           .catch((err) => {
             stopProgressBar(`${err}`);
+            printMessage(err, 'error');
+          });
+      }
+      break;
+    default:
+      printMessage(
+        `Multiple providers with entity id '${entityId}' found`,
+        'error'
+      );
+  }
+}
+
+/**
+ * Export provider metadata to file
+ * @param {String} entityId Provider entity id
+ * @param {String} file Optional filename
+ */
+export async function exportMetadata(entityId, file = null) {
+  let fileName = file;
+  if (!fileName) {
+    fileName = getTypedFilename(entityId, 'metadata', 'xml');
+  }
+  createProgressBar(1, `Exporting metadata for: ${entityId}`);
+  getProviderMetadata(entityId)
+    .then(async (response) => {
+      updateProgressBar(`Writing file ${fileName}`);
+      // printMessage(response.data, 'error');
+      const metaData = response.data;
+      saveTextToFile(metaData, fileName);
+      stopProgressBar(
+        `Exported ${entityId.brightCyan} metadata to ${fileName.brightCyan}.`
+      );
+    })
+    .catch((err) => {
+      stopProgressBar(`${err}`);
+      printMessage(err, 'error');
+    });
+}
+
+/**
+ * Describe an entity provider's configuration
+ * @param {String} entityId Provider entity id
+ */
+export async function describeProvider(entityId) {
+  const found = await findProviders(
+    `entityId eq '${entityId}'`,
+    'location,roles'
+  );
+  switch (found.data.resultCount) {
+    case 0:
+      printMessage(`No provider with entity id '${entityId}' found`, 'error');
+      break;
+    case 1:
+      {
+        const { location } = found.data.result[0];
+        const id = found.data.result[0]._id;
+        const roles = found.data.result[0].roles
+          .map((role) => roleMap[role])
+          .join(', ');
+        getProviderByLocationAndId(location, id)
+          .then(async (response) => {
+            const rawProviderData = response.data;
+            delete rawProviderData._id;
+            delete rawProviderData._rev;
+            rawProviderData.location = location;
+            rawProviderData.roles = roles;
+            rawProviderData.metadataUrl = getProviderMetadataUrl(entityId);
+            // const fullProviderData = getFileDataTemplate();
+            // fullProviderData.saml[location][rawProviderData._id] =
+            //   rawProviderData;
+            // await exportDependencies(rawProviderData, fullProviderData);
+            // describe the provider
+            const table = createObjectTable(rawProviderData);
+            printMessage(table.toString());
+          })
+          .catch((err) => {
             printMessage(err, 'error');
           });
       }
