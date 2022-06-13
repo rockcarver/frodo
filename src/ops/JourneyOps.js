@@ -1586,6 +1586,6 @@ export async function listJourneys(long = false, analyze = false) {
           : '',
       ]);
     });
-    printMessage(table.toString());
+    printMessage(table.toString(), 'data');
   }
 }
