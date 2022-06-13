@@ -23,6 +23,7 @@
     "no-multi-str": "off"
   },
   "env": {
+    "jest": true,
     "jest/globals": true
   }
 }
