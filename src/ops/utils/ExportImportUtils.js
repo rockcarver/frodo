@@ -90,9 +90,9 @@ export function checkTargetCompatibility(type, source, target) {
   //   });
 }
 
-export function getTypedFilename(name, type) {
+export function getTypedFilename(name, type, suffix = 'json') {
   const slug = slugify(name.replace(/^http(s?):\/\//, ''));
-  return `${slug}.${type}.json`;
+  return `${slug}.${type}.${suffix}`;
 }
 
 export function saveToFile(type, data, identifier, filename) {
@@ -114,6 +114,11 @@ export function saveToFile(type, data, identifier, filename) {
   });
 }
 
+/**
+ * Save JSON object to file
+ * @param {Object} data data object
+ * @param {String} filename file name
+ */
 export function saveJsonToFile(data, filename) {
   const exportData = data;
   exportData.meta = getMetadata();
@@ -122,5 +127,20 @@ export function saveJsonToFile(data, filename) {
       return printMessage(`ERROR - can't save ${filename}`, 'error');
     }
     return '';
+  });
+}
+
+/**
+ * Save text data to file
+ * @param {String} data text data
+ * @param {String} filename file name
+ */
+export function saveTextToFile(data, filename) {
+  fs.writeFile(filename, data, (err) => {
+    if (err) {
+      printMessage(`ERROR - can't save ${filename}`, 'error');
+      return false;
+    }
+    return true;
   });
 }

@@ -12,11 +12,17 @@ export default function setup() {
 
   program.command('list', 'List entity providers.').showHelpAfterError();
 
+  program
+    .command('describe', 'Describe entity providers.')
+    .showHelpAfterError();
+
   program.command('export', 'Export entity providers.').showHelpAfterError();
 
   program.command('import', 'Import entity providers.').showHelpAfterError();
 
   program.command('cot', 'Manage circles of trust.').showHelpAfterError();
+
+  program.command('metadata', 'Metadata operations.').showHelpAfterError();
 
   program.showHelpAfterError();
   return program;
