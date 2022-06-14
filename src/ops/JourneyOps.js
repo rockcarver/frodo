@@ -1555,7 +1555,13 @@ async function isCustom(journey) {
  * @param {boolean} analyze Analyze journeys/trees for custom nodes (expensive)
  */
 export async function listJourneys(long = false, analyze = false) {
-  const journeys = (await getTrees()).data.result;
+  let journeys = [];
+  try {
+    journeys = (await getTrees()).data.result;
+  } catch (error) {
+    printMessage(`${error.message}`, 'error');
+    printMessage(error.response.data, 'error');
+  }
   journeys.sort((a, b) => a._id.localeCompare(b._id));
   let customTrees = Array(journeys.length).fill(false);
   if (analyze) {
