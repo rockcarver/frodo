@@ -386,6 +386,8 @@ async function authenticate() {
       storage.session.setCookieValue(response2.data.tokenId);
       if (!storage.session.getDeploymentType()) {
         storage.session.setDeploymentType(await determineDeployment());
+      } else {
+        determineDefaultRealm(storage.session.getDeploymentType());
       }
       storage.session.setAmVersion(await getVersionInfo());
       return '';
