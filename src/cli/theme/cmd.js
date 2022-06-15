@@ -13,6 +13,7 @@ import {
   importThemeById,
   importThemeByName,
   importThemesFromFile,
+  importThemesFromFiles,
 } from '../../ops/ThemeOps.js';
 
 export default function setup() {
@@ -219,6 +220,7 @@ export default function setup() {
           printMessage(
             'Importing all themes from separate files in current directory...'
           );
+          importThemesFromFiles();
         }
         // import single theme from file
         else if (options.file) {
