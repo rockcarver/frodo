@@ -1,92 +1,37 @@
-import util from 'util';
-import { generateIdmApi } from './BaseApi.js';
-import { getTenantURL } from './utils/ApiUtils.js';
-import storage from '../storage/SessionStorage.js';
-import { printMessage } from '../ops/utils/Console.js';
+import {
+  getConfigEntitiesByType,
+  getConfigEntity,
+  putConfigEntity,
+} from './IdmConfigApi.js';
 
-const emailTemplateURLTemplate = '%s/openidm/config/emailTemplate/%s';
-const emailTemplateQueryTemplate =
-  '%s/openidm/config?_queryFilter=_id%20sw%20%27emailTemplate%27';
+/**
+ * Email template type key used to build the IDM id: 'emailTemplate/<id>'
+ */
+export const EMAIL_TEMPLATE_TYPE = 'emailTemplate';
 
-export async function listEmailTemplates() {
-  try {
-    const urlString = util.format(
-      emailTemplateQueryTemplate,
-      getTenantURL(storage.session.getTenant())
-    );
-    const response = await generateIdmApi().get(urlString);
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `listEmailTemplates ERROR: list email templates data call returned ${response.status}`,
-        'error'
-      );
-      return null;
-    }
-    return response.data.result;
-  } catch (e) {
-    printMessage(
-      `listEmailTemplates ERROR: list email templates data error - ${e.message}`,
-      'error'
-    );
-    return null;
-  }
+/**
+ * Get all email templates
+ * @returns {Promise} a promise that resolves to an object containing an array of email template objects
+ */
+export async function getEmailTemplates() {
+  return getConfigEntitiesByType(EMAIL_TEMPLATE_TYPE);
 }
 
+/**
+ * Get email template
+ * @param {String} id id/name of the email template without the type prefix
+ * @returns {Promise} a promise that resolves to an object containing the email template object
+ */
 export async function getEmailTemplate(id) {
-  try {
-    const urlString = util.format(
-      emailTemplateURLTemplate,
-      getTenantURL(storage.session.getTenant()),
-      id
-    );
-    const response = await generateIdmApi().get(urlString);
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `getEmailTemplate ERROR: get email template data call returned ${response.status}, possible cause: email template not found`,
-        'error'
-      );
-      return null;
-    }
-    return response.data;
-  } catch (e) {
-    printMessage(
-      `getEmailTemplate ERROR: get email template data error - ${e.message}`,
-      'error'
-    );
-    return null;
-  }
+  return getConfigEntity(`${EMAIL_TEMPLATE_TYPE}/${id}`);
 }
 
-export async function putEmailTemplate(id, longid, data) {
-  try {
-    const urlString = util.format(
-      emailTemplateURLTemplate,
-      getTenantURL(storage.session.getTenant()),
-      id
-    );
-    const response = await generateIdmApi().put(urlString, data);
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `putEmailTemplate ERROR: put template call returned ${response.status}, details: ${response}`,
-        'error'
-      );
-      return null;
-    }
-    if (response.data._id !== longid) {
-      printMessage(
-        `putEmailTemplate ERROR: generic error importing template ${id} (${longid})`,
-        'error'
-      );
-      console.dir(data);
-      return null;
-    }
-    return '';
-  } catch (e) {
-    printMessage(
-      `putEmailTemplate ERROR: template ${id} (${longid}) - ${e.message}`,
-      'error'
-    );
-    console.dir(data);
-    return null;
-  }
+/**
+ * Put email template
+ * @param {String} id id/name of the email template without the type prefix
+ * @param {Object} data email template object
+ * @returns {Promise} a promise that resolves to an object containing the email template object
+ */
+export async function putEmailTemplate(id, data) {
+  return putConfigEntity(`${EMAIL_TEMPLATE_TYPE}/${id}`, data);
 }
