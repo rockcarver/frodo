@@ -184,12 +184,10 @@ async function getSaml2NodeDependencies(
  * @param {Object} exportData export data
  */
 async function exportDependencies(treeObject, exportData, options) {
-  const nodeDataPromises = [];
+  const nodePromises = [];
   const scriptPromises = [];
   const emailTemplatePromises = [];
-  const innerNodeDataPromises = [];
-  const innerScriptPromises = [];
-  const innerEmailTemplatePromises = [];
+  const innerNodePromises = [];
   const saml2ConfigPromises = [];
   let socialProviderPromise = null;
   const socialProviderTransformScriptPromises = [];
@@ -204,11 +202,11 @@ async function exportDependencies(treeObject, exportData, options) {
 
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
-    nodeDataPromises.push(
+    nodePromises.push(
       getNode(nodeId, nodeInfo.nodeType).then((response) => response.data)
     );
   }
-  const nodeObjects = await Promise.all(nodeDataPromises);
+  const nodeObjects = await Promise.all(nodePromises);
 
   // iterate over every node in tree
   for (const nodeObject of nodeObjects) {
@@ -228,7 +226,16 @@ async function exportDependencies(treeObject, exportData, options) {
     ) {
       if (emailTemplateNodes.includes(nodeObject._type._id)) {
         emailTemplatePromises.push(
-          getEmailTemplate(nodeObject.emailTemplateName)
+          getEmailTemplate(nodeObject.emailTemplateName).catch((error) => {
+            let message = `${error}`;
+            if (error.isAxiosError && error.response.status) {
+              message = error.response.statusText;
+            }
+            printMessage(
+              `\n${message}: Email Template "${nodeObject.emailTemplateName}"`,
+              'error'
+            );
+          })
         );
       }
     }
@@ -273,50 +280,54 @@ async function exportDependencies(treeObject, exportData, options) {
     // get inner nodes (nodes inside container nodes)
     if (containerNodes.includes(nodeObject._type._id)) {
       for (const innerNode of nodeObject.nodes) {
-        innerNodeDataPromises.push(
+        innerNodePromises.push(
           getNode(innerNode._id, innerNode.nodeType).then(
             (response) => response.data
           )
         );
       }
-      if (nodeObject.stage && nodeObject.stage.indexOf('themeId=') === 0) {
-        if (!themePromise) {
-          themePromise = getThemes();
+      // frodo supports themes in platform deployments
+      if (
+        storage.session.getDeploymentType() ===
+          global.CLOUD_DEPLOYMENT_TYPE_KEY ||
+        storage.session.getDeploymentType() ===
+          global.FORGEOPS_DEPLOYMENT_TYPE_KEY
+      ) {
+        let themeId = false;
+
+        if (nodeObject.stage) {
+          // see if themeId is part of the stage object
+          try {
+            themeId = JSON.parse(nodeObject.stage).themeId;
+          } catch (e) {
+            themeId = false;
+          }
+          // if the page node's themeId is set the "old way" set themeId accordingly
+          if (!themeId && nodeObject.stage.indexOf('themeId=') === 0) {
+            // eslint-disable-next-line prefer-destructuring
+            themeId = nodeObject.stage.split('=')[1];
+          }
         }
-        themes = themes || [];
-        const themeId = nodeObject.stage.split('=')[1];
-        if (!themes.includes(themeId)) themes.push(themeId);
+
+        if (themeId) {
+          if (!themePromise) {
+            themePromise = getThemes();
+          }
+          themes = themes || [];
+          if (!themes.includes(themeId)) themes.push(themeId);
+        }
       }
     }
   }
 
-  // Process scripts
-  const scripts = await Promise.all(scriptPromises);
-  scripts.forEach((scriptObject) => {
-    if (scriptObject) {
-      if (useStringArrays) {
-        scriptObject.script = convertBase64TextToArray(scriptObject.script);
-      } else {
-        scriptObject.script = JSON.stringify(decode(scriptObject.script));
-      }
-      exportData.scripts[scriptObject._id] = scriptObject;
-    }
-  });
-
-  // Process email templates
-  const emailTemplates = await Promise.all(emailTemplatePromises);
-  emailTemplates.forEach((item) => {
-    exportData.emailTemplates[item._id.split('/')[1]] = item;
-  });
-
   // Process inner nodes
-  const innerNodeDataResults = await Promise.all(innerNodeDataPromises);
+  const innerNodeDataResults = await Promise.all(innerNodePromises);
   for (const innerNodeObject of innerNodeDataResults) {
     exportData.innerNodes[innerNodeObject._id] = innerNodeObject;
 
     // handle script node types
     if (scriptedNodes.includes(innerNodeObject._type._id)) {
-      innerScriptPromises.push(getScript(innerNodeObject.script));
+      scriptPromises.push(getScript(innerNodeObject.script));
     }
 
     // frodo supports email templates in platform deployments
@@ -327,8 +338,17 @@ async function exportDependencies(treeObject, exportData, options) {
         global.FORGEOPS_DEPLOYMENT_TYPE_KEY
     ) {
       if (emailTemplateNodes.includes(innerNodeObject._type._id)) {
-        innerEmailTemplatePromises.push(
-          getEmailTemplate(innerNodeObject.emailTemplateName)
+        emailTemplatePromises.push(
+          getEmailTemplate(innerNodeObject.emailTemplateName).catch((error) => {
+            let message = `${error}`;
+            if (error.isAxiosError && error.response.status) {
+              message = error.response.statusText;
+            }
+            printMessage(
+              `\n${message}: Email Template "${innerNodeObject.emailTemplateName}"`,
+              'error'
+            );
+          })
         );
       }
     }
@@ -364,7 +384,8 @@ async function exportDependencies(treeObject, exportData, options) {
     // If this is a SelectIdPNode and filteredProviters is not already set to empty array set filteredSocialProviers.
     if (
       !filteredSocialProviders &&
-      innerNodeObject._type._id === 'SelectIdPNode'
+      innerNodeObject._type._id === 'SelectIdPNode' &&
+      innerNodeObject.filteredProviders
     ) {
       filteredSocialProviders = filteredSocialProviders || [];
       for (const filteredProvider of innerNodeObject.filteredProviders) {
@@ -375,21 +396,28 @@ async function exportDependencies(treeObject, exportData, options) {
     }
   }
 
-  // process inner scripts
-  const innerScripts = await Promise.all(innerScriptPromises);
-  innerScripts.forEach((scriptObject) => {
-    if (useStringArrays) {
-      scriptObject.script = convertBase64TextToArray(scriptObject.script);
-    } else {
-      scriptObject.script = JSON.stringify(decode(scriptObject.script));
+  // Process scripts
+  const scripts = await Promise.all(scriptPromises);
+  scripts.forEach((scriptObject) => {
+    if (scriptObject) {
+      if (useStringArrays) {
+        scriptObject.script = convertBase64TextToArray(scriptObject.script);
+      } else {
+        scriptObject.script = JSON.stringify(decode(scriptObject.script));
+      }
+      exportData.scripts[scriptObject._id] = scriptObject;
     }
-    exportData.scripts[scriptObject._id] = scriptObject;
   });
 
   // Process email templates
-  const innerEmailTemplates = await Promise.all(innerEmailTemplatePromises);
-  innerEmailTemplates.forEach((item) => {
-    exportData.emailTemplates[item._id] = item;
+  const settledEmailTemplatePromises = await Promise.allSettled(
+    emailTemplatePromises
+  );
+  settledEmailTemplatePromises.forEach((settledPromise) => {
+    if (settledPromise.status === 'fulfilled' && settledPromise.value) {
+      exportData.emailTemplates[settledPromise.value.data._id.split('/')[1]] =
+        settledPromise.value.data;
+    }
   });
 
   // Process SAML2 providers
@@ -1573,7 +1601,7 @@ export async function listJourneys(long = false, analyze = false) {
   }
   if (!long) {
     for (const [i, journey] of journeys.entries()) {
-      printMessage(`${customTrees[i] ? ')' : ''}${journey._id}`, 'data');
+      printMessage(`${customTrees[i] ? '*' : ''}${journey._id}`, 'data');
     }
   } else {
     const table = createTable([
