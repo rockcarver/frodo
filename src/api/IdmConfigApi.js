@@ -5,6 +5,7 @@ import storage from '../storage/SessionStorage.js';
 
 const idmAllConfigURLTemplate = '%s/openidm/config';
 const idmConfigURLTemplate = '%s/openidm/config/%s';
+const idmConfigEntityQueryTemplate = '%s/openidm/config?_queryFilter=%s';
 const idmManagedObjectURLTemplate =
   '%s/openidm/managed/%s?_queryFilter=true&_pageSize=10000';
 
@@ -16,6 +17,20 @@ export async function getAllConfigEntities() {
   const urlString = util.format(
     idmAllConfigURLTemplate,
     getTenantURL(storage.session.getTenant())
+  );
+  return generateIdmApi().get(urlString);
+}
+
+/**
+ * Get IDM config entities by type
+ * @param {String} type the desired type of config entity
+ * @returns {Promise} a promise that resolves to an object containing all IDM config entities of the desired type
+ */
+export async function getConfigEntitiesByType(type) {
+  const urlString = util.format(
+    idmConfigEntityQueryTemplate,
+    getTenantURL(storage.session.getTenant()),
+    encodeURIComponent(`_id sw '${type}'`)
   );
   return generateIdmApi().get(urlString);
 }
