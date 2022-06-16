@@ -30,19 +30,19 @@ program
   .addOption(
     new Option(
       '-f, --file [file]',
-      'Name of the file to write the exported circle(s) of trust to. Ignored with -A. If not specified, the export file is named <id>.cot.saml.json.'
+      'Name of the export file. Ignored with -A. Defaults to <cot-id>.cot.saml.json.'
     )
   )
   .addOption(
     new Option(
       '-a, --all',
-      'Export all the circles of trust in a realm to a single file. Ignored with -t and -i.'
+      'Export all the circles of trust in a realm to a single file. Ignored with -i.'
     )
   )
   .addOption(
     new Option(
       '-A, --all-separate',
-      'Export all the circles of trust in a realm as separate files <id>.cot.saml.json. Ignored with -t, -i, and -a.'
+      'Export all the circles of trust in a realm as separate files <cot-id>.cot.saml.json. Ignored with -i, and -a.'
     )
   )
   .action(
