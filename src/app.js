@@ -9,7 +9,7 @@ import { printMessage } from './ops/utils/Console.js';
 import admin from './cli/admin/cmd.js';
 import application from './cli/application/cmd.js';
 import connections from './cli/connections/cmd.js';
-import emailTemplate from './cli/email_templates/cmd.js';
+import email from './cli/email/email.js';
 import idm from './cli/idm/cmd.js';
 import idp from './cli/idp/idp.js';
 import info from './cli/info/cmd.js';
@@ -33,7 +33,7 @@ const program = new Command(pkg.name).version(
     program.addCommand(admin());
     program.addCommand(application());
     program.addCommand(connections());
-    program.addCommand(emailTemplate());
+    program.addCommand(email());
     program.addCommand(idm());
     program.addCommand(idp());
     program.addCommand(info());
