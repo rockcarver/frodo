@@ -23,6 +23,8 @@ export default function setup() {
 
   program.command('import', 'Import journeys/trees.').showHelpAfterError();
 
+  program.command('delete', 'Delete journeys/trees.').showHelpAfterError();
+
   program
     .command(
       'prune',
