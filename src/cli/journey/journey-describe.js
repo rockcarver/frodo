@@ -15,11 +15,11 @@ import {
   stopProgressBar,
 } from '../../ops/utils/Console.js';
 
-const program = new Command('frodo command sub');
+const program = new Command('frodo journey describe');
 
 program
   .description(
-    'If -h is supplied, describe the journey/tree indicated by -t, or all journeys/trees in the realm if no -t is supplied, otherwise describe the journey/tree export file indicated by -f.'
+    'If -h is supplied, describe the journey/tree indicated by -i, or all journeys/trees in the realm if no -i is supplied, otherwise describe the journey/tree export file indicated by -f.'
   )
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
