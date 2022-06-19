@@ -22,6 +22,7 @@ import {
   putTree,
   getNodeTypes,
   getNodesByType,
+  deleteTree,
 } from '../api/TreeApi.js';
 import { getEmailTemplate, putEmailTemplate } from '../api/EmailTemplateApi.js';
 import { getScript, putScript } from '../api/ScriptApi.js';
@@ -1622,4 +1623,74 @@ export async function listJourneys(long = false, analyze = false) {
     });
     printMessage(table.toString(), 'data');
   }
+}
+
+/**
+ * Delete a journey
+ * @param {String} journeyId journey id/name
+ * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
+ */
+export async function deleteJourney(journeyId, options) {
+  const { deep } = options;
+  const { verbose } = options;
+  deleteTree(journeyId)
+    .then((deleteTreeResponse) => {
+      if (verbose) printMessage(`Deleted ${journeyId} (tree)`, 'info');
+      if (deep) {
+        for (const [nodeId, nodeObject] of Object.entries(
+          deleteTreeResponse.data.nodes
+        )) {
+          // delete inner nodes (nodes inside container nodes)
+          if (containerNodes.includes(nodeObject.nodeType)) {
+            getNode(nodeId, nodeObject.nodeType)
+              .then((response) => {
+                if (verbose)
+                  printMessage(
+                    `Read ${nodeId} (${nodeObject.nodeType})`,
+                    'info'
+                  );
+                for (const innerNodeObject of response.data.nodes) {
+                  deleteNode(innerNodeObject._id, innerNodeObject.nodeType)
+                    .then((response2) => {
+                      if (verbose)
+                        printMessage(
+                          `Deleted ${innerNodeObject._id} (${innerNodeObject.nodeType})`,
+                          'info'
+                        );
+                      return response2.data;
+                    })
+                    .catch((error) => {
+                      printMessage(
+                        `Error deleting inner node ${innerNodeObject._id}: ${error}`,
+                        'error'
+                      );
+                    });
+                }
+              })
+              .catch((error) => {
+                printMessage(
+                  `Error getting container node ${nodeId}: ${error}`,
+                  'error'
+                );
+              });
+          }
+          // finally delete the node
+          deleteNode(nodeId, nodeObject.nodeType)
+            .then((response) => {
+              if (verbose)
+                printMessage(
+                  `Deleted ${nodeId} (${nodeObject.nodeType})`,
+                  'info'
+                );
+              return response.data;
+            })
+            .catch((error) => {
+              printMessage(`Error deleting node ${nodeId}: ${error}`, 'error');
+            });
+        }
+      }
+    })
+    .catch((error) => {
+      printMessage(`Error deleting tree ${journeyId}: ${error}`, 'error');
+    });
 }
