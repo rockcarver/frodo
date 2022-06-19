@@ -151,46 +151,6 @@ export async function getTrees() {
   });
 }
 
-// export async function getAllJourneyData() {
-//   const urlString = util.format(
-//     queryAllTreesURLTemplate,
-//     storage.session.getTenant(),
-//     getCurrentRealmPath()
-//   );
-//   const response = await generateAmApi(getTreeApiConfig())
-//     .get(urlString, {
-//       withCredentials: true,
-//     })
-//     .catch((error) => {
-//       if (error.response) {
-//         // The request was made and the server responded with a status code
-//         // that falls out of the range of 2xx
-//         printMessage(
-//           `Error! The request was made and the server responded with a status code! - ${error.message}`,
-//           'error'
-//         );
-//         printMessage(error.response.data, 'error');
-//         printMessage(error.response.status, 'error');
-//         printMessage(error.response.headers, 'error');
-//       } else if (error.request) {
-//         // The request was made but no response was received
-//         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-//         // http.ClientRequest in node.js
-//         printMessage(
-//           `Error! The request was made but no response was received! - ${error.message}`,
-//           'error'
-//         );
-//         printMessage(error.request, 'error');
-//       } else {
-//         // Something happened in setting up the request that triggered an Error
-//         printMessage(`Error setting up request - ${error.message}`, 'error');
-//       }
-//       printMessage(error.config, 'error');
-//       return [];
-//     });
-//   return response.data.result;
-// }
-
 /**
  * Get tree by id/name
  * @param {String} id tree id/name
@@ -222,6 +182,23 @@ export async function putTree(id, data) {
     id
   );
   return generateAmApi(getTreeApiConfig()).put(urlString, data, {
+    withCredentials: true,
+  });
+}
+
+/**
+ * Delete tree by id/name
+ * @param {String} id tree id/name
+ * @returns {Promise} a promise that resolves to an object containing a tree object
+ */
+export async function deleteTree(id) {
+  const urlString = util.format(
+    treeByIdURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    id
+  );
+  return generateAmApi(getTreeApiConfig()).delete(urlString, {
     withCredentials: true,
   });
 }
