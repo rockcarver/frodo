@@ -1,7 +1,7 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../api/AuthApi.js';
-import { deleteJourney, prune } from '../../ops/JourneyOps.js';
+import { deleteJourney } from '../../ops/JourneyOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
 
