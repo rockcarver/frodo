@@ -7,6 +7,9 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
+  "jest": {
+    "globalSetup": "<rootDir>/test/global/setup.js"
+  },
   "contributors": [
     {
       "name": "Sandeep Chaturvedi",
