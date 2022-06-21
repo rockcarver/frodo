@@ -1,12 +1,34 @@
 // import { jest } from '@jest/globals';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 const ansiEscapeCodes =
   // eslint-disable-next-line no-control-regex
   /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
-beforeAll(() => {
+beforeAll(async () => {
   // import baseline journeys and delete all other journeys
+  const deleteJourneysCmd = spawnSync('frodo', [
+    'journey',
+    'delete',
+    '--all',
+    'frodo-dev',
+  ]);
+  if (deleteJourneysCmd.status > 0) {
+    console.error(deleteJourneysCmd.stderr.toString());
+    console.log(deleteJourneysCmd.stdout.toString());
+  }
+
+  const importJourneysCmd = spawnSync(
+    'frodo',
+    ['journey', 'import', '--all-separate', 'frodo-dev'],
+    {
+      cwd: `test/e2e/journey/baseline`,
+    }
+  );
+  if (importJourneysCmd.status > 0) {
+    console.error(importJourneysCmd.stderr.toString());
+    console.log(importJourneysCmd.stdout.toString());
+  }
 });
 
 describe('frodo journey list', () => {
