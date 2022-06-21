@@ -36,6 +36,7 @@ import {
   stopSpinner,
   createTable,
   spinSpinner,
+  failSpinner,
 } from './utils/Console.js';
 import wordwrap from './utils/Wordwrap.js';
 import {
@@ -1053,19 +1054,13 @@ async function resolveDependencies(
   index = -1
 ) {
   let before = -1;
-  //   let trees = [];
   let after = index;
-  if (index === -1) {
-    showSpinner('Resolving dependencies');
-    // trees = Object.keys(journeyMap);
-  } else {
+  if (index !== -1) {
     before = index;
-    // trees = [...unresolvedJourneys];
   }
 
   for (const tree in journeyMap) {
     if ({}.hasOwnProperty.call(journeyMap, tree)) {
-      // console.dir(journeyMap[tree]);
       const dependencies = [];
       for (const node in journeyMap[tree].nodes) {
         if (
@@ -1084,17 +1079,29 @@ async function resolveDependencies(
         }
       }
       if (allResolved) {
-        resolvedJourneys.push(tree);
+        if (resolvedJourneys.indexOf(tree) === -1) resolvedJourneys.push(tree);
         // remove from unresolvedJourneys array
-        unresolvedJourneys.splice(unresolvedJourneys.indexOf(tree), 1);
-      } else if (!unresolvedJourneys.includes(tree)) {
-        unresolvedJourneys.push(tree);
+        // for (let i = 0; i < unresolvedJourneys.length; i += 1) {
+        //   if (unresolvedJourneys[i] === tree) {
+        //     unresolvedJourneys.splice(i, 1);
+        //     i -= 1;
+        //   }
+        // }
+        delete unresolvedJourneys[tree];
+        // } else if (!unresolvedJourneys.includes(tree)) {
+      } else {
+        // unresolvedJourneys.push(tree);
+        unresolvedJourneys[tree] = dependencies;
       }
     }
   }
-  after = unresolvedJourneys.length;
+  after = Object.keys(unresolvedJourneys).length;
   if (index !== -1 && after === before) {
-    printMessage('Trees with unresolved dependencies: {}', unresolvedJourneys);
+    // This is the end, no progress was made since the last recursion
+    // printMessage(
+    //   `Journeys with unresolved dependencies: ${unresolvedJourneys}`,
+    //   'error'
+    // );
   } else if (after > 0) {
     resolveDependencies(
       installedJorneys,
@@ -1104,7 +1111,6 @@ async function resolveDependencies(
       after
     );
   }
-  stopSpinner();
 }
 
 /**
@@ -1114,14 +1120,30 @@ async function resolveDependencies(
  */
 async function importAllTrees(treesMap, options) {
   const installedJourneys = (await getTrees()).data.result.map((x) => x._id);
-  const unresolvedJourneys = [];
+  const unresolvedJourneys = {};
   const resolvedJourneys = [];
+  showSpinner('Resolving dependencies');
   await resolveDependencies(
     installedJourneys,
     treesMap,
     unresolvedJourneys,
     resolvedJourneys
   );
+  if (Object.keys(unresolvedJourneys).length === 0) {
+    stopSpinner(`Resolved all dependencies.`);
+  } else {
+    failSpinner(
+      `${
+        Object.keys(unresolvedJourneys).length
+      } journeys with unresolved dependencies:`
+    );
+    for (const journey of Object.keys(unresolvedJourneys)) {
+      printMessage(
+        `  - ${journey} requires ${unresolvedJourneys[journey]}`,
+        'info'
+      );
+    }
+  }
   createProgressBar(resolvedJourneys.length, 'Importing');
   for (const tree of resolvedJourneys) {
     updateProgressBar(`${tree}`);
@@ -1154,10 +1176,10 @@ export async function importJourneysFromFiles(options) {
     name.toLowerCase().endsWith('.journey.json')
   );
   const allJourneysData = { trees: {} };
-  jsonFiles.forEach((file) => {
+  for (const file of jsonFiles) {
     const journeyData = JSON.parse(fs.readFileSync(file, 'utf8'));
     allJourneysData.trees[journeyData.tree._id] = journeyData;
-  });
+  }
   importAllTrees(allJourneysData.trees, options);
 }
 
@@ -1646,7 +1668,7 @@ export async function deleteJourney(journeyId, options) {
               .then((response) => {
                 if (verbose)
                   printMessage(
-                    `Read ${nodeId} (${nodeObject.nodeType})`,
+                    `Read ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
                     'info'
                   );
                 for (const innerNodeObject of response.data.nodes) {
@@ -1654,43 +1676,78 @@ export async function deleteJourney(journeyId, options) {
                     .then((response2) => {
                       if (verbose)
                         printMessage(
-                          `Deleted ${innerNodeObject._id} (${innerNodeObject.nodeType})`,
+                          `Deleted ${innerNodeObject._id} (${innerNodeObject.nodeType}) from ${journeyId}`,
                           'info'
                         );
                       return response2.data;
                     })
                     .catch((error) => {
                       printMessage(
-                        `Error deleting inner node ${innerNodeObject._id}: ${error}`,
+                        `Error deleting inner node ${innerNodeObject._id} (${innerNodeObject.nodeType}) from ${journeyId}: ${error}`,
                         'error'
                       );
                     });
                 }
+                // finally delete the container node
+                deleteNode(nodeId, nodeObject.nodeType)
+                  .then((response2) => {
+                    if (verbose)
+                      printMessage(
+                        `Deleted ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
+                        'info'
+                      );
+                    return response2.data;
+                  })
+                  .catch((error) => {
+                    printMessage(
+                      `Error deleting container node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
+                      'error'
+                    );
+                  });
               })
               .catch((error) => {
                 printMessage(
-                  `Error getting container node ${nodeId}: ${error}`,
+                  `Error getting container node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
+                  'error'
+                );
+                printMessage(error.response.data, 'error');
+              });
+          } else {
+            // delete the node
+            deleteNode(nodeId, nodeObject.nodeType)
+              .then((response) => {
+                if (verbose)
+                  printMessage(
+                    `Deleted ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
+                    'info'
+                  );
+                return response.data;
+              })
+              .catch((error) => {
+                printMessage(
+                  `Error deleting node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
                   'error'
                 );
               });
           }
-          // finally delete the node
-          deleteNode(nodeId, nodeObject.nodeType)
-            .then((response) => {
-              if (verbose)
-                printMessage(
-                  `Deleted ${nodeId} (${nodeObject.nodeType})`,
-                  'info'
-                );
-              return response.data;
-            })
-            .catch((error) => {
-              printMessage(`Error deleting node ${nodeId}: ${error}`, 'error');
-            });
         }
       }
     })
     .catch((error) => {
       printMessage(`Error deleting tree ${journeyId}: ${error}`, 'error');
     });
+}
+
+/**
+ * Delete all journeys
+ * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
+ */
+export async function deleteJourneys(options) {
+  const trees = (await getTrees()).data.result;
+  createProgressBar(trees.length, 'Deleting journeys...');
+  for (const tree of trees) {
+    updateProgressBar(`${tree._id}`);
+    deleteJourney(tree._id, options);
+  }
+  stopProgressBar('Done');
 }
