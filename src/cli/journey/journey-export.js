@@ -36,13 +36,13 @@ program
   .addOption(
     new Option(
       '-a, --all',
-      'Export all the journeys/trees in a realm. Ignored with -t.'
+      'Export all the journeys/trees in a realm. Ignored with -i.'
     )
   )
   .addOption(
     new Option(
       '-A, --all-separate',
-      'Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.'
+      'Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -i or -a.'
     )
   )
   .addOption(
