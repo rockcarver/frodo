@@ -214,6 +214,19 @@ export function stopSpinner(message = null) {
 }
 
 /**
+ * Fail the spinner
+ * @param {String} message optional message to update the spinner
+ */
+export function failSpinner(message = null) {
+  const spinner = storage.session.getItem('Spinner');
+  if (spinner) {
+    let options = {};
+    if (message) options = { text: message };
+    spinner.error(options);
+  }
+}
+
+/**
  * Spin the spinner
  * @param {String} message optional message to update the spinner
  */
