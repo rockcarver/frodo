@@ -577,7 +577,7 @@ export async function createOAuth2ClientWithAdminPrivileges(
   clientSecret
 ) {
   let client = OAUTH2_CLIENT;
-  client.userpassword = clientSecret;
+  client.coreOAuth2ClientConfig.userpassword = clientSecret;
   client.coreOAuth2ClientConfig.clientName.value = [clientId];
   client.advancedOAuth2ClientConfig.descriptions.value = [
     `Created by Frodo on ${new Date().toLocaleString()}`,
