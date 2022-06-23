@@ -7,7 +7,7 @@ import {
   getConfigEntity,
   queryAllManagedObjectsByType,
 } from '../api/IdmConfigApi.js';
-import { printMessage, showSpinner, stopSpinner } from './utils/Console.js';
+import { printMessage, showSpinner, succeedSpinner } from './utils/Console.js';
 import { getTypedFilename } from './utils/ExportImportUtils.js';
 
 /**
@@ -111,7 +111,7 @@ export async function exportAllRawConfigEntities(directory) {
           );
         }
       });
-      stopSpinner();
+      succeedSpinner();
     });
   }
 }
@@ -190,7 +190,7 @@ export async function exportAllConfigEntities(
             );
           }
         });
-        stopSpinner();
+        succeedSpinner();
       });
     }
   });

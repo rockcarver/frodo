@@ -148,12 +148,14 @@ export function createProgressBar(
   message = null,
   options = {
     format: '[{bar}] {percentage}% | {value}/{total} | {data}',
+    noTTYOutput: true,
   }
 ) {
   let opt = options;
   if (message == null) {
     opt = {
       format: '[{bar}] {percentage}% | {value}/{total}',
+      noTTYOutput: true,
     };
   }
   let pBar = storage.session.getItem('progressBar');
@@ -205,6 +207,19 @@ export function showSpinner(message) {
  * @param {String} message optional message to update the spinner
  */
 export function stopSpinner(message = null) {
+  const spinner = storage.session.getItem('Spinner');
+  if (spinner) {
+    let options = {};
+    if (message) options = { text: message };
+    spinner.stop(options);
+  }
+}
+
+/**
+ * Succeed the spinner. Stop and render success checkmark with optional message.
+ * @param {String} message optional message to update the spinner
+ */
+export function succeedSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
   if (spinner) {
     let options = {};

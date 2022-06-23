@@ -33,10 +33,11 @@ import {
   updateProgressBar,
   stopProgressBar,
   showSpinner,
-  stopSpinner,
+  succeedSpinner,
   createTable,
   spinSpinner,
   failSpinner,
+  stopSpinner,
 } from './utils/Console.js';
 import wordwrap from './utils/Wordwrap.js';
 import {
@@ -511,14 +512,14 @@ export async function exportJourneyToFile(journeyId, file, options) {
       spinSpinner();
       await exportDependencies(treeData, fileData, options);
       saveJsonToFile(fileData, fileName);
-      stopSpinner();
+      succeedSpinner();
       printMessage(
         `Exported ${journeyId.brightCyan} to ${fileName.brightCyan}.`,
         'info'
       );
     })
     .catch((err) => {
-      stopSpinner();
+      succeedSpinner();
       printMessage(err, 'error');
     });
 }
@@ -533,14 +534,14 @@ export async function getJourneyData(journeyId) {
   const journeyData = getSingleTreeFileDataTemplate();
   const treeData = (
     await getTree(journeyId).catch((err) => {
-      stopSpinner();
+      succeedSpinner();
       printMessage(err, 'error');
     })
   ).data;
   journeyData.tree = treeData;
   spinSpinner();
   await exportDependencies(treeData, journeyData, { useStringArrays: true });
-  stopSpinner();
+  succeedSpinner();
   return journeyData;
 }
 
@@ -1130,7 +1131,7 @@ async function importAllTrees(treesMap, options) {
     resolvedJourneys
   );
   if (Object.keys(unresolvedJourneys).length === 0) {
-    stopSpinner(`Resolved all dependencies.`);
+    succeedSpinner(`Resolved all dependencies.`);
   } else {
     failSpinner(
       `${
@@ -1241,7 +1242,7 @@ async function findOrphanedNodes() {
       spinSpinner(`${allNodes.length} total nodes`);
     });
   }
-  stopSpinner(`${allNodes.length} total nodes`);
+  succeedSpinner(`${allNodes.length} total nodes`);
 
   showSpinner('Counting active nodes...');
   const activeNodes = [];
@@ -1263,12 +1264,12 @@ async function findOrphanedNodes() {
       }
     }
   }
-  stopSpinner(`${activeNodes.length} active nodes`);
+  succeedSpinner(`${activeNodes.length} active nodes`);
 
   showSpinner('Calculating orphaned nodes...');
   const diff = allNodes.filter((x) => !activeNodes.includes(x._id));
   diff.forEach((x) => orphanedNodes.push(x));
-  stopSpinner(`${orphanedNodes.length} orphaned nodes`);
+  succeedSpinner(`${orphanedNodes.length} orphaned nodes`);
   return orphanedNodes;
 }
 
@@ -1652,11 +1653,16 @@ export async function listJourneys(long = false, analyze = false) {
  * @param {String} journeyId journey id/name
  * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
  */
-export async function deleteJourney(journeyId, options) {
+export async function deleteJourney(journeyId, options, spinner = true) {
   const { deep } = options;
   const { verbose } = options;
-  deleteTree(journeyId)
-    .then((deleteTreeResponse) => {
+  const status = { nodes: {} };
+  if (spinner) showSpinner(`Deleting ${journeyId}...`);
+  if (spinner && verbose) stopSpinner();
+  return deleteTree(journeyId)
+    .then(async (deleteTreeResponse) => {
+      status.status = 'success';
+      const nodePromises = [];
       if (verbose) printMessage(`Deleted ${journeyId} (tree)`, 'info');
       if (deep) {
         for (const [nodeId, nodeObject] of Object.entries(
@@ -1664,16 +1670,20 @@ export async function deleteJourney(journeyId, options) {
         )) {
           // delete inner nodes (nodes inside container nodes)
           if (containerNodes.includes(nodeObject.nodeType)) {
-            getNode(nodeId, nodeObject.nodeType)
-              .then((response) => {
-                if (verbose)
-                  printMessage(
-                    `Read ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
-                    'info'
-                  );
-                for (const innerNodeObject of response.data.nodes) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              const pageNode = (await getNode(nodeId, nodeObject.nodeType))
+                .data;
+              if (verbose)
+                printMessage(
+                  `Read ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
+                  'info'
+                );
+              for (const innerNodeObject of pageNode.nodes) {
+                nodePromises.push(
                   deleteNode(innerNodeObject._id, innerNodeObject.nodeType)
                     .then((response2) => {
+                      status.nodes[innerNodeObject._id] = { status: 'success' };
                       if (verbose)
                         printMessage(
                           `Deleted ${innerNodeObject._id} (${innerNodeObject.nodeType}) from ${journeyId}`,
@@ -1682,15 +1692,23 @@ export async function deleteJourney(journeyId, options) {
                       return response2.data;
                     })
                     .catch((error) => {
-                      printMessage(
-                        `Error deleting inner node ${innerNodeObject._id} (${innerNodeObject.nodeType}) from ${journeyId}: ${error}`,
-                        'error'
-                      );
-                    });
-                }
-                // finally delete the container node
+                      status.nodes[innerNodeObject._id] = {
+                        status: 'error',
+                        error,
+                      };
+                      if (verbose)
+                        printMessage(
+                          `Error deleting inner node ${innerNodeObject._id} (${innerNodeObject.nodeType}) from ${journeyId}: ${error}`,
+                          'error'
+                        );
+                    })
+                );
+              }
+              // finally delete the container node
+              nodePromises.push(
                 deleteNode(nodeId, nodeObject.nodeType)
                   .then((response2) => {
+                    status.nodes[nodeId] = { status: 'success' };
                     if (verbose)
                       printMessage(
                         `Deleted ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
@@ -1699,42 +1717,80 @@ export async function deleteJourney(journeyId, options) {
                     return response2.data;
                   })
                   .catch((error) => {
-                    printMessage(
-                      `Error deleting container node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
-                      'error'
-                    );
-                  });
-              })
-              .catch((error) => {
+                    status.nodes[nodeId] = { status: 'error', error };
+                    if (verbose)
+                      printMessage(
+                        `Error deleting container node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
+                        'error'
+                      );
+                  })
+              );
+            } catch (error) {
+              if (verbose)
                 printMessage(
                   `Error getting container node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
                   'error'
                 );
-                printMessage(error.response.data, 'error');
-              });
+            }
           } else {
             // delete the node
-            deleteNode(nodeId, nodeObject.nodeType)
-              .then((response) => {
-                if (verbose)
-                  printMessage(
-                    `Deleted ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
-                    'info'
-                  );
-                return response.data;
-              })
-              .catch((error) => {
-                printMessage(
-                  `Error deleting node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
-                  'error'
-                );
-              });
+            nodePromises.push(
+              deleteNode(nodeId, nodeObject.nodeType)
+                .then((response) => {
+                  status.nodes[nodeId] = { status: 'success' };
+                  if (verbose)
+                    printMessage(
+                      `Deleted ${nodeId} (${nodeObject.nodeType}) from ${journeyId}`,
+                      'info'
+                    );
+                  return response.data;
+                })
+                .catch((error) => {
+                  status.nodes[nodeId] = { status: 'error', error };
+                  if (verbose)
+                    printMessage(
+                      `Error deleting node ${nodeId} (${nodeObject.nodeType}) from ${journeyId}: ${error}`,
+                      'error'
+                    );
+                })
+            );
           }
         }
       }
+      // wait until all the node calls are complete
+      await Promise.allSettled(nodePromises);
+
+      // report status
+      if (spinner) {
+        let nodeCount = 0;
+        let errorCount = 0;
+        for (const node of Object.keys(status.nodes)) {
+          nodeCount += 1;
+          if (status.nodes[node].status === 'error') errorCount += 1;
+        }
+        if (errorCount === 0) {
+          succeedSpinner(
+            `Deleted ${journeyId} and ${
+              nodeCount - errorCount
+            }/${nodeCount} nodes.`
+          );
+        } else {
+          failSpinner(
+            `Deleted ${journeyId} and ${
+              nodeCount - errorCount
+            }/${nodeCount} nodes.`
+          );
+        }
+      }
+      return status;
     })
     .catch((error) => {
-      printMessage(`Error deleting tree ${journeyId}: ${error}`, 'error');
+      status.status = 'error';
+      status.error = error;
+      failSpinner(`Error deleting ${journeyId}.`);
+      if (verbose)
+        printMessage(`Error deleting tree ${journeyId}: ${error}`, 'error');
+      return status;
     });
 }
 
@@ -1743,11 +1799,38 @@ export async function deleteJourney(journeyId, options) {
  * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
  */
 export async function deleteJourneys(options) {
+  const { verbose } = options;
+  const status = {};
   const trees = (await getTrees()).data.result;
   createProgressBar(trees.length, 'Deleting journeys...');
   for (const tree of trees) {
+    if (verbose) printMessage('');
+    // eslint-disable-next-line no-await-in-loop
+    status[tree._id] = await deleteJourney(tree._id, options, false);
     updateProgressBar(`${tree._id}`);
-    deleteJourney(tree._id, options);
+    // introduce a 100ms wait to allow the progress bar to update before the next verbose message prints from the async function
+    if (verbose)
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((r) => {
+        setTimeout(r, 100);
+      });
   }
-  stopProgressBar('Done');
+  let journeyCount = 0;
+  let journeyErrorCount = 0;
+  let nodeCount = 0;
+  let nodeErrorCount = 0;
+  for (const journey of Object.keys(status)) {
+    journeyCount += 1;
+    if (status[journey].status === 'error') journeyErrorCount += 1;
+    for (const node of Object.keys(status[journey].nodes)) {
+      nodeCount += 1;
+      if (status[journey].nodes[node].status === 'error') nodeErrorCount += 1;
+    }
+  }
+  stopProgressBar(
+    `Deleted ${journeyCount - journeyErrorCount}/${journeyCount} journeys and ${
+      nodeCount - nodeErrorCount
+    }/${nodeCount} nodes.`
+  );
+  return status;
 }
