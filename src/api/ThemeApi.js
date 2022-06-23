@@ -1,11 +1,11 @@
 import { getConfigEntity, putConfigEntity } from './IdmConfigApi.js';
-import storage from '../storage/SessionStorage.js';
+import { getCurrentRealmName } from './utils/ApiUtils.js';
 
 const THEMEREALM_ID = 'ui/themerealm';
 
 function getRealmThemes(themes) {
-  return themes.realm[storage.session.getRealm()]
-    ? themes.realm[storage.session.getRealm()]
+  return themes.realm[getCurrentRealmName()]
+    ? themes.realm[getCurrentRealmName()]
     : [];
 }
 
@@ -34,7 +34,7 @@ export async function putTheme(id, data) {
   themeData._id = id;
   // don't import a new theme as default theme
   themeData.isDefault = false;
-  const themes = await getConfigEntity(THEMEREALM_ID);
+  const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   let isNew = true;
   const realmThemes = getRealmThemes(themes).map((theme) => {
     if (theme._id === id) {
@@ -48,7 +48,7 @@ export async function putTheme(id, data) {
   if (isNew) {
     realmThemes.push(themeData);
   }
-  themes.realm[storage.session.getRealm()] = realmThemes;
+  themes.realm[getCurrentRealmName()] = realmThemes;
   return putConfigEntity(THEMEREALM_ID, themes);
 }
 
@@ -71,7 +71,7 @@ export async function putThemeByName(name, data) {
   if (isNew) {
     realmThemes.push(themeData);
   }
-  themes.realm[storage.session.getRealm()] = realmThemes;
+  themes.realm[getCurrentRealmName()] = realmThemes;
   return putConfigEntity(THEMEREALM_ID, themes);
 }
 
@@ -97,6 +97,6 @@ export async function putThemes(data) {
     allThemesData[themeId].isDefault = false;
     realmThemes.push(allThemesData[themeId]);
   });
-  themes.realm[storage.session.getRealm()] = realmThemes;
+  themes.realm[getCurrentRealmName()] = realmThemes;
   return putConfigEntity(THEMEREALM_ID, themes);
 }
