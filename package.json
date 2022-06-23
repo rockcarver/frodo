@@ -5,7 +5,10 @@
   "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
   "main": "src/app.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:list": "node --experimental-vm-modules node_modules/jest/bin/jest.js --listTests",
+    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand e2e",
+    "test:e2e:list": "node --experimental-vm-modules node_modules/jest/bin/jest.js --listTests e2e"
   },
   "jest": {
     "globalSetup": "<rootDir>/test/global/setup.js"
