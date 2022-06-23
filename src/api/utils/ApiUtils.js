@@ -20,6 +20,20 @@ export function getCurrentRealmPath() {
 }
 
 /**
+ * Get current realm name
+ * @returns {String} name of the current name. /alpha -> alpha
+ */
+export function getCurrentRealmName() {
+  const realm = storage.session.getRealm();
+  const components = realm.split('/');
+  let realmName = '/';
+  if (components.length > 0) {
+    realmName = components[components.length - 1];
+  }
+  return realmName;
+}
+
+/**
  * Get tenant base URL
  * @param {String} tenant tenant URL with path and query params
  * @returns {String} tenant base URL without path and query params
