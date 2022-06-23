@@ -139,6 +139,7 @@ export async function putOAuth2Client(id, data) {
       `putOAuth2Client ERROR: OAuth2 Client: ${id} - ${e.message} - ${e.response}`,
       'error'
     );
+    printMessage(e.response.data, 'error');
     return null;
   }
 }
