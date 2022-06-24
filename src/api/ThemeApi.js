@@ -30,7 +30,7 @@ export async function getThemes() {
  * @returns {Promise} a promise that resolves to an array of themes
  */
 export async function getTheme(id) {
-  const themes = await getConfigEntity(THEMEREALM_ID);
+  const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   return getRealmThemes(themes).filter((theme) => theme._id === id);
 }
 
@@ -40,7 +40,7 @@ export async function getTheme(id) {
  * @returns {Promise} a promise that resolves to an array of themes
  */
 export async function getThemeByName(name) {
-  const themes = await getConfigEntity(THEMEREALM_ID);
+  const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   return getRealmThemes(themes).filter((theme) => theme.name === name);
 }
 
@@ -53,17 +53,15 @@ export async function getThemeByName(name) {
 export async function putTheme(id, data) {
   const themeData = data;
   themeData._id = id;
-  // don't import a new theme as default theme
-  themeData.isDefault = false;
   const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   let isNew = true;
   const realmThemes = getRealmThemes(themes).map((theme) => {
     if (theme._id === id) {
       isNew = false;
-      // preserve isDefault setting when overwriting existing theme
-      themeData.isDefault = theme.isDefault;
       return themeData;
     }
+    // eslint-disable-next-line no-param-reassign
+    if (themeData.isDefault) theme.isDefault = false;
     return theme;
   });
   if (isNew) {
@@ -82,17 +80,15 @@ export async function putTheme(id, data) {
 export async function putThemeByName(name, data) {
   const themeData = data;
   themeData.name = name;
-  // don't import a new theme as default theme
-  themeData.isDefault = false;
   const themes = await getConfigEntity(THEMEREALM_ID);
   let isNew = true;
   const realmThemes = getRealmThemes(themes).map((theme) => {
     if (theme.name === name) {
       isNew = false;
-      // preserve isDefault setting when overwriting existing theme
-      themeData.isDefault = theme.isDefault;
       return themeData;
     }
+    // eslint-disable-next-line no-param-reassign
+    if (themeData.isDefault) theme.isDefault = false;
     return theme;
   });
   if (isNew) {
@@ -112,11 +108,13 @@ export async function putThemes(data) {
   const themes = (await getConfigEntity(THEMEREALM_ID)).data;
   const allThemeIDs = Object.keys(allThemesData);
   const existingThemeIDs = [];
-  const realmThemes = getRealmThemes(themes).map((theme) => {
+  let defaultThemeId = null;
+  // update existing themes
+  let realmThemes = getRealmThemes(themes).map((theme) => {
     if (allThemesData[theme._id]) {
       existingThemeIDs.push(theme._id);
-      // preserve isDefault setting when overwriting existing theme
-      allThemesData[theme._id].isDefault = theme.isDefault;
+      // remember the id of the last default theme
+      if (allThemesData[theme._id].isDefault) defaultThemeId = theme._id;
       return allThemesData[theme._id];
     }
     return theme;
@@ -124,11 +122,20 @@ export async function putThemes(data) {
   const newThemeIDs = allThemeIDs.filter(
     (id) => !existingThemeIDs.includes(id)
   );
+  // add new themes
   newThemeIDs.forEach((themeId) => {
-    // don't import a new theme as default theme
-    allThemesData[themeId].isDefault = false;
+    // remember the id of the last default theme
+    if (allThemesData[themeId].isDefault) defaultThemeId = themeId;
     realmThemes.push(allThemesData[themeId]);
   });
+  // if we imported a default theme, flag all the other themes as not default
+  if (defaultThemeId) {
+    realmThemes = realmThemes.map((theme) => {
+      // eslint-disable-next-line no-param-reassign
+      theme.isDefault = theme._id === defaultThemeId;
+      return theme;
+    });
+  }
   themes.realm[getCurrentRealmName()] = realmThemes;
   return putConfigEntity(THEMEREALM_ID, themes);
 }
