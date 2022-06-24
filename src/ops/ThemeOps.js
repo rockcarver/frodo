@@ -1,5 +1,8 @@
 import fs from 'fs';
 import {
+  deleteTheme,
+  deleteThemeByName,
+  deleteThemes,
   getTheme,
   getThemeByName,
   getThemes,
@@ -9,8 +12,12 @@ import {
 } from '../api/ThemeApi.js';
 import {
   createProgressBar,
+  createTable,
+  failSpinner,
   printMessage,
+  showSpinner,
   stopProgressBar,
+  succeedSpinner,
   updateProgressBar,
 } from './utils/Console.js';
 import {
@@ -19,6 +26,37 @@ import {
   saveToFile,
   validateImport,
 } from './utils/ExportImportUtils.js';
+
+/**
+ * List all the themes
+ * @param {boolean} long Long version, more fields
+ */
+export async function listThemes(long = false) {
+  const themeList = await getThemes();
+  themeList.sort((a, b) => a.name.localeCompare(b.name));
+  if (!long) {
+    themeList.forEach((theme) => {
+      printMessage(
+        `${theme.isDefault ? theme.name.brightCyan : theme.name}`,
+        'data'
+      );
+    });
+  } else {
+    const table = createTable([
+      'Name'.brightCyan,
+      'Id'.brightCyan,
+      'Default'.brightCyan,
+    ]);
+    themeList.forEach((theme) => {
+      table.push([
+        `${theme.name}`,
+        `${theme._id}`,
+        `${theme.isDefault ? 'Yes'.brightGreen : ''}`,
+      ]);
+    });
+    printMessage(table.toString(), 'data');
+  }
+}
 
 /**
  * Export theme by name to file
@@ -297,4 +335,45 @@ export async function importFirstThemeFromFile(file) {
       printMessage('Import validation failed...', 'error');
     }
   });
+}
+
+/**
+ * Delete theme by id
+ * @param {String} id theme id
+ */
+export async function deleteThemeCmd(id) {
+  showSpinner(`Deleting ${id}...`);
+  try {
+    await deleteTheme(id);
+    succeedSpinner(`Deleted ${id}.`);
+  } catch (error) {
+    failSpinner(`Error: ${error.message}`);
+  }
+}
+
+/**
+ * Delete theme by name
+ * @param {String} name theme name
+ */
+export async function deleteThemeByNameCmd(name) {
+  showSpinner(`Deleting ${name}...`);
+  try {
+    await deleteThemeByName(name);
+    succeedSpinner(`Deleted ${name}.`);
+  } catch (error) {
+    failSpinner(`Error: ${error.message}`);
+  }
+}
+
+/**
+ * Delete all themes
+ */
+export async function deleteThemesCmd() {
+  showSpinner(`Deleting all realm themes...`);
+  try {
+    await deleteThemes();
+    succeedSpinner(`Deleted all realm themes.`);
+  } catch (error) {
+    failSpinner(`Error: ${error.message}`);
+  }
 }

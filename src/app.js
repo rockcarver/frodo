@@ -19,7 +19,7 @@ import realm from './cli/realm/cmd.js';
 import saml from './cli/saml/saml.js';
 import script from './cli/script/cmd.js';
 import secret from './cli/secret/cmd.js';
-import theme from './cli/theme/cmd.js';
+import theme from './cli/theme/theme.js';
 
 const program = new Command(pkg.name).version(
   `v${pkg.version} [${process.version}]`,
