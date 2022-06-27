@@ -5,12 +5,16 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default function setup() {
-  const program = new Command('command')
+  const program = new Command('esv')
     .helpOption('-h, --help', 'Help')
-    .description('Top-level command.')
+    .description('Manage Environment-Specific Variables (ESVs).')
     .executableDir(__dirname);
 
-  program.command('sub', 'Sub-command.').showHelpAfterError();
+  program.command('apply', 'Apply pending changes.').showHelpAfterError();
+
+  program.command('secret', 'Manage secrets.').showHelpAfterError();
+
+  program.command('variable', 'Manage variables.').showHelpAfterError();
 
   program.showHelpAfterError();
   return program;
