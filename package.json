@@ -55,10 +55,10 @@
   },
   "dependencies": {
     "@colors/colors": "^1.5.0",
-    "axios": "^0.25.0",
-    "axios-retry": "^3.2.4",
+    "axios": "^0.27.2",
+    "axios-retry": "^3.2.5",
     "chalk": "^5.0.1",
-    "cli-progress": "^3.11.0",
+    "cli-progress": "^3.11.2",
     "cli-table3": "^0.6.2",
     "commander": "^9.3.0",
     "fs-extra": "^10.0.0",
@@ -70,14 +70,13 @@
     "replaceall": "^0.1.6",
     "slugify": "^1.6.5",
     "uuid": "^8.3.2",
-    "yesno": "^0.3.1"
+    "yesno": "^0.4.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
     "@babel/plugin-syntax-import-assertions": "^7.16.7",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "babel-plugin-transform-import-meta": "^2.1.1",
-    "cjs-to-es6": "^1.1.1",
     "del": "^6.0.0",
     "eslint": "^8.10.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -91,7 +90,7 @@
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-sourcemaps": "^3.0.0",
-    "jest": "27.5.1",
+    "jest": "^28.1.1",
     "pkg": "^5.5.2"
   }
 }
