@@ -7,7 +7,7 @@ import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
 import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
 import { getOAuth2Provider } from '../api/AmServiceApi.js';
-import { createSecret } from '../api/SecretsApi.js';
+import { putSecret } from '../api/SecretsApi.js';
 import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
 // eslint-disable-next-line no-unused-vars
@@ -612,7 +612,7 @@ export async function createLongLivedToken(
   await putOAuth2Client(clientId, client);
   // create secret with token as value
   const description = 'Long-lived admin token';
-  await createSecret(secret, response.access_token, description);
+  await putSecret(secret, response.access_token, description);
   delete response.access_token;
   return response;
 }

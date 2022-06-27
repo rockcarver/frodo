@@ -10,6 +10,7 @@ import admin from './cli/admin/cmd.js';
 import application from './cli/application/cmd.js';
 import connections from './cli/connections/cmd.js';
 import email from './cli/email/email.js';
+import esv from './cli/esv/esv.js';
 import idm from './cli/idm/cmd.js';
 import idp from './cli/idp/idp.js';
 import info from './cli/info/cmd.js';
@@ -18,7 +19,6 @@ import logging from './cli/logging/logs.js';
 import realm from './cli/realm/cmd.js';
 import saml from './cli/saml/saml.js';
 import script from './cli/script/cmd.js';
-import secret from './cli/secret/cmd.js';
 import theme from './cli/theme/theme.js';
 
 const program = new Command(pkg.name).version(
@@ -34,6 +34,7 @@ const program = new Command(pkg.name).version(
     program.addCommand(application());
     program.addCommand(connections());
     program.addCommand(email());
+    program.addCommand(esv());
     program.addCommand(idm());
     program.addCommand(idp());
     program.addCommand(info());
@@ -42,10 +43,10 @@ const program = new Command(pkg.name).version(
     program.addCommand(realm());
     program.addCommand(saml());
     program.addCommand(script());
-    program.addCommand(secret());
     program.addCommand(theme());
 
     program.showHelpAfterError();
+    program.enablePositionalOptions();
     program.parse();
   } catch (e) {
     printMessage(`ERROR: exception running frodo - ${e}`, 'error');
