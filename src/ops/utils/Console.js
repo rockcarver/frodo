@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { SingleBar, Presets } from 'cli-progress';
 import { createSpinner } from 'nanospinner';
 import Table from 'cli-table3';
@@ -44,7 +43,7 @@ function info(message) {
       console.dir(message, { depth: 3 });
       break;
     default:
-      console.error(chalk.cyanBright(message));
+      console.error(message.brightCyan);
   }
 }
 
@@ -58,7 +57,7 @@ function warn(message) {
       console.dir(message, { depth: 3 });
       break;
     default:
-      console.error(chalk.yellow(message));
+      console.error(message.yellow);
   }
 }
 
@@ -72,7 +71,7 @@ function error(message) {
       console.dir(message, { depth: 4 });
       break;
     default:
-      console.error(chalk.redBright(message));
+      console.error(message.brightRed);
   }
 }
 
@@ -106,28 +105,28 @@ export function printMessage(message, type = 'text', newline = true) {
       if (newline) {
         info(message);
       } else {
-        process.stderr.write(chalk.cyanBright(message));
+        process.stderr.write(message.brightCyan);
       }
       break;
     case 'warn':
       if (newline) {
         warn(message);
       } else {
-        process.stderr.write(chalk.yellow(message));
+        process.stderr.write(message.yellow);
       }
       break;
     case 'error':
       if (newline) {
         error(message);
       } else {
-        process.stderr.write(chalk.redBright(message));
+        process.stderr.write(message.brightRed);
       }
       break;
     default:
       if (newline) {
         error(message);
       } else {
-        process.stderr.write(chalk.bgRedBright(message));
+        process.stderr.write(message.bgBrightRed);
       }
   }
 }

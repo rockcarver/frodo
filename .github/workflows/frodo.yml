@@ -72,11 +72,11 @@ jobs:
         run: pkg -C Gzip -t node18-macos-x64 --out-path bin/macos .
       #
       # Fail early on failing tests.
-      # Disabled because this project does not have tests. (TODO Add some example tests)
       #
 
-      #- name: "Test"
-      #  uses: devbotsxyz/xcode-test@v1
+      - name: "Test"
+        working-directory: ./dist/bin/macos
+        run: "frodo -v"
 
       #
       # Re-sign the application with the "Developer ID" certificate.
@@ -132,6 +132,13 @@ jobs:
         working-directory: ./dist
         run: pkg -C Gzip -t node18-linux-x64 --out-path bin/linux .
 
+      #
+      # Fail early on failing tests.
+      #
+      - name: "Test"
+        working-directory: ./dist/bin/linux
+        run: "frodo -v"
+
       - name: Archive distribution binary
         run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
 
@@ -173,6 +180,13 @@ jobs:
       - name: Build distribution binary
         working-directory: ./dist
         run: pkg -C Gzip -t node18-win-x64 --out-path bin/win .
+
+      #
+      # Fail early on failing tests.
+      #
+      - name: "Test"
+        working-directory: ./dist/bin/win
+        run: "frodo -v"
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
