@@ -75,8 +75,7 @@ jobs:
       #
 
       - name: "Test"
-        working-directory: ./dist/bin/macos
-        run: "frodo -v"
+        run: "dist/bin/macos/frodo -v"
 
       #
       # Re-sign the application with the "Developer ID" certificate.
@@ -136,8 +135,7 @@ jobs:
       # Fail early on failing tests.
       #
       - name: "Test"
-        working-directory: ./dist/bin/linux
-        run: "frodo -v"
+        run: "dist/bin/linux/frodo -v"
 
       - name: Archive distribution binary
         run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
@@ -185,8 +183,7 @@ jobs:
       # Fail early on failing tests.
       #
       - name: "Test"
-        working-directory: ./dist/bin/win
-        run: "frodo -v"
+        run: "dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
