@@ -4,6 +4,12 @@
 name: Binary release (linux, macos, win)
 
 on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Run with tag'
+        required: false 
+        type: boolean
   release:
     types: [ created ]
 
