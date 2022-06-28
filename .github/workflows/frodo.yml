@@ -189,7 +189,9 @@ jobs:
       # Fail early on failing tests.
       #
       - name: "Test"
-        run: "$GITHUB_WORKSPACE/dist/bin/win/frodo.exe -v"
+        run: |
+          "ls -lah $GITHUB_WORKSPACE/dist/bin/win"
+          "$GITHUB_WORKSPACE/dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
