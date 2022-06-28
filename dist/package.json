@@ -47,16 +47,23 @@
     ]
   },
   "dependencies": {
-    "axios": "^0.25.0",
-    "axios-retry": "^3.2.4",
+    "@colors/colors": "^1.5.0",
+    "axios": "^0.27.2",
+    "axios-retry": "^3.2.5",
+    "chalk": "^5.0.1",
+    "cli-progress": "^3.11.2",
+    "cli-table3": "^0.6.2",
     "commander": "^9.3.0",
     "fs-extra": "^10.0.0",
+    "lodash": "^4.17.21",
+    "nanospinner": "^1.1.0",
     "properties-reader": "^2.2.0",
+    "qs": "^6.10.3",
     "readline-sync": "^1.4.10",
     "replaceall": "^0.1.6",
-    "underscore": "^1.13.2",
+    "slugify": "^1.6.5",
     "uuid": "^8.3.2",
-    "yesno": "^0.3.1"
+    "yesno": "^0.4.0"
   },
   "devDependencies": {
     "pkg": "^5.7.0"
