@@ -189,7 +189,9 @@ jobs:
       # Fail early on failing tests.
       #
       - name: "Test"
-        run: "dist/bin/win/frodo.exe -v"
+        run: |
+          "chmod +x dist/bin/win/frodo.exe"
+          "dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
