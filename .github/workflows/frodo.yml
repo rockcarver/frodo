@@ -192,7 +192,7 @@ jobs:
         run: "dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
-        run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
+        run: 7z a -tzip dist/frodo-win.zip dist/bin/win/frodo.exe
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
