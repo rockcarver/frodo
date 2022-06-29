@@ -23,6 +23,7 @@ jobs:
         with:
           tag-prefix: 'v'
           default: prerelease
+          preid: 'alpha'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'cat package.json'
