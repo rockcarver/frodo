@@ -153,7 +153,7 @@ jobs:
             dist/frodo-linux.zip
 
   win-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         node-version: [18.x]
@@ -189,9 +189,7 @@ jobs:
       # Fail early on failing tests.
       #
       - name: "Test"
-        run: |
-          "ls -lah $GITHUB_WORKSPACE/dist/bin/win"
-          "$GITHUB_WORKSPACE/dist/bin/win/frodo.exe -v"
+        run: "dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
         run: zip -r dist/frodo-win.zip . -i dist/bin/win/frodo.exe
