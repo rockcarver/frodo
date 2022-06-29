@@ -191,8 +191,8 @@ jobs:
       - name: "Test"
         run: |
           "pwd"
-          "ls /home/runner/work"
-          "ls -lah $GITHUB_WORKSPACE/../"
+          "dir /home/runner/work"
+          "dir -lah $GITHUB_WORKSPACE/../"
           "$GITHUB_WORKSPACE/dist/bin/win/frodo.exe -v"
 
       - name: Archive distribution binary
