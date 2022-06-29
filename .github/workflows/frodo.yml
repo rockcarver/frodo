@@ -191,7 +191,6 @@ jobs:
       - name: "Test"
         run: |
           "pwd"
-          "find / -name \"frodo.exe\""
           "ls /home/runner/work"
           "ls -lah $GITHUB_WORKSPACE/../"
           "$GITHUB_WORKSPACE/dist/bin/win/frodo.exe -v"
