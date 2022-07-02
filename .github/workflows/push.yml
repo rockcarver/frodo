@@ -28,7 +28,7 @@ jobs:
           default: prerelease
           preid: ''
         env:
-          GITHUB_TOKEN: ${{ WORKFLOW_PAT }}
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_PAT }}
       - name: 'cat package.json'
         run: cat ./package.json
       - name: 'Output Step'
