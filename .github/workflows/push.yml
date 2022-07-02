@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  bump-version:
+  bump-version-and-release:
     name: 'Bump version and release main branch'
     runs-on: ubuntu-latest
 
@@ -42,3 +42,191 @@ jobs:
           prerelease_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-[[:alpha:]]+\.[[:digit:]]+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  macos-binary-release:
+    needs: bump-version-and-release
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    timeout-minutes: 15
+    steps:
+      - name: "Checkout Project"
+        uses: actions/checkout@v2
+
+      - name: Install the Apple certificate
+        env:
+          DEVELOPMENT_CERTIFICATE_DATA: ${{ secrets.DEVELOPMENT_CERTIFICATE_DATA }}
+          DEVELOPMENT_CERTIFICATE_PASSPHRASE: ${{ secrets.DEVELOPMENT_CERTIFICATE_PASSPHRASE }}
+          INTERMEDIATE_CERTIFICATE_DATA: ${{ secrets.INTERMEDIATE_CERTIFICATE_DATA }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          INTERMEDIATE_CERTIFICATE_PATH=$RUNNER_TEMP/intermediate_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificates from secrets
+          echo -n "$DEVELOPMENT_CERTIFICATE_DATA" | base64 --decode --output $CERTIFICATE_PATH
+          echo -n "$INTERMEDIATE_CERTIFICATE_DATA" | base64 --decode --output $INTERMEDIATE_CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$DEVELOPMENT_CERTIFICATE_PASSPHRASE" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          #security import $INTERMEDIATE_CERTIFICATE_PATH -P "$DEVELOPMENT_CERTIFICATE_PASSPHRASE" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Install gulp
+        run: npm install -g gulp
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Transpile to CommonJS
+        run: gulp
+
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node18-macos-x64 --out-path bin/macos .
+      #
+      # Fail early on failing tests.
+      #
+
+      - name: "Test"
+        run: "dist/bin/macos/frodo -v"
+
+      #
+      # Re-sign the application with the "Developer ID" certificate.
+      #
+      - name: Sign distribution binary
+        working-directory: ./dist/bin/macos
+        run: "codesign -f -s 'Rock Carver' --timestamp --deep frodo"
+        # run: "codesign -f -s 'Developer ID Application: Volker Scheuber (AV6L99G8W9)' --timestamp --deep frodo"
+
+      #
+      # Zip up the app and add it to the GitHub Release as a
+      # downloadable asset.
+      #
+
+      - name: Package for Distribution
+        run: ditto -V -c -k --keepParent "dist/bin/macos/frodo" "dist/frodo-macos.zip"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/frodo-macos.zip
+
+  linux-binary-release:
+    needs: bump-version-and-release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Transpile to CommonJS
+        run: gulp
+
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node18-linux-x64 --out-path bin/linux .
+
+      #
+      # Fail early on failing tests.
+      #
+      - name: "Test"
+        run: "dist/bin/linux/frodo -v"
+
+      - name: Archive distribution binary
+        run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
+
+      - name: Release distribution binaries
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: |
+            dist/frodo-linux.zip
+
+  windows-binary-release:
+    needs: bump-version-and-release
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Transpile to CommonJS
+        run: gulp
+
+      - name: Install binary distribution dependencies
+        working-directory: ./dist
+        run: npm ci
+
+      - name: Build distribution binary
+        working-directory: ./dist
+        run: pkg -C Gzip -t node18-win-x64 --out-path bin/win .
+
+      #
+      # Fail early on failing tests.
+      #
+      - name: "Test"
+        run: "dist/bin/win/frodo.exe -v"
+
+      - name: Archive distribution binary
+        run: 7z a -tzip dist/frodo-win.zip dist/bin/win/frodo.exe
+
+      - name: Release distribution binaries
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: dist/frodo-win.zip
