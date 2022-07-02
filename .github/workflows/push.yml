@@ -15,6 +15,7 @@ jobs:
         uses: 'actions/checkout@v2'
         with:
           ref: ${{ github.ref }}
+          ssh-key: "${{ secrets.COMMIT_KEY }}"
       - name: 'cat package.json'
         run: cat ./package.json
       - name: 'Automated Version Bump'
