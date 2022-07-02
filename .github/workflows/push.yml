@@ -27,8 +27,6 @@ jobs:
           tag-prefix: 'v'
           default: prerelease
           preid: ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'cat package.json'
         run: cat ./package.json
       - name: 'Output Step'
