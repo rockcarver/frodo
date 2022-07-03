@@ -42,6 +42,9 @@ jobs:
           prerelease_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-[[:alpha:]]+\.[[:digit:]]+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    outputs:
+      newReleaseTag: ${{ steps.version-bump.outputs.newTag }}
 
   macos-binary-release:
     needs: bump-version-and-release
@@ -132,6 +135,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ needs.version-bump.outputs.newTag }}
           files: dist/frodo-macos.zip
 
   linux-binary-release:
@@ -180,8 +184,8 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
-          files: |
-            dist/frodo-linux.zip
+          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          files: dist/frodo-linux.zip
 
   windows-binary-release:
     needs: bump-version-and-release
@@ -229,4 +233,5 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
+          tag_name: ${{ needs.version-bump.outputs.newTag }}
           files: dist/frodo-win.zip
