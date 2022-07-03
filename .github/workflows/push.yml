@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     outputs:
-      newReleaseTag: ${{ steps.version-bump.outputs.newTag }}
+      newTag: ${{ steps.version-bump.outputs.newTag }}
 
   macos-binary-release:
     needs: bump-version-and-release
