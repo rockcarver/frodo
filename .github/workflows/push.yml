@@ -135,7 +135,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          tag_name: ${{ needs.bump-version-and-release.outputs.newTag }}
           files: dist/frodo-macos.zip
 
   linux-binary-release:
@@ -184,7 +184,7 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          tag_name: "${{ needs.bump-version-and-release.outputs.newTag }}"
           files: dist/frodo-linux.zip
 
   windows-binary-release:
@@ -233,5 +233,5 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          tag_name: ${{ needs.bump-version-and-release.outputs.newTag }}
           files: dist/frodo-win.zip
