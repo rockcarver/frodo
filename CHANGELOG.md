@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v0.6.3-alpha.32] - 2022-07-07
-
 ### Added
 
 -   This CHANGELOG.md file
@@ -18,67 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## [0.6.3-alpha.31] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.30] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.29] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.28] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.27] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.26] - 2022-07-07 [YANKED]
-
-## [0.6.3-alpha.25][YANKED]
-
-## [0.6.3-alpha.24][YANKED]
-
-## [0.6.3-alpha.23][YANKED]
-
-## [0.6.3-alpha.22][YANKED]
-
-## [0.6.3-alpha.21][YANKED]
-
-## [0.6.3-alpha.20][YANKED]
-
-## [0.6.3-alpha.19][YANKED]
-
-## [0.6.3-alpha.18][YANKED]
-
-## [0.6.3-alpha.17][YANKED]
-
-## [0.6.3-alpha.16][YANKED]
-
-## [0.6.3-alpha.15][YANKED]
-
-## [0.6.3-alpha.14][YANKED]
-
-## [0.6.3-alpha.13][YANKED]
-
-## [0.6.3-alpha.12][YANKED]
-
-## [0.6.3-alpha.11][YANKED]
-
-## [0.6.3-alpha.10][YANKED]
-
-## [0.6.3-alpha.9][YANKED]
-
-## [0.6.3-alpha.8][YANKED]
-
-## [0.6.3-alpha.7][YANKED]
-
-## [0.6.3-alpha.6][YANKED]
-
-## [0.6.3-alpha.5][YANKED]
-
-## [0.6.3-alpha.4][YANKED]
-
-## [0.6.3-alpha.3][YANKED]
-
-## [0.6.3-alpha.2][YANKED]
-
-## [0.6.3-alpha.1][YANKED]
+## [v0.6.3-alpha.1] - [v0.6.3-alpha.32] [YANKED]
 
 ## [0.6.2][YANKED]
 
@@ -88,13 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Changed archive step of Windows binary build to use 7zip
 
-## [0.6.1 alpha 25][YANKED]
-
-## [0.6.1 alpha 24][YANKED]
-
-## [0.6.1 alpha 23][YANKED]
-
-## [0.6.1 alpha 22][YANKED]
+## [0.6.1 alpha 22] - [0.6.1 alpha 25][YANKED]
 
 ## [0.6.1 alpha 21] - 2022-06-27
 
@@ -180,11 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Updated readme
 -   Miscellaneous bug fixes
 
-## [0.6.1 alpha 16][YANKED]
-
-## [0.6.1 alpha 15][YANKED]
-
-## [0.6.1 alpha 14][YANKED]
+## [0.6.1 alpha 14] - [0.6.1 alpha 16][YANKED]
 
 ## [0.6.1 alpha 13] - 2022-05-20
 
@@ -215,17 +143,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
-
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.32...HEAD
-
-[v0.6.3-alpha.32]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.31...v0.6.3-alpha.32
-
-[0.6.3-alpha.31]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.30...v0.6.3-alpha.31
-
-[0.6.3-alpha.30]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.29...v0.6.3-alpha.30
-
-[0.6.3-alpha.29]: https://github.com/vscheuber/frodo/compare/v0.6.3-alpha.28...v0.6.3-alpha.29
-
-[0.6.3-alpha.28]: https://github.com/vscheuber/frodo/compare/v0.6.3-alpha.27...v0.6.3-alpha.28
-
-[0.6.3-alpha.27]: https://github.com/vscheuber/frodo/compare/2098220af92e2be7603b97cbb22b85aea94ee5d2...v0.6.3-alpha.27
