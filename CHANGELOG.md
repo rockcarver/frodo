@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adapted true semantic versioning
 - Pipeline changes to automate release notes
 
+## [0.6.3-alpha.1 - 25] [YANKED]
+
+## [0.6.2] [YANKED]
+
 ## [0.6.1 alpha 26] - 2022-06-28
 
 ### Changed
