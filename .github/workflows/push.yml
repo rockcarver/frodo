@@ -69,9 +69,7 @@ jobs:
         run: cat ./package.json
 
       - name: 'Check tag version is same as package version'
-        env:
-          NEW_TAG: ${{ needs.bump-version-and-release.outputs.newTag }}
-        run: grep "$NEW_TAG" ./package.json
+        run: grep "${{ needs.bump-version-and-release.outputs.newTag }}" ./package.json
 
       - name: Install the Apple certificate
         env:
@@ -163,6 +161,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.bump-version-and-release.outputs.newTag }}
+
+      - name: 'cat package.json'
+        run: cat ./package.json
 
       - name: Install pkg
         run: npm install -g pkg
@@ -212,6 +215,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.bump-version-and-release.outputs.newTag }}
+
+      - name: 'type package.json'
+        run: type package.json
 
       - name: Install pkg
         run: npm install -g pkg
