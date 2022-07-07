@@ -411,7 +411,7 @@ export async function addAutoIdStaticUserMapping() {
 }
 
 export async function grantOAuth2ClientAdminPrivileges(clientId) {
-  let client = await getOAuth2Client(clientId);
+  let client = (await getOAuth2Client(clientId)).data;
   if (client.coreOAuth2ClientConfig.clientName.value.length === 0) {
     client.coreOAuth2ClientConfig.clientName.value = [clientId];
   }
@@ -549,7 +549,7 @@ async function removeAdminStaticUserMapping(name) {
 }
 
 export async function revokeOAuth2ClientAdminPrivileges(clientId) {
-  let client = await getOAuth2Client(clientId);
+  let client = (await getOAuth2Client(clientId)).data;
   if (client.coreOAuth2ClientConfig.clientName.value.length === 0) {
     client.coreOAuth2ClientConfig.clientName.value = [clientId];
   }
@@ -595,7 +595,7 @@ export async function createLongLivedToken(
   lifetime
 ) {
   // get oauth2 client
-  const client = await getOAuth2Client(clientId);
+  const client = (await getOAuth2Client(clientId)).data;
   client.userpassword = clientSecret;
   // remember current lifetime
   const rememberedLifetime =

@@ -7,13 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.3-alpha.30] - 2022-07-07
+### Added
+-   Release notes
 
-## [0.6.3-alpha.29] - 2022-07-07
-
-## [0.6.3-alpha.28] - 2022-07-07
-
-## [0.6.3-alpha.27] - 2022-07-07
+## [0.6.3-alpha.30] - 2022-07-07 [YANKED]
 
 ### Added
 
@@ -23,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
+
+## [0.6.3-alpha.29] - 2022-07-07 [YANKED]
+
+## [0.6.3-alpha.28] - 2022-07-07 [YANKED]
+
+## [0.6.3-alpha.27] - 2022-07-07 [YANKED]
 
 ## [0.6.3-alpha.1 - 25][YANKED]
 

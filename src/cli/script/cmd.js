@@ -53,7 +53,7 @@ export default function setup() {
         // console.log(scriptList);
         scriptList.sort((a, b) => a.name.localeCompare(b.name));
         scriptList.forEach((item) => {
-          printMessage(`- ${item.name}`, 'info');
+          printMessage(`${item.name}`, 'data');
         });
       }
     });

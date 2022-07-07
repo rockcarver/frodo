@@ -74,31 +74,15 @@ export async function getOAuth2ClientByName(name) {
 }
 
 export async function getOAuth2Client(id) {
-  try {
-    const urlString = util.format(
-      oauth2ClientURLTemplate,
-      storage.session.getTenant(),
-      getCurrentRealmPath(),
-      id
-    );
-    const response = await generateAmApi(getApiConfig()).get(urlString, {
-      withCredentials: true,
-    });
-    if (response.status < 200 || response.status > 399) {
-      printMessage(
-        `getOAuth2Client ERROR: get structure call returned ${response.status}, possible cause: OAuth2 Client not found`,
-        'error'
-      );
-      return null;
-    }
-    return response.data;
-  } catch (e) {
-    printMessage(
-      `getOAuth2Client ERROR: structure error - ${e.message}`,
-      'error'
-    );
-    return null;
-  }
+  const urlString = util.format(
+    oauth2ClientURLTemplate,
+    storage.session.getTenant(),
+    getCurrentRealmPath(),
+    id
+  );
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
 export async function putOAuth2Client(id, data) {
