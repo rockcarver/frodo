@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.6.3-alpha.32] - 2022-07-07
+
 ### Added
 
 -   This CHANGELOG.md file
@@ -28,55 +30,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.3-alpha.26] - 2022-07-07 [YANKED]
 
-## [0.6.3-alpha.25] [YANKED]
+## [0.6.3-alpha.25][YANKED]
 
-## [0.6.3-alpha.24] [YANKED]
+## [0.6.3-alpha.24][YANKED]
 
-## [0.6.3-alpha.23] [YANKED]
+## [0.6.3-alpha.23][YANKED]
 
-## [0.6.3-alpha.22] [YANKED]
+## [0.6.3-alpha.22][YANKED]
 
-## [0.6.3-alpha.21] [YANKED]
+## [0.6.3-alpha.21][YANKED]
 
-## [0.6.3-alpha.20] [YANKED]
+## [0.6.3-alpha.20][YANKED]
 
-## [0.6.3-alpha.19] [YANKED]
+## [0.6.3-alpha.19][YANKED]
 
-## [0.6.3-alpha.18] [YANKED]
+## [0.6.3-alpha.18][YANKED]
 
-## [0.6.3-alpha.17] [YANKED]
+## [0.6.3-alpha.17][YANKED]
 
-## [0.6.3-alpha.16] [YANKED]
+## [0.6.3-alpha.16][YANKED]
 
-## [0.6.3-alpha.15] [YANKED]
+## [0.6.3-alpha.15][YANKED]
 
-## [0.6.3-alpha.14] [YANKED]
+## [0.6.3-alpha.14][YANKED]
 
-## [0.6.3-alpha.13] [YANKED]
+## [0.6.3-alpha.13][YANKED]
 
-## [0.6.3-alpha.12] [YANKED]
+## [0.6.3-alpha.12][YANKED]
 
-## [0.6.3-alpha.11] [YANKED]
+## [0.6.3-alpha.11][YANKED]
 
-## [0.6.3-alpha.10] [YANKED]
+## [0.6.3-alpha.10][YANKED]
 
-## [0.6.3-alpha.9] [YANKED]
+## [0.6.3-alpha.9][YANKED]
 
-## [0.6.3-alpha.8] [YANKED]
+## [0.6.3-alpha.8][YANKED]
 
-## [0.6.3-alpha.7] [YANKED]
+## [0.6.3-alpha.7][YANKED]
 
-## [0.6.3-alpha.6] [YANKED]
+## [0.6.3-alpha.6][YANKED]
 
-## [0.6.3-alpha.5] [YANKED]
+## [0.6.3-alpha.5][YANKED]
 
-## [0.6.3-alpha.4] [YANKED]
+## [0.6.3-alpha.4][YANKED]
 
-## [0.6.3-alpha.3] [YANKED]
+## [0.6.3-alpha.3][YANKED]
 
-## [0.6.3-alpha.2] [YANKED]
+## [0.6.3-alpha.2][YANKED]
 
-## [0.6.3-alpha.1] [YANKED]
+## [0.6.3-alpha.1][YANKED]
 
 ## [0.6.2][YANKED]
 
@@ -214,7 +216,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.31...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.32...HEAD
+
+[v0.6.3-alpha.32]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.31...v0.6.3-alpha.32
 
 [0.6.3-alpha.31]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.30...v0.6.3-alpha.31
 
