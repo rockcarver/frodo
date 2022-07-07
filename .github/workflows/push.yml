@@ -68,9 +68,6 @@ jobs:
       - name: 'cat package.json'
         run: cat ./package.json
 
-      - name: 'Check tag version is same as package version'
-        run: grep "${{ needs.bump-version-and-release.outputs.newTag }}" ./package.json
-
       - name: Install the Apple certificate
         env:
           DEVELOPMENT_CERTIFICATE_DATA: ${{ secrets.DEVELOPMENT_CERTIFICATE_DATA }}
