@@ -65,10 +65,13 @@ jobs:
         with:
           ref: ${{ needs.bump-version-and-release.outputs.newTag }}
 
+      - name: 'cat package.json'
+        run: cat ./package.json
+
       - name: 'Check tag version is same as package version'
         env:
           NEW_TAG: ${{ needs.bump-version-and-release.outputs.newTag }}
-        run: grep "$NEW_TAG" package.json
+        run: grep "$NEW_TAG" ./package.json
 
       - name: Install the Apple certificate
         env:
