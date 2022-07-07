@@ -28,6 +28,7 @@ jobs:
           tag-prefix: 'v'
           default: prerelease
           preid: ''
+          bump-policy: 'ignore'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
