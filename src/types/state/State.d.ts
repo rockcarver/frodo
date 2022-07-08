@@ -1,4 +1,4 @@
-import { ALL_AMSupportedVersions } from "./utils/OOTBNodeTypes";
+import { ALL_AMSupportedVersions } from "../journey/OOTBNodeTypes";
 
 /**
  * Descibes the global state of a lib-frodo client
