@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   CHANGELOG.md
+
+### Changed
+
+-   Adapted true semantic versioning
+-   Pipeline changes
+    -   automated updating changelog using keep a changelog format in CHANGELOG.md
+    -   automated version bump (SemVer format) using PR comments to trigger prerelease, patch, minor, or major bumps
+    -   automated release notes extraction from CHANGELOG.md
+    -   automated GitHub release creation
+    -   Renamed frodo.yml to pipeline.yml
+
+### Fixed
+
+-   Fixed missing -k/--insecure param in application sub-commands #280
+
 ## [0.6.3-alpha.51] - 2022-07-08
 
 ### Added
