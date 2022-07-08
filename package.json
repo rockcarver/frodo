@@ -1,11 +1,15 @@
 {
-  "name": "frodo",
-  "version": "0.6.1",
+  "name": "lib-frodo",
+  "version": "1.0.0",
   "type": "module",
-  "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
-  "main": "src/app.js",
+  "description": "lib-frodo is a multi-platform Node.js library that provides JavaScript bindings for various interactions within ForgeRock your products. lib-frodo enables anyone to build client software such as CLI's, GUI's or other tooling.",
+  "main": "src/index.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "doc": "typedoc --plugin typedoc-plugin-markdown --out docs ./src/index.js",
+    "generate-typescript-support": "tsc -p tsconfig.json",
+    "test_api": "cd ./test/api/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "test_e2e": "cd ./test/e2e/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "test_unit": "cd ./test/units/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "contributors": [
     {
@@ -26,47 +30,19 @@
     }
   ],
   "license": "MIT",
-  "bin": {
-    "frodo": "./src/app.js"
-  },
-  "babel": {
-    "plugins": [
-      "@babel/plugin-syntax-import-assertions"
-    ]
-  },
-  "pkg": {
-    "options": [
-      "experimental-json-modules",
-      "enable-source-maps",
-      "no-warnings"
-    ],
-    "scripts": [
-      "storage/**/*.js",
-      "api/**/*.js",
-      "modules/**/*.js"
-    ]
-  },
   "dependencies": {
-    "@colors/colors": "^1.5.0",
+    "atob": "^2.1.2",
+    "btoa": "^1.2.1",
     "axios": "^0.25.0",
     "axios-retry": "^3.2.4",
-    "cli-table3": "^0.6.2",
-    "commander": "^9.0.0",
     "fs-extra": "^10.0.0",
     "properties-reader": "^2.2.0",
     "qs": "^6.10.3",
-    "readline-sync": "^1.4.10",
-    "replaceall": "^0.1.6",
-    "underscore": "^1.13.2",
-    "uuid": "^8.3.2",
-    "yesno": "^0.3.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.17.0",
-    "@babel/plugin-syntax-import-assertions": "^7.16.7",
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
-    "cjs-to-es6": "^1.1.1",
-    "del": "^6.0.0",
+    "@types/uuid": "8.3.4",
+    "dotenv": "16.0.1",
     "eslint": "^8.10.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.4.0",
@@ -75,10 +51,9 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.29.2",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-sourcemaps": "^3.0.0",
     "jest": "27.5.1",
-    "pkg": "^5.5.2"
+    "typedoc": "^0.22.17",
+    "typedoc-plugin-markdown": "^3.12.1",
+    "typescript": "4.7.3"
   }
 }

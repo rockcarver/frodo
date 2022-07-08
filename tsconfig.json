@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    // Generate d.ts files
+    "declaration": true,
+    // This compiler run should
+    // only output d.ts files
+    "emitDeclarationOnly": true,
+    // Types should go into this directory.
+    // Removing this would place the .d.ts files
+    // next to the .js files
+    "outDir": "dist",
+    // go to js file when using IDE functions like
+    // "Go to Definition" in VSCode
+    "declarationMap": true,
+    "target": "es2016",
+    "module": "esnext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "files": [
+    "./src/index.js"
+  ],
+  "include": [
+    "./src/types/**/*.js"
+  ]
+}
