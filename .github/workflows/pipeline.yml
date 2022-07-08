@@ -52,9 +52,8 @@ jobs:
           NEW_VERSION: ${{ steps.prepare-version-bump.outputs.newTag }}
         run: echo "new tag $NEW_VERSION"
 
-jobs:
-  needs: update-changelog
   bump-version-and-release:
+    needs: update-changelog
     name: 'Bump version and release main branch'
     runs-on: ubuntu-latest
 
