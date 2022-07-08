@@ -6,8 +6,8 @@ on:
       - 'main'
 
 jobs:
-  bump-version-and-release:
-    name: 'Bump version and release main branch'
+  update-changelog:
+    name: 'Update Changelog'
     runs-on: ubuntu-latest
 
     steps:
@@ -52,13 +52,28 @@ jobs:
           NEW_VERSION: ${{ steps.prepare-version-bump.outputs.newTag }}
         run: echo "new tag $NEW_VERSION"
 
+jobs:
+  needs: update-changelog
+  bump-version-and-release:
+    name: 'Bump version and release main branch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: 'actions/checkout@v2'
+        with:
+          ref: ${{ github.ref }}
+
+      - name: 'cat package.json'
+        run: cat ./package.json
+
       - name: 'Automated Version Bump'
         id: version-bump
         uses: 'phips28/gh-action-bump-version@master'
         with:
           patch-wording: 'patch,fixes'
           rc-wording: ''
-          tag-prefix: ''
+          tag-prefix: 'v'
           default: prerelease
           preid: ''
           bump-policy: 'ignore'
