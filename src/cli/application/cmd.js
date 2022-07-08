@@ -23,44 +23,41 @@ export default function setup() {
 
   application
     .command('list')
+    .description('List all applications in a realm.')
+    .helpOption('-h, --help', 'Help')
     .addArgument(common.hostArgumentM)
     .addArgument(common.realmArgument)
     .addArgument(common.userArgument)
     .addArgument(common.passwordArgument)
-    .helpOption('-h, --help', 'Help')
     .addOption(common.deploymentOption)
-    .description('List all applications in a realm.')
+    .addOption(common.insecureOption)
     .action(async (host, realm, user, password, options) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         printMessage(`OAuth2 applications ...`);
         const applicationList = await listOAuth2Applications();
         applicationList.sort((a, b) => a._id.localeCompare(b._id));
         applicationList.forEach((item) => {
-          printMessage(`- ${item._id}`);
+          printMessage(`${item._id}`);
         });
-        // console.log("\nSAML entities ...");
-        // const entityList = await listSamlEntities();
-        // // console.log(applicationList);
-        // entityList.sort((a, b) => a.entityId.localeCompare(b.entityId));
-        // entityList.forEach((item, index) => {
-        //     console.log(`- ${item.entityId}`);
-        // })
       }
     });
 
   application
     .command('export')
+    .description('Export applications.')
+    .helpOption('-h, --help', 'Help')
     .addArgument(common.hostArgumentM)
     .addArgument(common.realmArgument)
     .addArgument(common.userArgument)
     .addArgument(common.passwordArgument)
-    .helpOption('-h, --help', 'Help')
     .addOption(common.deploymentOption)
+    .addOption(common.insecureOption)
     .addOption(
       new Option(
         '-i, --id <id>',
@@ -85,13 +82,13 @@ export default function setup() {
         'Export all applications in a realm as separate files <id>.json. Ignored with -s or -a.'
       )
     )
-    .description('Export applications.')
     .action(async (host, realm, user, password, options, command) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
       let applicationData = null;
       let oauthServiceData = null;
       if (await getTokens()) {
@@ -145,20 +142,22 @@ export default function setup() {
 
   application
     .command('import')
+    .description('Import applications.')
+    .helpOption('-h, --help', 'Help')
     .addArgument(common.hostArgumentM)
     .addArgument(common.realmArgument)
     .addArgument(common.userArgument)
     .addArgument(common.passwordArgument)
-    .helpOption('-h, --help', 'Help')
     .addOption(common.deploymentOption)
+    .addOption(common.insecureOption)
     .addOption(common.fileOptionM)
-    .description('Import application.')
     .action(async (host, realm, user, password, options, command) => {
       storage.session.setTenant(host);
       storage.session.setRealm(realm);
       storage.session.setUsername(user);
       storage.session.setPassword(password);
       storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         printMessage(`Importing application(s) ...`);
         const targetOauthServiceData = await getOAuth2Provider();
