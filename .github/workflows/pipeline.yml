@@ -40,6 +40,9 @@ jobs:
         with:
           tag: ${{ steps.prepare-version-bump.outputs.newTag }}
 
+      - name: 'Output Changelog'
+        run: cat CHANGELOG.md
+
       - name: Commit updated changelog
         id: commit-changelog
         run: |
@@ -58,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout source code'
+      - name: 'Checkout Source Code'
         uses: 'actions/checkout@v2'
         with:
           ref: ${{ github.ref }}
@@ -96,8 +99,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout'
+      - name: 'Checkout Source Code'
         uses: 'actions/checkout@v2'
+        with:
+          ref: ${{ github.ref }}
 
       - name: 'Version From Tag'
         id: version-from-tag
@@ -109,7 +114,7 @@ jobs:
 
       - name: 'Release Header'
         id: release-header
-        run: echo "::set-output name=header::$(echo `grep '## \[${{ steps.version-from-tag.outputs.version }}] -' CHANGELOG.md | sed 's/## //'`)"
+        run: echo "::set-output name=header::$(echo `grep '## \\[${{ steps.version-from-tag.outputs.version }}] -' CHANGELOG.md | sed 's/## //'`)"
 
       - name: 'Output Release Header'
         id: output-release-header
@@ -132,7 +137,7 @@ jobs:
       # The output-text contains the text of the extracted part.
       - run: echo $CHANGELOG
         env:
-          CHANGELOG: ${{ steps.extract-release-notes.output.output-text }}
+          CHANGELOG: ${{ steps.extract-release-notes.outputs.output-text }}
 
     outputs:
       notes: ${{ steps.extract-release-notes.output.output-text }}
@@ -143,8 +148,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout source code'
+      - name: 'Checkout Source Code'
         uses: 'actions/checkout@v2'
+        with:
+          ref: ${{ github.ref }}
 
       - name: 'Github SHA'
         id: github-sha
