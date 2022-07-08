@@ -114,7 +114,7 @@ jobs:
 
       - name: 'Release Header'
         id: release-header
-        run: echo "::set-output name=header::$(echo `grep '## \\[${{ steps.version-from-tag.outputs.version }}] -' CHANGELOG.md | sed 's/## //'`)"
+        run: echo "::set-output name=header::$(echo `grep '## \\[${{ steps.version-from-tag.outputs.version }}] -' CHANGELOG.md | sed 's/## //' | sed 's/\\[//' | sed 's/]//'`)"
 
       - name: 'Output Release Header'
         id: output-release-header
