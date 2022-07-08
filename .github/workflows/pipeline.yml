@@ -95,7 +95,7 @@ jobs:
 
       - name: Get Release Header From Changelog
         id: release-header
-        run: echo "::set-output name=release-header::$(VERSION=`echo '$TAG' | sed 's/v//'`: grep '## $VERSION -'' CHANGELOG.md | sed 's/## //')\n"
+        run: echo "::set-output name=release-header::$(VERSION=`echo '$TAG' | sed 's/v//'` :: grep '## $VERSION -'' CHANGELOG.md | sed 's/## //')\n"
         env:
           TAG: ${{ steps.version-bump.outputs.newTag }}
 
