@@ -7,16 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.3-alpha.42] - 2022-07-08
-
-## [0.6.3-alpha.41] - 2022-07-08
-
-## [0.6.3-alpha.40] - 2022-07-08
-
-## [0.6.3-alpha.39] - 2022-07-08
-
-## [0.6.3-alpha.38] - 2022-07-08
-
 ### Added
 
 -   This CHANGELOG.md file
@@ -26,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## 0.6.3-alpha.1 - 0.6.3-alpha.37 [YANKED]
+## 0.6.3-alpha.1 - 0.6.3-alpha.42 [YANKED]
 
 ## 0.6.2 [YANKED]
 
@@ -153,17 +143,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
-
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.42...HEAD
-
-[0.6.3-alpha.42]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.41...v0.6.3-alpha.42
-
-[0.6.3-alpha.41]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.40...v0.6.3-alpha.41
-
-[0.6.3-alpha.40]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.39...v0.6.3-alpha.40
-
-[0.6.3-alpha.39]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.38...v0.6.3-alpha.39
-
-[0.6.3-alpha.38]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.37...v0.6.3-alpha.38
-
-[0.6.3-alpha.37]: https://github.com/rockcarver/frodo/compare/f9c4a8ce2b89659d96ff393c23fb4501629ca454...v0.6.3-alpha.37
