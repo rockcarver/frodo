@@ -124,23 +124,23 @@ jobs:
         id: extract-release-notes
         uses: 'dahlia/submark@bugfix/7'
         with:
-          input-file: CHANGELOG.md
+          input-file: "CHANGELOG.md"
           heading-level: 2
-          heading-title-text: ${{ steps.release-header.outputs.header }}
+          heading-title-text: "${{ steps.release-header.outputs.header }}"
           ignore-case: true
           omit-heading: true
 
       # The output-file refers to the path of the temporary file which contains
       # the only extracted part:
-      - run: cat ${{ steps.extract-release-notes.output.output-file }}
+      - name: 'Output Extracted Release Notes File'
+        run: cat ${{ steps.extract-release-notes.outputs.output-file }}
 
       # The output-text contains the text of the extracted part.
-      - run: echo $CHANGELOG
-        env:
-          CHANGELOG: ${{ steps.extract-release-notes.outputs.output-text }}
+      - name: 'Output Extracted Release Notes'
+        run: echo "${{ steps.extract-release-notes.outputs.output-text }}"
 
     outputs:
-      notes: ${{ steps.extract-release-notes.output.output-text }}
+      notes: ${{ steps.extract-release-notes.outputs.output-text }}
 
   release:
     needs: [bump-version, release-notes]
@@ -168,8 +168,9 @@ jobs:
           body: ${{ needs.release-notes.outputs.notes }}
           generate_release_notes: true
           files: |
-            Release.txt
+            CHANGELOG.md
             LICENSE
+            Release.txt
           token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Create GitHub release
