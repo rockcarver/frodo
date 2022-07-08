@@ -98,18 +98,25 @@ jobs:
         env:
           TAG: ${{ steps.version-bump.outputs.newTag }}
 
+      - id: output-version
+        env:
+          VERSION: ${{ steps.version-from-tag.outputs.version }}
+        run: echo "Version = $VERSION"
+
       - id: release-header
-        run: echo "::set-output name=release-header::$(grep '## $VERSION -' CHANGELOG.md | sed 's/## //')"
+        run: echo "::set-output name=header::$(grep '## $VERSION -' CHANGELOG.md | sed 's/## //')"
         env:
           VERSION: ${{ steps.version-from-tag.outputs.version }}
 
       - id: output-release-header
-        env:
-          RELEASE_HEADER: ${{ steps.release-header.outputs.release-header }}
         run: echo "Release Header = $RELEASE_HEADER"
+        env:
+          RELEASE_HEADER: ${{ steps.release-header.outputs.header }}
+
+      - uses: 'actions/checkout@v2'
 
       - id: extract-release-notes
-        uses: dahlia/submark@0.3.1
+        uses: 'dahlia/submark@0.3.1'
         with:
           input-file: CHANGELOG.md
           heading-level: 2
