@@ -87,25 +87,28 @@ jobs:
           NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
         run: echo "new tag $NEW_TAG"
 
-      - name: Build
+      - id: github-sha
         run: echo ${{ github.sha }} > Release.txt
 
-      - name: Test
+      - id: test-github-sha
         run: cat Release.txt
 
-      - name: Get Release Header From Changelog
-        id: release-header
-        run: echo "::set-output name=release-header::$(VERSION=`echo '$TAG' | sed 's/v//'` %3A grep '## $VERSION -'' CHANGELOG.md | sed 's/## //')"
+      - id: version-from-tag
+        run: echo "::set-output name=version::$(echo '$TAG' | sed 's/v//')"
         env:
           TAG: ${{ steps.version-bump.outputs.newTag }}
 
-      - name: 'Output Release Header'
+      - id: release-header
+        run: echo "::set-output name=release-header::$(grep '## $VERSION -' CHANGELOG.md | sed 's/## //')"
+        env:
+          VERSION: ${{ steps.version-from-tag.outputs.version }}
+
+      - id: output-release-header
         env:
           RELEASE_HEADER: ${{ steps.release-header.outputs.release-header }}
         run: echo "Release Header = $RELEASE_HEADER"
 
-      - name: Extract Release Notes From Changelog
-        id: extract-release-notes
+      - id: extract-release-notes
         uses: dahlia/submark@0.3.1
         with:
           input-file: CHANGELOG.md
