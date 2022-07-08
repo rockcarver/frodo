@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased
 
 ### Added
 
@@ -16,19 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## [v0.6.3-alpha.1] - [v0.6.3-alpha.32] [YANKED]
+## v0.6.3-alpha.1 - v0.6.3-alpha.32 [YANKED]
 
-## [0.6.2][YANKED]
+## 0.6.2 [YANKED]
 
-## [0.6.1 alpha 26] - 2022-06-28
+## 0.6.1 alpha 26 - 2022-06-28
 
 ### Changed
 
 -   Changed archive step of Windows binary build to use 7zip
 
-## [0.6.1 alpha 22] - [0.6.1 alpha 25][YANKED]
+## 0.6.1 alpha 22 - 0.6.1 alpha 25 [YANKED]
 
-## [0.6.1 alpha 21] - 2022-06-27
+## 0.6.1 alpha 21 - 2022-06-27
 
 ### Added
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Moved secret command under new esv command
 
-## [0.6.1 alpha 20] - 2022-06-23
+## 0.6.1 alpha 20 - 2022-06-23
 
 ### Added
 
@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fix theme import issues when using /alpha or /bravo instead of alpha or bravo
 -   Fix admin create-oauth2-client-with-admin-privileges command
 
-## [0.6.1 alpha 19] - 2022-06-14
+## 0.6.1 alpha 19 - 2022-06-14
 
 ### Added
 
@@ -77,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed issue where overriding deployment type would fail to detect the default realm
 -   Fix theme import -A
 
-## [0.6.1 alpha 18] - 2022-06-10
+## 0.6.1 alpha 18 - 2022-06-10
 
 ### Added
 
@@ -87,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Bug in idm exportAllRaw
 
-## [0.6.1 alpha 17] - 2022-06-08
+## 0.6.1 alpha 17 - 2022-06-08
 
 ### Added
 
@@ -112,9 +112,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Updated readme
 -   Miscellaneous bug fixes
 
-## [0.6.1 alpha 14] - [0.6.1 alpha 16][YANKED]
+## 0.6.1 alpha 14 - 0.6.1 alpha 16 [YANKED]
 
-## [0.6.1 alpha 13] - 2022-05-20
+## 0.6.1 alpha 13 - 2022-05-20
 
 ### Added
 
