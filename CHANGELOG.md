@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v0.6.3-alpha.36] - 2022-07-08
-
-## [v0.6.3-alpha.34] - 2022-07-08
-
 ### Added
 
 -   This CHANGELOG.md file
@@ -20,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## v0.6.3-alpha.1 - v0.6.3-alpha.33 [YANKED]
+## 0.6.3-alpha.1 - 0.6.3-alpha.36 [YANKED]
 
 ## 0.6.2 [YANKED]
 
@@ -147,9 +143,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
-
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.36...HEAD
-
-[v0.6.3-alpha.36]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.34...v0.6.3-alpha.36
-
-[v0.6.3-alpha.34]: https://github.com/rockcarver/frodo/compare/25daf596abf625742a591fa56da98234a9d04fa3...v0.6.3-alpha.34
