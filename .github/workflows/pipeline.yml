@@ -90,8 +90,17 @@ jobs:
           NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
         run: echo "new tag $NEW_TAG"
 
+      - name: 'Version From Tag'
+        id: version-from-tag
+        run: echo "::set-output name=version::$(echo '${{ steps.version-bump.outputs.newTag }}' | sed 's/v//')"
+
+      - name: 'Output Version'
+        id: output-version
+        run: echo "Version = ${{ steps.version-from-tag.outputs.version }}"
+
     outputs:
       newTag: ${{ steps.version-bump.outputs.newTag }}
+      newVersion: ${{ steps.version-from-tag.outputs.version }}
 
   release-notes:
     needs: bump-version
@@ -104,17 +113,9 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: 'Version From Tag'
-        id: version-from-tag
-        run: echo "::set-output name=version::$(echo '${{ needs.bump-version.outputs.newTag }}' | sed 's/v//')"
-
-      - name: 'Output Version'
-        id: output-version
-        run: echo "Version = ${{ steps.version-from-tag.outputs.version }}"
-
       - name: 'Release Header'
         id: release-header
-        run: echo "::set-output name=header::$(echo `grep '## \\[${{ steps.version-from-tag.outputs.version }}] -' CHANGELOG.md | sed 's/## //' | sed 's/\\[//' | sed 's/]//'`)"
+        run: echo "::set-output name=header::$(echo `grep '## \\[${{ needs.bump-version.outputs.newVersion }}] -' CHANGELOG.md | sed 's/## //' | sed 's/\\[//' | sed 's/]//'`)"
 
       - name: 'Output Release Header'
         id: output-release-header
@@ -164,9 +165,11 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          name: ${{ needs.bump-version.outputs.newVersion }}
           tag_name: ${{ needs.bump-version.outputs.newTag }}
           body: ${{ needs.release-notes.outputs.notes }}
-          generate_release_notes: true
+          prerelease: ${{ contains(needs.bump-version.outputs.newTag, 'alpha') }}
+          generate_release_notes: ${{ contains(needs.bump-version.outputs.newTag, 'alpha') }}
           files: |
             CHANGELOG.md
             LICENSE
