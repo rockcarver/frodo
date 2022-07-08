@@ -1,4 +1,4 @@
-name: 'Bump Version & Release'
+name: 'Frodo Release Pipeline'
 
 on:
   push:
@@ -52,9 +52,9 @@ jobs:
           NEW_VERSION: ${{ steps.prepare-version-bump.outputs.newTag }}
         run: echo "new tag $NEW_VERSION"
 
-  bump-version-and-release:
+  bump-version:
     needs: update-changelog
-    name: 'Bump version and release main branch'
+    name: 'Bump Version'
     runs-on: ubuntu-latest
 
     steps:
@@ -87,35 +87,36 @@ jobs:
           NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
         run: echo "new tag $NEW_TAG"
 
-      - id: github-sha
-        run: echo ${{ github.sha }} > Release.txt
+    outputs:
+      newTag: ${{ steps.version-bump.outputs.newTag }}
 
-      - id: test-github-sha
-        run: cat Release.txt
+  release-notes:
+    needs: bump-version
+    name: 'Release Notes'
+    runs-on: ubuntu-latest
 
-      - id: version-from-tag
-        run: echo "::set-output name=version::$(echo '$TAG' | sed 's/v//')"
-        env:
-          TAG: ${{ steps.version-bump.outputs.newTag }}
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v2'
 
-      - id: output-version
-        env:
-          VERSION: ${{ steps.version-from-tag.outputs.version }}
-        run: echo "Version = $VERSION"
+      - name: 'Version From Tag'
+        id: version-from-tag
+        run: echo "::set-output name=version::$(echo '${{ steps.version-bump.outputs.newTag }}' | sed 's/v//')"
 
-      - id: release-header
-        run: echo "::set-output name=header::$(grep '## $VERSION -' CHANGELOG.md | sed 's/## //')"
-        env:
-          VERSION: ${{ steps.version-from-tag.outputs.version }}
+      - name: 'Output Version'
+        id: output-version
+        run: echo "Version = ${{ steps.version-from-tag.outputs.version }}"
 
-      - id: output-release-header
-        run: echo "Release Header = $RELEASE_HEADER"
-        env:
-          RELEASE_HEADER: ${{ steps.release-header.outputs.header }}
+      - name: 'Release Header'
+        id: release-header
+        run: echo "::set-output name=header::$(grep '## ${{ steps.version-from-tag.outputs.version }} -' CHANGELOG.md | sed 's/## //')"
 
-      - uses: 'actions/checkout@v2'
+      - name: 'Output Release Header'
+        id: output-release-header
+        run: echo "Release Header = ${{ steps.release-header.outputs.header }}"
 
-      - id: extract-release-notes
+      - name: 'Extract Release Notes'
+        id: extract-release-notes
         uses: 'dahlia/submark@0.3.1'
         with:
           input-file: CHANGELOG.md
@@ -133,11 +134,31 @@ jobs:
         env:
           CHANGELOG: ${{ steps.extract-release-notes.output.output-text }}
 
+    outputs:
+      notes: ${{ steps.extract-release-notes.output.output-text }}
+
+  release:
+    needs: [bump-version, release-notes]
+    name: 'Release'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: 'actions/checkout@v2'
+
+      - name: 'Github SHA'
+        id: github-sha
+        run: echo ${{ github.sha }} > Release.txt
+
+      - name: 'Test Github SHA'
+        id: test-github-sha
+        run: cat Release.txt
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version-bump.outputs.newTag }}
-          body: ${{ steps.release-header.outputs.release-header }}
+          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          body: ${{ needs.release-notes.outputs.notes }}
           generate_release_notes: true
           files: |
             Release.txt
@@ -155,10 +176,10 @@ jobs:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     outputs:
-      newTag: ${{ steps.version-bump.outputs.newTag }}
+      newTag: ${{ needs.version-bump.outputs.newTag }}
 
   macos-binary-release:
-    needs: bump-version-and-release
+    needs: release
     runs-on: macos-latest
     strategy:
       matrix:
@@ -169,7 +190,7 @@ jobs:
       - name: 'Checkout Project'
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.bump-version-and-release.outputs.newTag }}
+          ref: ${{ needs.release.outputs.newTag }}
 
       - name: 'cat package.json'
         run: cat ./package.json
@@ -251,11 +272,11 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.bump-version-and-release.outputs.newTag }}
+          tag_name: ${{ needs.release.outputs.newTag }}
           files: dist/frodo-macos.zip
 
   linux-binary-release:
-    needs: bump-version-and-release
+    needs: release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -265,7 +286,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.bump-version-and-release.outputs.newTag }}
+          ref: ${{ needs.release.outputs.newTag }}
 
       - name: 'cat package.json'
         run: cat ./package.json
@@ -305,11 +326,11 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: '${{ needs.bump-version-and-release.outputs.newTag }}'
+          tag_name: '${{ needs.release.outputs.newTag }}'
           files: dist/frodo-linux.zip
 
   windows-binary-release:
-    needs: bump-version-and-release
+    needs: release
     runs-on: windows-latest
     strategy:
       matrix:
@@ -319,7 +340,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.bump-version-and-release.outputs.newTag }}
+          ref: ${{ needs.release.outputs.newTag }}
 
       - name: 'type package.json'
         run: type package.json
@@ -359,5 +380,5 @@ jobs:
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v0.1.14
         with:
-          tag_name: ${{ needs.bump-version-and-release.outputs.newTag }}
+          tag_name: ${{ needs.release.outputs.newTag }}
           files: dist/frodo-win.zip
