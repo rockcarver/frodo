@@ -101,7 +101,7 @@ jobs:
 
       - name: 'Version From Tag'
         id: version-from-tag
-        run: echo "::set-output name=version::$(echo '${{ steps.version-bump.outputs.newTag }}' | sed 's/v//')"
+        run: echo "::set-output name=version::$(echo '${{ needs.bump-version.outputs.newTag }}' | sed 's/v//')"
 
       - name: 'Output Version'
         id: output-version
@@ -117,7 +117,7 @@ jobs:
 
       - name: 'Extract Release Notes'
         id: extract-release-notes
-        uses: 'dahlia/submark@0.3.1'
+        uses: 'dahlia/submark@bugfix/7'
         with:
           input-file: CHANGELOG.md
           heading-level: 2
@@ -157,7 +157,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.version-bump.outputs.newTag }}
+          tag_name: ${{ needs.bump-version.outputs.newTag }}
           body: ${{ needs.release-notes.outputs.notes }}
           generate_release_notes: true
           files: |
@@ -176,7 +176,7 @@ jobs:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     outputs:
-      newTag: ${{ needs.version-bump.outputs.newTag }}
+      newTag: ${{ needs.bump-version.outputs.newTag }}
 
   macos-binary-release:
     needs: release
