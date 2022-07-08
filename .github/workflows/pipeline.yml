@@ -126,7 +126,7 @@ jobs:
         with:
           input-file: CHANGELOG.md
           heading-level: 2
-          heading-title-text: ${{ steps.release-header.outputs.release-header }}
+          heading-title-text: ${{ steps.release-header.outputs.header }}
           ignore-case: true
           omit-heading: true
 
