@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.3-alpha.37] - 2022-07-08
-
 ### Added
 
 -   This CHANGELOG.md file
@@ -18,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## 0.6.3-alpha.1 - 0.6.3-alpha.36 [YANKED]
+## 0.6.3-alpha.1 - 0.6.3-alpha.37 [YANKED]
 
 ## 0.6.2 [YANKED]
 
