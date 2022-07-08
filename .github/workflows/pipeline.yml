@@ -29,7 +29,6 @@ jobs:
           default: prerelease
           preid: ''
           bump-policy: 'ignore'
-          skip-tag: 'true'
           skip-commit: 'true'
           skip-tag: 'true'
           skip-push: 'true'
