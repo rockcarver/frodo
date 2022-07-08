@@ -168,6 +168,7 @@ jobs:
           name: ${{ needs.bump-version.outputs.newVersion }}
           tag_name: ${{ needs.bump-version.outputs.newTag }}
           body: ${{ needs.release-notes.outputs.notes }}
+          draft: ${{ !contains(needs.bump-version.outputs.newTag, 'alpha') }}
           prerelease: ${{ contains(needs.bump-version.outputs.newTag, 'alpha') }}
           generate_release_notes: ${{ contains(needs.bump-version.outputs.newTag, 'alpha') }}
           files: |
