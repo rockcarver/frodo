@@ -59,16 +59,6 @@ export interface GlobalState {
 }
 
 /**
- * Many functions accept in lib-frodo require state which is passed as a object
- * @typedef {{
-    *  state: _GlobalState
-    * }} _WithStateParams
-    * @example ```js
-    * func({ a, b, c, state });
-    * ```
-    */
-
-/**
  * Many functions in  lib-frodo use a pure object pattern which require state to be passed as a object
  * ### Why?
  * 1. testability - easy to use static data
