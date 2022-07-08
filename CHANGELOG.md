@@ -5,9 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
-
-## [v0.6.3-alpha.33] - 2022-07-07
+## [Unreleased]
 
 ### Added
 
@@ -18,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Adapted true semantic versioning
 -   Pipeline changes to automate release notes
 
-## v0.6.3-alpha.1 - v0.6.3-alpha.32 [YANKED]
+## v0.6.3-alpha.1 - v0.6.3-alpha.33 [YANKED]
 
 ## 0.6.2 [YANKED]
 
@@ -145,7 +143,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
-
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.6.3-alpha.33...HEAD
-
-[v0.6.3-alpha.33]: https://github.com/rockcarver/frodo/compare/fbebd5142105160be3419864bf8f3bbfea2be08c...v0.6.3-alpha.33
