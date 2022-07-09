@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.3] - 2022-07-08
-
 ### Added
 
 -   CHANGELOG.md
@@ -17,37 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Adapted true semantic versioning
 -   Pipeline changes
-    -   automated updating changelog using keep a changelog format in CHANGELOG.md
-    -   automated version bump (SemVer format) using PR comments to trigger prerelease, patch, minor, or major bumps
-    -   automated release notes extraction from CHANGELOG.md
-    -   automated GitHub release creation
+    -   Automated updating changelog using keep a changelog format in CHANGELOG.md
+    -   Automated version bump (SemVer format) using PR comments to trigger prerelease, patch, minor, or major bumps
+    -   Automated release notes extraction from CHANGELOG.md
+    -   Automated GitHub release creation
+    -   Create all releases as draft releases
     -   Renamed frodo.yml to pipeline.yml
 
 ### Fixed
 
 -   Fixed missing -k/--insecure param in application sub-commands #280
+-   Fixed pipeline to include binary release artifacts
 
-## [0.6.3-alpha.51] - 2022-07-08
+## [0.6.3] - 2022-07-08 [YANKED]
 
-### Added
-
--   CHANGELOG.md
-
-### Changed
-
--   Adapted true semantic versioning
--   Pipeline changes
-    -   automated updating changelog using keep a changelog format in CHANGELOG.md
-    -   automated version bump (SemVer format) using PR comments to trigger prerelease, patch, minor, or major bumps
-    -   automated release notes extraction from CHANGELOG.md
-    -   automated GitHub release creation
-    -   Renamed frodo.yml to pipeline.yml
-
-### Fixed
-
--   Fixed missing -k/--insecure param in application sub-commands #280
-
-## 0.6.3-alpha.1 - 0.6.3-alpha.50 [YANKED]
+## 0.6.3-alpha.1 - 0.6.3-alpha.51 [YANKED]
 
 ## 0.6.2 [YANKED]
 
