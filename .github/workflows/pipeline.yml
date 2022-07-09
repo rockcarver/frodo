@@ -177,16 +177,6 @@ jobs:
             Release.txt
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      #- name: Create GitHub release
-      #  uses: Roang-zero1/github-create-release-action@v2.3.0
-      #  with:
-      #    created_tag: ${{ steps.version-bump.outputs.newTag }}
-      #    version_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+
-      #    prerelease_regex: ^v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-[[:alpha:]]+\.[[:digit:]]+
-      #    changelog_heading: "h2"
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     outputs:
       newTag: ${{ needs.bump-version.outputs.newTag }}
       newVersion: ${{ needs.bump-version.outputs.version }}
@@ -338,7 +328,7 @@ jobs:
         run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
 
       - name: Release distribution binaries
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v1
         with:
           name: ${{ needs.release.outputs.newVersion }}
           tag_name: ${{ needs.release.outputs.newTag }}
@@ -393,7 +383,7 @@ jobs:
         run: 7z a -tzip dist/frodo-win.zip dist/bin/win/frodo.exe
 
       - name: Release distribution binaries
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v1
         with:
           name: ${{ needs.release.outputs.newVersion }}
           tag_name: ${{ needs.release.outputs.newTag }}
