@@ -1,1 +1,1 @@
-export { _log } from "./bindings/_log";
+export { _list, _tail } from "./bindings/_log"
