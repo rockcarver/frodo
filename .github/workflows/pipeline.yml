@@ -179,10 +179,10 @@ jobs:
 
     outputs:
       newTag: ${{ needs.bump-version.outputs.newTag }}
-      newVersion: ${{ needs.bump-version.outputs.version }}
+      newVersion: ${{ needs.bump-version.outputs.newVersion }}
 
   macos-binary-release:
-    needs: release
+    needs: [bump-version, release]
     runs-on: macos-latest
     strategy:
       matrix:
@@ -280,7 +280,7 @@ jobs:
           files: dist/frodo-macos.zip
 
   linux-binary-release:
-    needs: release
+    needs: [bump-version, release]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -335,7 +335,7 @@ jobs:
           files: dist/frodo-linux.zip
 
   windows-binary-release:
-    needs: release
+    needs: [bump-version, release]
     runs-on: windows-latest
     strategy:
       matrix:
