@@ -19,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   Automated version bump (SemVer format) using PR comments to trigger prerelease, patch, minor, or major bumps
     -   Automated release notes extraction from CHANGELOG.md
     -   Automated GitHub release creation
-    -   Create all releases as draft releases
     -   Renamed frodo.yml to pipeline.yml
 
 ### Fixed
