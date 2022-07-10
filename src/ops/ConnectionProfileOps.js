@@ -2,7 +2,11 @@ import fs from 'fs';
 import os from 'os';
 import storage from '../storage/SessionStorage.js';
 import DataProtection from './utils/DataProtection.js';
-import { printMessage } from './utils/Console.js';
+import {
+  createObjectTable,
+  createTable,
+  printMessage,
+} from './utils/Console.js';
 
 const dataProtection = new DataProtection();
 
@@ -24,15 +28,15 @@ export function getConnectionProfilesFileName() {
 /**
  * Find connection profile
  * @param {Object} connectionProfiles connection profile object
- * @param {String} tenant tenant name or unique substring
+ * @param {String} host tenant host url or unique substring
  * @returns {Object} connection profile object or null
  */
-function findConnectionProfile(connectionProfiles, tenant) {
-  for (const savedTenant in connectionProfiles) {
-    if (savedTenant.includes(tenant)) {
-      const ret = connectionProfiles[savedTenant];
-      ret.tenant = savedTenant;
-      return ret;
+function findConnectionProfile(connectionProfiles, host) {
+  for (const tenant in connectionProfiles) {
+    if (tenant.includes(host)) {
+      const profile = connectionProfiles[tenant];
+      profile.tenant = tenant;
+      return profile;
     }
   }
   return null;
@@ -40,23 +44,31 @@ function findConnectionProfile(connectionProfiles, tenant) {
 
 /**
  * List connection profiles
+ * @param {boolean} long Long list format with details
  */
-export function listConnectionProfiles() {
+export function listConnectionProfiles(long = false) {
   const filename = getConnectionProfilesFileName();
   try {
     const data = fs.readFileSync(filename, 'utf8');
     const connectionsData = JSON.parse(data);
-    printMessage(`[Host] : [Username]`);
-    Object.keys(connectionsData).forEach((c) => {
-      printMessage(
-        `- [${c}] : [${connectionsData[c].username}]${
-          connectionsData[c].logApiKey ? ' [Log API key present]' : ''
-        }`,
-        'info'
-      );
-    });
+    if (long) {
+      const table = createTable(['Host', 'Username', 'Log API Key']);
+      Object.keys(connectionsData).forEach((c) => {
+        table.push([
+          c,
+          connectionsData[c].username,
+          connectionsData[c].logApiKey,
+        ]);
+      });
+      printMessage(table.toString(), 'data');
+    } else {
+      Object.keys(connectionsData).forEach((c) => {
+        printMessage(`${c}`, 'data');
+      });
+    }
     printMessage(
-      'Any unique substring of a saved host can be used as the value for host parameter in all commands'
+      'Any unique substring of a saved host can be used as the value for host parameter in all commands',
+      'info'
     );
   } catch (e) {
     printMessage(`No connections found in ${filename} (${e.message})`, 'error');
@@ -103,34 +115,32 @@ export function initConnectionProfiles() {
 }
 
 /**
- * Get connection profile
+ * Get connection profile by host
+ * @param {String} host host tenant host url or unique substring
  * @returns {Object} connection profile or null
  */
-export async function getConnectionProfile() {
+export async function getConnectionProfileByHost(host) {
   try {
     const filename = getConnectionProfilesFileName();
     const connectionsData = JSON.parse(
       fs.readFileSync(filename, fileOptions.options)
     );
-    const tenantData = findConnectionProfile(
-      connectionsData,
-      storage.session.getTenant()
-    );
-    if (!tenantData) {
+    const profile = findConnectionProfile(connectionsData, host);
+    if (!profile) {
       printMessage(
-        `No saved credentials for tenant ${storage.session.getTenant()}. Please specify credentials on command line`,
+        `Profile for ${host} not found. Please specify credentials on command line`,
         'error'
       );
       return null;
     }
     return {
-      tenant: tenantData.tenant,
-      username: tenantData.username ? tenantData.username : null,
-      password: tenantData.encodedPassword
-        ? await dataProtection.decrypt(tenantData.encodedPassword)
+      tenant: profile.tenant,
+      username: profile.username ? profile.username : null,
+      password: profile.encodedPassword
+        ? await dataProtection.decrypt(profile.encodedPassword)
         : null,
-      key: tenantData.logApiKey ? tenantData.logApiKey : null,
-      secret: tenantData.logApiSecret ? tenantData.logApiSecret : null,
+      key: profile.logApiKey ? profile.logApiKey : null,
+      secret: profile.logApiSecret ? profile.logApiSecret : null,
     };
   } catch (e) {
     printMessage(
@@ -139,6 +149,14 @@ export async function getConnectionProfile() {
     );
     return null;
   }
+}
+
+/**
+ * Get connection profile
+ * @returns {Object} connection profile or null
+ */
+export async function getConnectionProfile() {
+  return getConnectionProfileByHost(storage.session.getTenant());
 }
 
 /**
@@ -178,5 +196,59 @@ export async function saveConnectionProfile() {
   connectionsData[storage.session.getTenant()] = existingData;
 
   fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
-  printMessage('done.');
+}
+
+/**
+ * Delete connection profile
+ * @param {String} host host tenant host url or unique substring
+ */
+export function deleteConnectionProfile(host) {
+  const filename = getConnectionProfilesFileName();
+  let connectionsData = {};
+  fs.stat(filename, (err) => {
+    if (err == null) {
+      const data = fs.readFileSync(filename, 'utf8');
+      connectionsData = JSON.parse(data);
+      const profile = findConnectionProfile(connectionsData, host);
+      if (profile) {
+        printMessage(`Deleting connection profile ${profile.tenant}`);
+        delete connectionsData[profile.tenant];
+        fs.writeFileSync(filename, JSON.stringify(connectionsData, null, 2));
+      } else {
+        printMessage(`No connection profile ${host} found`);
+      }
+    } else if (err.code === 'ENOENT') {
+      printMessage(`Connection profile file ${filename} not found`);
+    } else {
+      printMessage(
+        `Error in deleting connection profile: ${err.code}`,
+        'error'
+      );
+    }
+  });
+}
+
+export async function describeConnectionProfile(host, showSecrets) {
+  const profile = await getConnectionProfileByHost(host);
+  if (profile) {
+    if (!showSecrets) {
+      delete profile.password;
+      delete profile.secret;
+    }
+    if (!profile.key) {
+      delete profile.key;
+      delete profile.secret;
+    }
+    const keyMap = {
+      tenant: 'Host',
+      username: 'Username',
+      password: 'Password',
+      key: 'Log API Key',
+      secret: 'Log API Secret',
+    };
+    const table = createObjectTable(profile, keyMap);
+    printMessage(table.toString(), 'data');
+  } else {
+    printMessage(`No connection profile ${host} found`);
+  }
 }

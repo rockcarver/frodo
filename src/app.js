@@ -8,7 +8,7 @@ import { printMessage } from './ops/utils/Console.js';
 // commands
 import admin from './cli/admin/cmd.js';
 import application from './cli/application/cmd.js';
-import connections from './cli/connections/cmd.js';
+import conn from './cli/conn/conn.js';
 import email from './cli/email/email.js';
 import esv from './cli/esv/esv.js';
 import idm from './cli/idm/cmd.js';
@@ -32,7 +32,7 @@ const program = new Command(pkg.name).version(
 
     program.addCommand(admin());
     program.addCommand(application());
-    program.addCommand(connections());
+    program.addCommand(conn());
     program.addCommand(email());
     program.addCommand(esv());
     program.addCommand(idm());
