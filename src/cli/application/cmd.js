@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import { getOAuth2Provider } from '../../api/AmServiceApi.js';
 import {
   listOAuth2Applications,

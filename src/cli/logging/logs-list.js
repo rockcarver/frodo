@@ -1,5 +1,9 @@
 import { Command } from 'commander';
-import { getConnection, saveConnection, getTokens } from '../../api/AuthApi.js';
+import {
+  getConnectionProfile,
+  saveConnectionProfile,
+} from '../../ops/ConnectionProfileOps.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import * as common from '../cmd_common.js';
 import { provisionCreds, getLogSources } from '../../ops/LogOps.js';
 import storage from '../../storage/SessionStorage.js';
@@ -20,7 +24,7 @@ program
     storage.session.setPassword(password);
     storage.session.setAllowInsecureConnection(options.insecure);
     printMessage('Listing available ID Cloud log sources...');
-    const conn = await getConnection();
+    const conn = await getConnectionProfile();
     storage.session.setTenant(conn.tenant);
     if (conn.key != null && conn.secret != null) {
       credsFromParameters = false;
@@ -54,7 +58,7 @@ program
         'error'
       );
     } else {
-      if (credsFromParameters) await saveConnection(); // save new values if they were specified on CLI
+      if (credsFromParameters) await saveConnectionProfile(); // save new values if they were specified on CLI
       printMessage('Available log sources:');
       sources.forEach((source) => {
         printMessage(`${source}`, 'info');

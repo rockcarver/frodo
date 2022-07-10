@@ -345,15 +345,24 @@ function hasValues(object) {
  * @param {CliTable3} table the object table to add the rows to
  * @returns the updated object table
  */
-function addRows(object, depth, level, table) {
+function addRows(object, depth, level, table, keyMap) {
   const space = '  ';
   const keys = Object.keys(object);
   for (const key of keys) {
     if (Object(object[key]) !== object[key]) {
       if (level === 1) {
-        table.push([key.brightCyan, object[key]]);
+        table.push([
+          keyMap[key] ? keyMap[key].brightCyan : key.brightCyan,
+          object[key],
+        ]);
       } else {
-        table.push([{ hAlign: 'right', content: key.gray }, object[key]]);
+        table.push([
+          {
+            hAlign: 'right',
+            content: keyMap[key] ? keyMap[key].gray : key.gray,
+          },
+          object[key],
+        ]);
       }
     }
   }
@@ -363,10 +372,15 @@ function addRows(object, depth, level, table) {
       if (hasValues(object[key])) {
         let indention = new Array(level).fill(space).join('');
         if (level < 3) indention = `\n${indention}`;
-        table.push([indention.concat(key.brightCyan), '']);
+        table.push([
+          indention.concat(
+            keyMap[key] ? keyMap[key].brightCyan : key.brightCyan
+          ),
+          '',
+        ]);
       }
       // eslint-disable-next-line no-param-reassign
-      table = addRows(object[key], depth, level + 1, table);
+      table = addRows(object[key], depth, level + 1, table, keyMap);
     }
   }
   return table;
@@ -377,7 +391,7 @@ function addRows(object, depth, level, table) {
  * @param {Object} object JSON object to create
  * @returns {CliTable3} a table that can be printed to the console
  */
-export function createObjectTable(object) {
+export function createObjectTable(object, keyMap = {}) {
   // eslint-disable-next-line no-param-reassign
   const depth = getObjectDepth(object);
   // eslint-disable-next-line no-param-reassign
@@ -402,6 +416,6 @@ export function createObjectTable(object) {
     },
     style: { 'padding-left': 0, 'padding-right': 0, head: ['brightCyan'] },
   });
-  addRows(object, depth, level + 1, table);
+  addRows(object, depth, level + 1, table, keyMap);
   return table;
 }

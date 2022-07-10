@@ -6,20 +6,34 @@ import storage from '../storage/SessionStorage.js';
 import { encode } from './utils/Base64.js';
 import { printMessage } from '../ops/utils/Console.js';
 
-const oauth2AccessTokenURLTemplate = '%s/oauth2%s/access_token';
+const authorizeUrlTemplate = '%s/oauth2%s/authorize';
+const accessTokenUrlTemplate = '%s/oauth2%s/access_token';
 const apiVersion = 'protocol=2.1,resource=1.0';
-const getApiConfig = () => {
-  const configPath = getCurrentRealmPath();
-  return {
-    path: `${configPath}/realm-config/agents/OAuth2Client`,
-    apiVersion,
-  };
-};
+const getApiConfig = () => ({
+  apiVersion,
+});
 
-// eslint-disable-next-line import/prefer-default-export
+export async function authorize(data, config = {}) {
+  const authorizeURL = util.format(
+    authorizeUrlTemplate,
+    storage.session.getTenant(),
+    ''
+  );
+  return generateOauth2Api(getApiConfig()).post(authorizeURL, data, config);
+}
+
+export async function accessToken(data, config = {}) {
+  const accessTokenURL = util.format(
+    accessTokenUrlTemplate,
+    storage.session.getTenant(),
+    ''
+  );
+  return generateOauth2Api(getApiConfig()).post(accessTokenURL, data, config);
+}
+
 export async function clientCredentialsGrant(clientId, clientSecret, scope) {
   const urlString = util.format(
-    oauth2AccessTokenURLTemplate,
+    accessTokenUrlTemplate,
     storage.session.getTenant(),
     getCurrentRealmPath()
   );
