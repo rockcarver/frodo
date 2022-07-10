@@ -11,7 +11,10 @@ const realmArgumentDescription =
 export const realmArgument = new Argument(
   '[realm]',
   realmArgumentDescription
-).default(global.DEFAULT_REALM_KEY);
+).default(
+  global.DEFAULT_REALM_KEY,
+  '"alpha" for Identity Cloud tenants, "/" otherwise.'
+);
 export const realmArgumentM = new Argument('<realm>', realmArgumentDescription);
 
 const userArgumentDescription =

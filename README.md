@@ -18,7 +18,7 @@ Cookie name: 27e1d6427df2a07
 Session token: w7nvv <snip> IwMQ..*
 Bearer token: eyJ0eXAiOiJKV1QiL <snip> 68SEpHUg
 ```
-**NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](binaries.md) if this happens.**
+**NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](docs/BINARIES.md) if this happens.**
 
 4. Now you can use other frodo commands, like `journey`, `logs`, `applications` etc. as desired. **For detailed usage, refer to [this](#usage)**
 
@@ -30,6 +30,7 @@ Bearer token: eyJ0eXAiOiJKV1QiL <snip> 68SEpHUg
 - [Usage](#usage)
 - [Request features or report issues](#feature-requests)
 - [Contributing](#contributing)
+- [Maintaining](#maintaining)
 
 ## Features
 
@@ -102,7 +103,7 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
 
 ## Limitations
 
-`frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
+`frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any hard dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
 
 ## Installing
 
@@ -130,12 +131,14 @@ You can invoke `frodo` from the terminal as long as you're in the directory or s
 
 To get started, refer to [Quick Start](#quick-start).
 
-### Connections
-A connection is essentially a set of ForgeRock environment URL, admin username and admin password. It can also optionally contain a logging API key and corresponding API secret for that environment. All connections are stored in `~/.frodo/.frodorc` file. Password is stored encrypted for obvious reasons. `.frodorc` can house information for multiple connections.
+### Connection Profiles
+A connection profile is a set of ForgeRock environment URL (Access Management base URL), admin username and admin password. It can optionally contain log API key and secret for a ForgeRock Identity Cloud environment. All connection profiless are stored in `~/.frodo/.frodorc`. Passwords are stored encrypted. `.frodorc` can house information for multiple connections.
 
-`frodo` automatically creates a new "connection" in the file when any command, which connects to a ForgeRock environment, is successfully executed. You can also use the `connections` cli option to manage this information.
-
-Only one set of username and password is storeed for a given environment. If you connect to an existing saved environment (as part of a `frodo` command) with a different set of username/password, `frodo` will update the saved connection information for that environment with the new credentials.
+Use the `frodo conn` sub-commands to manage connections:
+-   `frodo conn list` to list all the connections frodo currently knows about for the current machine and user.
+-   `frodo conn add` to add a new connection profile.
+-   `frodo conn describe` to see all the details of a connection profile.
+-   `frodo conn delete` to remove a connection profile.
 
 Once `frodo` saves a connection, you don't have to provide the `host`, `username`, and `password` arguments. You can reference your connection using any unique substring from your host. This is the most common way users would run frodo. For example, if `https://openam-example-use1-dev.id.forgerock.io/am` and `https://openam-example-use1-staging.id.forgerock.io/am` are two saved ForgeRock connections from previous commands, one would simply use:
 
@@ -158,26 +161,25 @@ frodo help
 Usage: frodo [options] [command]
 
 Options:
--v, --version                            output the version number
--h, --help                               display help for command
+  -v, --version                            output the version number
+  -h, --help                               display help for command
 
 Commands:
-admin                                    Platform admin tasks.
-application                              Manage applications.
-connections                              Manage connection profiles.
-email_templates                          Manage email templates.
-idm                                      Manage IDM configuration.
-idp                                      Manage (social) identity providers.
-info [options] <host> [user] [password]  Print versions and tokens.
-journey                                  Manage journeys/trees.
-logs <host>                              View Identity Cloud logs. If valid tenant admin credentials are specified, a log API key and secret
-are automatically created for that admin user.
-realm                                    Manage realms.
-saml                                     Manage SAML entity providers and circles of trust.
-script                                   Manage scripts.
-secret                                   Manage Identity Cloud secrets.
-theme                                    Manage themes.
-help [command]                           display help for command
+  admin                                    Platform admin tasks.
+  application                              Manage applications.
+  conn|connection                          Manage connection profiles.
+  email                                    Manage email templates and configuration.
+  esv                                      Manage Environment-Specific Variables (ESVs).
+  idm                                      Manage IDM configuration.
+  idp                                      Manage (social) identity providers.
+  info [options] <host> [user] [password]  Print versions and tokens.
+  journey                                  Manage journeys/trees.
+  logs                                     List/View Identity Cloud logs
+  realm                                    Manage realms.
+  saml                                     Manage SAML entity providers and circles of trust.
+  script                                   Manage scripts.
+  theme                                    Manages themes.
+  help [command]                           display help for command
 ```
 
 Or to view options for a specific command
@@ -192,17 +194,16 @@ Usage: frodo journey [options] [command]
 Manage journeys/trees.
 
 Options:
-  -h, --help                                            Help
+  -h, --help      Help
 
 Commands:
-  list [options] <host> [realm] [user] [password]       List all the journeys/trees in a realm.
-  describe [options] [host] [realm] [user] [password]   If -h is supplied, describe the journey/tree indicated by -t, or all journeys/trees in the realm if no -t is supplied, otherwise describe the journey/tree export file
-                                                        indicated by -f.
-  export [options] <host> [realm] [user] [password]     Export journeys/trees.
-  import [options] <host> [realm] [user] [password]     Import journey/tree.
-  importAll [options] <host> [realm] [user] [password]  Import all the trees in a realm.
-  prune [options] <host> [realm] [user] [password]      Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.
-  help [command]                                        display help for command
+  list            List journeys/trees.
+  describe        If host argument is supplied, describe the journey/tree indicated by -t, or all journeys/trees in the realm if no -t is supplied, otherwise describe the journey/tree export file indicated by -f.
+  export          Export journeys/trees.
+  import          Import journeys/trees.
+  delete          Delete journeys/trees.
+  prune           Prune orphaned configuration artifacts left behind after deleting authentication trees. You will be prompted before any destructive operations are performed.
+  help [command]  display help for command
 ```
 
 ```console
@@ -215,24 +216,32 @@ Usage: frodo journey export [options] <host> [realm] [user] [password]
 Export journeys/trees.
 
 Arguments:
-  host               Access Management base URL, e.g.: https://cdk.iam.example.com/am. To use a connection profile, just specify a unique substring.
-  realm              Realm. Specify realm as '/' for the root realm or 'realm' or '/parent/child' otherwise. (default: "__default__realm__")
-  user               Username to login with. Must be an admin user with appropriate rights to manage authentication journeys/trees.
-  password           Password.
+  host                        Access Management base URL, e.g.: https://cdk.iam.example.com/am. To use a connection profile, just specify a unique substring.
+  realm                       Realm. Specify realm as '/' for the root realm or 'realm' or '/parent/child' otherwise. (default: "alpha" for Identity Cloud tenants, "/" otherwise.)
+  user                        Username to login with. Must be an admin user with appropriate rights to manage authentication journeys/trees.
+  password                    Password.
 
 Options:
-  -m, --type <type>  Override auto-detected deployment type. Valid values for type: [Classic] - A classic Access Management-only deployment with custom layout and configuration. [Cloud] - A ForgeRock Identity Cloud
-                     environment. [ForgeOps] - A ForgeOps CDK or CDM deployment. The detected or provided deployment type controls certain behavior like obtaining an Identity Management admin token or not and whether to
-                     export/import referenced email templates or how to walk through the tenant admin login flow of Identity Cloud and handle MFA (choices: "classic", "cloud", "forgeops")
-  -t, --tree <tree>  Name of a journey/tree. If specified, -a and -A are ignored.
-  -f, --file <file>  Name of the file to write the exported journey(s) to. Ignored with -A.
-  -a, --all          Export all the journeys/trees in a realm. Ignored with -t.
-  -A, --allSeparate  Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -t or -a.
-  -h, --help         Help
+  -m, --type <type>           Override auto-detected deployment type. Valid values for type:
+                              classic:  A classic Access Management-only deployment with custom layout and configuration.
+                              cloud:    A ForgeRock Identity Cloud environment.
+                              forgeops: A ForgeOps CDK or CDM deployment.
+                              The detected or provided deployment type controls certain behavior like obtaining an Identity Management admin token or not and whether to export/import referenced email templates or how to
+                              walk through the tenant admin login flow of Identity Cloud and handle MFA (choices: "classic", "cloud", "forgeops")
+  -k, --insecure              Allow insecure connections when using SSL/TLS (default: Don't allow insecure connections)
+  -i, --journey-id <journey>  Name of a journey/tree. If specified, -a and -A are ignored.
+  -f, --file <file>           Name of the file to write the exported journey(s) to. Ignored with -A.
+  -a, --all                   Export all the journeys/trees in a realm. Ignored with -i.
+  -A, --all-separate          Export all the journeys/trees in a realm as separate files <journey/tree name>.json. Ignored with -i or -a.
+  --use-string-arrays         Where applicable, use string arrays to store multi-line text (e.g. scripts). (default: off)
+  -h, --help                  Help
 ```
 
 ## Feature requests
 Please use the repository's [issues](https://github.com/rockcarver/frodo/issues) to request new features/enhancements or report bugs/issues.
 
 ## Contributing
-If you would like to contribute to frodo, please refer to [contribution instructions](docs/contribute.md).
+If you would like to contribute to frodo, please refer to the [contributing instructions](docs/CONTRIBUTE.md).
+
+## Maintaining
+If you are a maintainer of this repository, please refer to the [pipeline and release process instructions](docs/PIPELINE.md).
