@@ -312,9 +312,13 @@ export async function getTokens(save = false) {
   ) {
     credsFromParameters = false;
     const conn = await getConnectionProfile();
-    storage.session.setTenant(conn.tenant);
-    storage.session.setUsername(conn.username);
-    storage.session.setPassword(conn.password);
+    if (conn) {
+      storage.session.setTenant(conn.tenant);
+      storage.session.setUsername(conn.username);
+      storage.session.setPassword(conn.password);
+    } else {
+      return false;
+    }
   }
   await authenticate();
   if (
