@@ -14,22 +14,20 @@ Frodo adopted the principle of continuous integration. Therefore every push to t
 
 The pipeline determines the type of release - `prerelease`, `patch`, `minor`, `major` - for the push:
 
--   Scans the commit and PR comments for trigger phrases:
-    -   `PATCH RELEASE` triggers a `patch` release
-    -   `MINOR RELEASE` triggers a `minor` release
-    -   `MAJOR RELEASE` triggers a `major` release
-    -   Everything else triggers a `prerelease`
--   Bumps the version accordingly:<br>
-    `<major>`.`<minor>`.`<patch>`-`<prerelease>`
--   Updates the [changelog](../CHANGELOG.md) file in [keep a changelog](https://keepachangelog.com/en/1.0.0/) format:
-    -   Creates a new release heading using the bumped version and a date stamp
-    -   Moves the content of the `Unreleased` section into the new section
-    -   Adds release details links
+- Scans the commit and PR comments for trigger phrases:
+  - `PATCH RELEASE` triggers a `patch` release
+  - `MINOR RELEASE` triggers a `minor` release
+  - `MAJOR RELEASE` triggers a `major` release
+  - Everything else triggers a `prerelease`
+- Bumps the version accordingly:<br>
+  `<major>`.`<minor>`.`<patch>`-`<prerelease>`
+- Updates the [changelog](../CHANGELOG.md) file in [keep a changelog](https://keepachangelog.com/en/1.0.0/) format:
+  - Creates a new release heading using the bumped version and a date stamp
+  - Moves the content of the `Unreleased` section into the new section
+  - Adds release details links
 
-```
-❗❗❗ IMPORTANT ❗❗❗
+❗❗❗ IMPORTANT ❗❗❗<br>
 Contributors are instructed to submit pull requests. Maintainers must make sure none of the commit comments nor the PR comment contain trigger phrases that would cause the pipeline to perform an undesired version bump and release.
-```
 
 ### Automatic Pre-Releases During Iterative Development
 
@@ -48,8 +46,10 @@ Maintainers must adhere to the [guidelines set forth by the npm project](https:/
 
 ![NPM Versioning Guidelines](images/npm_versioning_guidelines.png)
 
+Frodo is currently in a pre-1.0.0 phase. We are striving to release 1.0.0 very soon.
+
 ## Pipeline Maintenance
 
-Pipeline maintenance is a tricky business. Pipeline testing in forks is difficult because GitHub by default imposes a different behaviour for pipeline events than in the main repository. Some pipeline steps require branch names, which means the pipeline needs to be adopted to run in the fork and branch it is being tested in. 
+Pipeline maintenance is a tricky business. Pipeline testing in forks is difficult because GitHub by default imposes a different behaviour for pipeline events than in the main repository. Some pipeline steps require branch names, which means the pipeline needs to be adopted to run in the fork and branch it is being tested in.
 
 All of the above has lead the team to make and test pipeline changes in the main repository on the real pipeline.
