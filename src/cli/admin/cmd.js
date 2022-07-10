@@ -2,7 +2,7 @@ import { Command, Option } from 'commander';
 import { v4 as uuidv4 } from 'uuid';
 import Table from 'cli-table3';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import { clientCredentialsGrant } from '../../api/OAuth2OIDCApi.js';
 import {
   addAutoIdStaticUserMapping,

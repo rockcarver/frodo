@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --experimental-json-modules --no-warnings --enable-source-maps
 
 import { Command } from 'commander';
-import { initConnections } from './api/AuthApi.js';
+import { initConnectionProfiles } from './ops/ConnectionProfileOps.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { printMessage } from './ops/utils/Console.js';
 
@@ -28,7 +28,7 @@ const program = new Command(pkg.name).version(
 
 (async () => {
   try {
-    initConnections();
+    initConnectionProfiles();
 
     program.addCommand(admin());
     program.addCommand(application());

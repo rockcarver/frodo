@@ -1,5 +1,9 @@
 import { Command, Option } from 'commander';
-import { getConnection, saveConnection, getTokens } from '../../api/AuthApi.js';
+import {
+  getConnectionProfile,
+  saveConnectionProfile,
+} from '../../ops/ConnectionProfileOps.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import * as common from '../cmd_common.js';
 // import { createAPIKeyAndSecret, tailLogs } from '../../api/LogApi.js';
 import { provisionCreds, tailLogs, resolveLevel } from '../../ops/LogOps.js';
@@ -34,7 +38,7 @@ Following values are possible (values on the same line are equivalent): \
     storage.session.setUsername(user);
     storage.session.setPassword(password);
     storage.session.setAllowInsecureConnection(options.insecure);
-    const conn = await getConnection();
+    const conn = await getConnectionProfile();
     storage.session.setTenant(conn.tenant);
     if (conn.key != null && conn.secret != null) {
       credsFromParameters = false;
@@ -65,7 +69,7 @@ Following values are possible (values on the same line are equivalent): \
         command.opts().sources
       } and levels [${resolveLevel(command.opts().level)}]...`
     );
-    if (credsFromParameters) await saveConnection(); // save new values if they were specified on CLI
+    if (credsFromParameters) await saveConnectionProfile(); // save new values if they were specified on CLI
     await tailLogs(
       command.opts().sources,
       resolveLevel(command.opts().level),

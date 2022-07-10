@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { Command } from 'commander';
 import {
-  listConnections,
-  saveConnection,
-  getConnectionFileName,
-} from '../../api/AuthApi.js';
+  listConnectionProfiles,
+  saveConnectionProfile,
+  getConnectionProfilesFileName,
+} from '../../ops/ConnectionProfileOps.js';
 import * as common from '../cmd_common.js';
 import { printMessage } from '../../ops/utils/Console.js';
 import storage from '../../storage/SessionStorage.js';
@@ -19,10 +19,10 @@ export default function setup() {
     .command('list')
     .showHelpAfterError()
     .helpOption('-h, --help', 'Help')
-    .description('List configured connections.')
+    .description('List connection profiles.')
     .action(async () => {
       // console.log('list command called');
-      listConnections();
+      listConnectionProfiles();
     });
 
   connections
@@ -35,7 +35,7 @@ export default function setup() {
     .showHelpAfterError()
     .helpOption('-h, --help', 'Help')
     .description(
-      'Add a new connection. You have to specify a URL, username and password at a minimum.\n' +
+      'Add a new connection profile. You have to specify a URL, username and password at a minimum.\n' +
         'Optionally, for Identity Cloud, you can also add a log API key and secret.'
     )
     .action(async (host, user, password, key, secret) => {
@@ -45,7 +45,7 @@ export default function setup() {
       storage.session.setPassword(password);
       storage.session.setLogApiKey(key);
       storage.session.setLogApiSecret(secret);
-      saveConnection();
+      saveConnectionProfile();
     });
 
   connections
@@ -53,12 +53,10 @@ export default function setup() {
     .addArgument(common.hostArgumentM)
     .showHelpAfterError()
     .helpOption('-h, --help', 'Help')
-    .description(
-      "Delete an existing connection profile (can also be done by editing '$HOME/.frodorc' in a text editor)."
-    )
+    .description('Delete connection profiles.')
     .action(async (host) => {
       // console.log('list command called');
-      const filename = getConnectionFileName();
+      const filename = getConnectionProfilesFileName();
       let connectionsData = {};
       fs.stat(filename, (err) => {
         if (err == null) {

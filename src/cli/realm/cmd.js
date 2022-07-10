@@ -2,7 +2,7 @@ import { Command, Option } from 'commander';
 // eslint-disable-next-line no-unused-vars
 import * as colors from '@colors/colors';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import {
   listRealms,
   getRealmByName,
