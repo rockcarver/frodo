@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   `conn describe` command to describe connection profiles
+
+### Changed
+
+-   Renamed connections command to `conn` with aliases `connection` and `connections` for backwards compatibility
+-   Internal restructuring (#160, #135)
+
+### Fixed
+
+-   #310: No longer storing connection profiles unless explicitly requested to
+
 ## [0.6.4-3] - 2022-07-09
 
 ### Added
