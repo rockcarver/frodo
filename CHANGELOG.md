@@ -7,26 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.4-4] - 2022-07-10
-
-### Added
-
--   `conn describe` command to describe connection profiles
-
-### Changed
-
--   Renamed connections command to `conn` with aliases `connection` and `connections` for backwards compatibility
--   Internal restructuring (#160, #135)
-
-### Fixed
-
--   \#310: No longer storing connection profiles unless explicitly requested to
-
-## [0.6.4-3] - 2022-07-09
-
 ### Added
 
 -   CHANGELOG.md
+-   `conn describe` command to describe connection profiles
+    -   `--show-secrets` option to `conn describe` command to show clear-text secrets
+-   `--validate` option to `conn add` command to validate credentials before adding
 
 ### Changed
 
@@ -37,11 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   Automated release notes extraction from CHANGELOG.md
     -   Automated GitHub release creation
     -   Renamed frodo.yml to pipeline.yml
+-   Renamed connections command to `conn` with aliases `connection` and `connections` for backwards compatibility
+-   Internal restructuring (#160, #135)
 
 ### Fixed
 
--   Fixed missing -k/--insecure param in application sub-commands #280
--   Fixed pipeline to include binary release artifacts
+-   \#280: Fixed missing -k/--insecure param in application sub-commands #280
+-   \#310: No longer storing connection profiles unless explicitly instructed to
+
+## [0.6.4-4] - 2022-07-10 [YANKED]
+
+## [0.6.4-3] - 2022-07-09 [YANKED]
 
 ## [0.6.4-2] - 2022-07-09 [YANKED]
 
