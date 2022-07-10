@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2022-07-10
-
 ### Added
 
 -   CHANGELOG.md
@@ -174,8 +172,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Miscellaneous bug fixes
 
 [Unreleased]: https://github.com/rockcarver/frodo/compare/v1.0.0...HEAD
-
-[1.0.0]: https://github.com/rockcarver/frodo/compare/v0.6.4-4...v1.0.0
 
 [0.6.4-4]: https://github.com/rockcarver/frodo/compare/v0.6.4-3...v0.6.4-4
 

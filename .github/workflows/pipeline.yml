@@ -23,9 +23,9 @@ jobs:
         id: prepare-version-bump
         uses: 'phips28/gh-action-bump-version@master'
         with:
-          major-wording: 'Major,major,BREAKING CHANGE'
-          minor-wording: 'Minor,minor,Feat,feat,Add,add'
-          patch-wording: 'Patch,patch,Fix,fix'
+          major-wording: 'MAJOR RELEASE'
+          minor-wording: 'MINOR RELEASE'
+          patch-wording: 'PATCH RELEASE'
           rc-wording: ''
           tag-prefix: 'v'
           default: prerelease
@@ -75,9 +75,9 @@ jobs:
         id: version-bump
         uses: 'phips28/gh-action-bump-version@master'
         with:
-          major-wording: 'Major,major,BREAKING CHANGE'
-          minor-wording: 'Minor,minor,Feat,feat,Add,add'
-          patch-wording: 'Patch,patch,Fix,fix'
+          major-wording: 'MAJOR RELEASE'
+          minor-wording: 'MINOR RELEASE'
+          patch-wording: 'PATCH RELEASE'
           rc-wording: ''
           tag-prefix: 'v'
           default: prerelease
