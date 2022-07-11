@@ -48,15 +48,93 @@ Maintainers must adhere to the [guidelines set forth by the npm project](https:/
 
 Frodo is currently in a pre-1.0.0 phase. We are striving to release 1.0.0 very soon.
 
+## Current Pipeline Explained
+
+### Trigger Event
+
+The trigger event is any `push` to the `main` branch in the repository.
+
+### Update Changelog
+
+This step calculates the new version but doesn't modify `package.json` and `package-lock.json`. Based on that new version, it creates a new heading in the [CHANGELOG.md](../CHANGELOG.md) file and moves everything from the `Unreleased` section into the new version section. It also creates links to the release tags at the bottom of the [CHANGELOG.md](../CHANGELOG.md) file. Last but not least, it commits the updated [CHANGELOG.md](../CHANGELOG.md) file to the repository.
+
+#### 3rd-Party Actions
+
+-   [gh-action-bump-version](https://github.com/phips28/gh-action-bump-version): phips28/gh-action-bump-version@master
+-   [keep-a-changelog-new-release](https://github.com/thomaseizinger/keep-a-changelog-new-release): thomaseizinger/keep-a-changelog-new-release@1.3.0
+
+### Bump Version
+
+This step calculates the new version and corresponding tag, updates both [package.json](../package.json) and [package-lock.json](../package-lock.json) and commits the changes to the `main` branch.
+
+#### 3rd-Party Actions
+
+-   [gh-action-bump-version](https://github.com/phips28/gh-action-bump-version): phips28/gh-action-bump-version@master
+
+### Release Notes
+
+This step extracts the changes under the heading that matches the release version and uses it as the release notes. For pre-releases it also generates a section of changes based on commits that were part of the release.
+
+Good release notes require the contributor and/or maintainer take the time and update the [CHANGELOG.md](../CHANGELOG.md) file. Auto-generated release notes based on commit comments are less than optimal but acceptable for pre-releases.
+
+Patch, minor, and major releases require a carefully curated [CHANGELOG.md](../CHANGELOG.md) file.
+
+#### 3rd-Party Actions
+
+-   [submark](https://github.com/dahlia/submark): dahlia/submark@main
+
+
+### Release
+
+This step creates a GitHub release based on the tag created in a previous step and posts a number of artifacts:
+
+-   [CHANGELOG.md](../CHANGELOG.md)
+-   [LICENSE](../LICENSE)
+-   `Release.txt` - Generated for each release containing the git sha of the release
+-   `<tag>.zip` -  Generated for each release containing the full repository as a `.zip` archive
+-   `<tag>.tar.gz` - Generated for each release containing the full repository as a `.tar.gz` archive
+
+_Note:_ this step does not include the frodo binaries!
+
+#### 3rd-Party Actions
+
+-   [action-gh-release](https://github.com/softprops/action-gh-release): softprops/action-gh-release@v1
+
+### Binary Releases
+
+The binaries are built by GitHub runners of the same OS as the binary they are building. That allows the binaries to be executed (tested) as one of the steps in the build process.
+
+The binary builds run in parallel while all the previous steps run in sequence and must complete before the binay builds even kick off.
+
+#### Linux Binary Release
+
+This step builds the Linux binary and adds it to the release created in an earlier step.
+
+#### 3rd-Party Actions
+
+-   [action-gh-release](https://github.com/softprops/action-gh-release): softprops/action-gh-release@v1
+
+#### Mac OS Binary Release
+
+This step builds the Mac OS binary and adds it to the release created in an earlier step.
+
+#### 3rd-Party Actions
+
+-   [action-gh-release](https://github.com/softprops/action-gh-release): softprops/action-gh-release@v1
+
+#### Windows Binary Release
+
+This step builds the Windows binary and adds it to the release created in an earlier step.
+
+#### 3rd-Party Actions
+
+-   [action-gh-release](https://github.com/softprops/action-gh-release): softprops/action-gh-release@v1
+
 ## Pipeline Maintenance
 
 Pipeline maintenance is a tricky business. Pipeline testing in forks is difficult because GitHub by default imposes a different behaviour for pipeline events than in the main repository. Some pipeline steps require branch names, which means the pipeline needs to be adopted to run in the fork and branch it is being tested in.
 
 All of the above has lead the team to make and test pipeline changes in the main repository on the real pipeline.
-
-### Current Pipeline Explained
-
-
 
 ### Recover From A Wrong Version Bump And Release
 
