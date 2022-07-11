@@ -127,7 +127,7 @@ jobs:
 
       - name: 'Extract Release Notes'
         id: extract-release-notes
-        uses: 'dahlia/submark@bugfix/7'
+        uses: 'dahlia/submark@main'
         with:
           input-file: "CHANGELOG.md"
           heading-level: 2
