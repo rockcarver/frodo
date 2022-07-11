@@ -13,7 +13,7 @@ import email from './cli/email/email.js';
 import esv from './cli/esv/esv.js';
 import idm from './cli/idm/cmd.js';
 import idp from './cli/idp/idp.js';
-import info from './cli/info/cmd.js';
+import info from './cli/info/info.js';
 import journey from './cli/journey/journey.js';
 import logging from './cli/logging/logs.js';
 import realm from './cli/realm/cmd.js';
