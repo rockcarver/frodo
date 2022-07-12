@@ -68,7 +68,7 @@ export interface GlobalState {
  * func({ a, b, c, state: { username, password } });
  * ```
  */
-export interface WithStateParams<keys> {
+export interface WithOptions<keys> {
   /**
    * The global state object to be injected where keys refer to the required keys from the global state object needed by the calling function
    * @example ```ts

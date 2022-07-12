@@ -1,4 +1,7 @@
-import { WithStateParams } from '../state/State';
+import { WithOptions } from '../state/State';
+import { WithRealm } from '../unions/WithRealm';
+import { WithTenant } from '../unions/WithTenant';
+import { WithUsername, WithPassword } from '../unions/WithCredentials';
 // create-oauth2-client-with-admin-privileges [options] <tenant> [realm] [user] [password]  Create an oauth2 client with admin
 //                                                                                          privileges.
 //   get-access-token [options] <tenant> [realm] [user] [password]                            Get an access token using client credentials
@@ -18,27 +21,26 @@ import { WithStateParams } from '../state/State';
 //   show-generic-extension-attributes [options] <tenant> [realm] [user] [password]           Show generic extension attributes.
 //   repair-org-model [options] <tenant> [realm] [user] [password]                            Repair org model.
 
-/**
- * A user and password must be passed
- */
-type usesClientCredentials = 'user' | 'passowrd';
-/**
- * A tenant and realm must be passed
- */
-type usesTenantRealm = 'tenant' | 'realm';
-
 export type CreatePrivlidgedOAuth2Client = (
-  options: WithStateParams<usesTenantRealm | usesClientCredentials>
+  options: WithOptions<
+    keyof WithTenant | keyof WithRealm | keyof WithUsername | keyof WithPassword
+  >
 ) => void;
 
 export type ListPrivlidgedOAuth2Clients = (
-  options: WithStateParams<usesTenantRealm | usesClientCredentials>
+  options: WithOptions<
+    keyof WithTenant | keyof WithRealm | keyof WithUsername | keyof WithPassword
+  >
 ) => void;
 
 export type GrantPrivlidgedOAuth2Client = (
-  options: WithStateParams<usesTenantRealm | usesClientCredentials>
+  options: WithOptions<
+    keyof WithTenant | keyof WithRealm | keyof WithUsername | keyof WithPassword
+  >
 ) => void;
 
 export type RevokePrivlidgedOAuth2Client = (
-  options: WithStateParams<usesTenantRealm | usesClientCredentials>
+  options: WithOptions<
+    keyof WithTenant | keyof WithRealm | keyof WithUsername | keyof WithPassword
+  >
 ) => void;

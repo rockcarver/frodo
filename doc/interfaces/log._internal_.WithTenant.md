@@ -22,4 +22,4 @@ Your ForgeRock environments URL, see example for details
 
 #### Defined in
 
-[src/types/unions/WithTenant.d.ts:8](https://github.com/adam-cyclones/frodo/blob/21cbedc/src/types/unions/WithTenant.d.ts#L8)
+[src/types/unions/WithTenant.d.ts:8](https://github.com/adam-cyclones/frodo/blob/cdcadb0/src/types/unions/WithTenant.d.ts#L8)

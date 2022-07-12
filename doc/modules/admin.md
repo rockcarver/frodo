@@ -24,7 +24,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 
@@ -40,7 +40,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 
@@ -56,7 +56,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 

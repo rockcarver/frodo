@@ -9,14 +9,12 @@
 ### Interfaces
 
 - [GlobalState](../interfaces/admin._internal_.GlobalState.md)
-- [WithStateParams](../interfaces/admin._internal_.WithStateParams.md)
+- [WithOptions](../interfaces/admin._internal_.WithOptions.md)
 
 ### Type Aliases
 
 - [ALL\_AMSupportedVersions](admin._internal_.md#all_amsupportedversions)
 - [Pick](admin._internal_.md#pick)
-- [usesClientCredentials](admin._internal_.md#usesclientcredentials)
-- [usesTenantRealm](admin._internal_.md#usestenantrealm)
 
 ## Type Aliases
 
@@ -28,7 +26,7 @@ All AM supported versions
 
 #### Defined in
 
-[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/21cbedc/src/types/journey/OOTBNodeTypes.d.ts#L35)
+[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/cdcadb0/src/types/journey/OOTBNodeTypes.d.ts#L35)
 
 ___
 
@@ -48,27 +46,3 @@ From T, pick a set of properties whose keys are in the union K
 #### Defined in
 
 node_modules/typescript/lib/lib.es5.d.ts:1558
-
-___
-
-### usesClientCredentials
-
-Ƭ **usesClientCredentials**: ``"user"`` \| ``"passowrd"``
-
-A user and password must be passed
-
-#### Defined in
-
-[src/types/bindings/Admin.d.ts:24](https://github.com/adam-cyclones/frodo/blob/21cbedc/src/types/bindings/Admin.d.ts#L24)
-
-___
-
-### usesTenantRealm
-
-Ƭ **usesTenantRealm**: ``"tenant"`` \| ``"realm"``
-
-A tenant and realm must be passed
-
-#### Defined in
-
-[src/types/bindings/Admin.d.ts:28](https://github.com/adam-cyclones/frodo/blob/21cbedc/src/types/bindings/Admin.d.ts#L28)

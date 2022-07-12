@@ -1,8 +1,8 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / [\_admin](../modules/admin.md) / [<internal\>](../modules/admin._internal_.md) / WithStateParams
+[lib-frodo](../README.md) / [Modules](../modules.md) / [\_admin](../modules/admin.md) / [<internal\>](../modules/admin._internal_.md) / WithOptions
 
-# Interface: WithStateParams<keys\>
+# Interface: WithOptions<keys\>
 
-[_admin](../modules/admin.md).[<internal>](../modules/admin._internal_.md).WithStateParams
+[_admin](../modules/admin.md).[<internal>](../modules/admin._internal_.md).WithOptions
 
 Many functions in  lib-frodo use a pure object pattern which require state to be passed as a object
 ### Why?
@@ -26,7 +26,7 @@ func({ a, b, c, state: { username, password } });
 
 ### Properties
 
-- [state](admin._internal_.WithStateParams.md#state)
+- [state](admin._internal_.WithOptions.md#state)
 
 ## Properties
 
@@ -47,4 +47,4 @@ const y: Pick<GlobalState, 'username' | 'password'> = { username: '', password: 
 
 #### Defined in
 
-[src/types/state/State.d.ts:81](https://github.com/adam-cyclones/frodo/blob/21cbedc/src/types/state/State.d.ts#L81)
+[src/types/state/State.d.ts:81](https://github.com/adam-cyclones/frodo/blob/cdcadb0/src/types/state/State.d.ts#L81)
