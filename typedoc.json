@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/bindings/_admin.js",
+    "src/bindings/_application.js",
+    "src/bindings/_connection.js",
+    "src/bindings/_email-template.js",
+    "src/bindings/_idm.js",
+    "src/bindings/_log.js",
+    "src/bindings/_realm.js",
+    "src/bindings/_saml.js",
+    "src/bindings/_script.js",
+    "src/bindings/_secret.js",
+    "src/bindings/_theme.js",
+    "src/bindings/_token.js"
+  ],
+  "out": "doc",
+  "entryPointStrategy": "resolve",
+  "plugin": ["typedoc-plugin-markdown"]
+}
