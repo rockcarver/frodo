@@ -6,7 +6,7 @@ import pkg from '../package.json' assert { type: 'json' };
 import { printMessage } from './ops/utils/Console.js';
 
 // commands
-import admin from './cli/admin/cmd.js';
+import admin from './cli/admin/admin.js';
 import application from './cli/application/cmd.js';
 import conn from './cli/conn/conn.js';
 import email from './cli/email/email.js';
