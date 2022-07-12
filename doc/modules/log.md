@@ -51,7 +51,7 @@ A binding to tail the identity cloud logs
 
 **`Example`**
 
-``` js 
+``` js
 _tail({
  host: 'https://openam-fr-example.forgeblocks.com/am',
  key: 'some-key',

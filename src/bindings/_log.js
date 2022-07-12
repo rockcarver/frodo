@@ -1,14 +1,14 @@
 /**
  * @file Bindings to access logging
-*/
+ */
 
 /**
  * A binding to get a list of log sources
- * @param { & 
+ * @param { &
  * import('../types/unions/WithTenant').WithTenant &
  * import('../types/unions/WithSecrets').WithSecrets
  * } config object
- * 
+ *
  * @example ``` js
  * _list({
  *  host: 'https://openam-fr-example.forgeblocks.com/am',
@@ -18,16 +18,16 @@
  * ```
  */
 export const _list = ({ tenant, key, secret }) => {
-    return {};
+  return {};
 };
 
 /**
  * A binding to tail the identity cloud logs
  * @param { &
- * import('../types/unions/WithTenant').WithTenant & 
+ * import('../types/unions/WithTenant').WithTenant &
  * import('../types/unions/WithSecrets').WithSecrets
  * } config object
- * @example ``` js 
+ * @example ``` js
  * _tail({
  *  host: 'https://openam-fr-example.forgeblocks.com/am',
  *  key: 'some-key',
@@ -36,5 +36,5 @@ export const _list = ({ tenant, key, secret }) => {
  * ```
  */
 export const _tail = ({ tenant, key, secret }) => {
-    return {};
+  return {};
 };

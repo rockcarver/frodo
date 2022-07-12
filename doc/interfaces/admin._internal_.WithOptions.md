@@ -47,4 +47,4 @@ const y: Pick<GlobalState, 'username' | 'password'> = { username: '', password: 
 
 #### Defined in
 
-[src/types/state/State.d.ts:81](https://github.com/adam-cyclones/frodo/blob/e29ee87/src/types/state/State.d.ts#L81)
+[src/types/state/State.d.ts:81](https://github.com/adam-cyclones/frodo/blob/736b64a/src/types/state/State.d.ts#L81)

@@ -28,6 +28,21 @@
 
 ▸ **_addAutoIdStaticUserMapping**(`options`): `void`
 
+Add AutoId static user mapping to enable dashboards and other AutoId-based functionality.
+
+**`Example`**
+
+```js
+_addAutoIdStaticUserMapping({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -43,6 +58,21 @@ ___
 ### \_createPrivlidgedOAuth2Client
 
 ▸ **_createPrivlidgedOAuth2Client**(`options`): `void`
+
+Create an oauth2 client with admin privileges.
+
+**`Example`**
+
+``` js
+_createPrivlidgedOAuth2Client({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
 
 #### Parameters
 
@@ -60,6 +90,21 @@ ___
 
 ▸ **_grantPrivlidgedOAuth2Client**(`options`): `void`
 
+Grant an oauth2 client admin privileges.
+
+**`Example`**
+
+```js
+_grantPrivlidgedOAuth2Client({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -75,6 +120,21 @@ ___
 ### \_hideGenericExtensionAttributes
 
 ▸ **_hideGenericExtensionAttributes**(`options`): `void`
+
+Hide generic extension attributes.
+
+**`Example`**
+
+```js
+_hideGenericExtensionAttributes({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
 
 #### Parameters
 
@@ -92,6 +152,21 @@ ___
 
 ▸ **_listCustomPrivilegedOAuth2Clients**(`options`): `void`
 
+List oauth2 clients with custom privileges.
+
+**`Example`**
+
+```js
+_listCustomPrivilegedOAuth2Clients({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -107,6 +182,21 @@ ___
 ### \_listPrivlidgedOAuth2Client
 
 ▸ **_listPrivlidgedOAuth2Client**(`options`): `void`
+
+List oauth2 clients with admin privileges.
+
+**`Example`**
+
+```js
+_listPrivlidgedOAuth2Client({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
 
 #### Parameters
 
@@ -124,6 +214,21 @@ ___
 
 ▸ **_listStaticUserMappings**(`options`): `void`
 
+List all subjects of static user mappings that are not oauth2 clients.
+
+**`Example`**
+
+```js
+_listStaticUserMappings({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -139,6 +244,21 @@ ___
 ### \_removeStaticUserMapping
 
 ▸ **_removeStaticUserMapping**(`options`): `void`
+
+Remove a subject's static user mapping.
+
+**`Example`**
+
+```js
+_removeStaticUserMapping({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
 
 #### Parameters
 
@@ -156,6 +276,21 @@ ___
 
 ▸ **_repairOrgModel**(`options`): `void`
 
+Repair org model.
+
+**`Example`**
+
+```js
+_repairOrgModel({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -172,6 +307,21 @@ ___
 
 ▸ **_revokePrivlidgedOAuth2Client**(`options`): `void`
 
+Revoke admin privileges from an oauth2.
+
+**`Example`**
+
+```js
+_revokePrivlidgedOAuth2Client({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
+
 #### Parameters
 
 | Name | Type |
@@ -187,6 +337,21 @@ ___
 ### \_showGenericExtensionAttributes
 
 ▸ **_showGenericExtensionAttributes**(`options`): `void`
+
+Show generic extension attributes.
+
+**`Example`**
+
+```js
+_showGenericExtensionAttributes({
+ state: {
+     username: 'gandalf',
+     password: 'maiar',
+     realm: '/',
+     tenant: 'example.forgeblock.com',
+ },
+});
+```
 
 #### Parameters
 
