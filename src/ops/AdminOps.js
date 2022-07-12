@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   listOAuth2Clients,
   getOAuth2Client,
@@ -293,7 +294,15 @@ function addClientCredentialsGrantType(clientId, client) {
 }
 
 async function addAdminStaticUserMapping(name) {
-  const authentication = (await getConfigEntity('authentication')).data;
+  let authentication = {};
+  try {
+    authentication = (await getConfigEntity('authentication')).data;
+  } catch (error) {
+    printMessage(
+      `Error reading IDM authentication configuration: ${error.message}`,
+      'error'
+    );
+  }
   let needsAdminMapping = true;
   let addRoles = [];
   const mappings = authentication.rsFilter.staticUserMapping.map((mapping) => {
@@ -582,9 +591,13 @@ export async function createOAuth2ClientWithAdminPrivileges(
   client.advancedOAuth2ClientConfig.descriptions.value = [
     `Created by Frodo on ${new Date().toLocaleString()}`,
   ];
-  client = await addAdminScopes(clientId, client);
-  await putOAuth2Client(clientId, client);
-  await addAdminStaticUserMapping(clientId);
+  try {
+    client = await addAdminScopes(clientId, client);
+    await putOAuth2Client(clientId, client);
+    await addAdminStaticUserMapping(clientId);
+  } catch (error) {
+    printMessage(`Error creating oauth2 client: ${error.message}`, 'error');
+  }
 }
 
 export async function createLongLivedToken(
@@ -604,15 +617,31 @@ export async function createLongLivedToken(
   client.coreOAuth2ClientConfig.accessTokenLifetime.value = lifetime;
   await putOAuth2Client(clientId, client);
   const response = await clientCredentialsGrant(clientId, clientSecret, scope);
-  response.expires_on = new Date(
-    new Date().getTime() + 1000 * response.expires_in
-  ).toLocaleString();
+  const expires = new Date().getTime() + 1000 * response.expires_in;
+  response.expires_on = new Date(expires).toLocaleString();
   // reset token lifetime
   client.coreOAuth2ClientConfig.accessTokenLifetime.value = rememberedLifetime;
   await putOAuth2Client(clientId, client);
   // create secret with token as value
   const description = 'Long-lived admin token';
-  await putSecret(secret, response.access_token, description);
+  try {
+    await putSecret(secret, response.access_token, description);
+    response.secret = secret;
+  } catch (error) {
+    if (
+      _.get(error, 'response.data.code') === 400 &&
+      _.get(error, 'response.data.message') ===
+        'Failed to create secret, the secret already exists'
+    ) {
+      const newSecret = `${secret}-${expires}`;
+      printMessage(
+        `esv '${secret}' already exists, using ${newSecret}`,
+        'warning'
+      );
+      await putSecret(newSecret, response.access_token, description);
+      response.secret = newSecret;
+    }
+  }
   delete response.access_token;
   return response;
 }
