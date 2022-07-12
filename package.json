@@ -7,9 +7,8 @@
   "scripts": {
     "doc": "typedoc ./src/bindings/*.js",
     "generate-typescript-support": "tsc -p tsconfig.json",
-    "test_api": "cd ./test/api/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "test_e2e": "cd ./test/e2e/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "test_unit": "cd ./test/units/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+    "test_api": "cd ./test/api/ && NODE_ENV=debug node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "test_unit": "cd ./test/units/ && NODE_ENV=debug node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "contributors": [
     {
