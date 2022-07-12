@@ -1,2 +1,2 @@
-export * from './bindings/_admin';
-export * from './bindings/_log';
+export * from './bindings/_admin.js';
+export * from './bindings/_log.js';
