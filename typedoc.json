@@ -16,5 +16,5 @@
   ],
   "out": "doc",
   "entryPointStrategy": "resolve",
-  "plugin": ["typedoc-plugin-markdown"]
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-missing-exports"]
 }

@@ -4,6 +4,7 @@
     "checkJs": true,
     // Generate d.ts files
     "declaration": true,
+    "declarationDir": "dist/types",
     // This compiler run should
     // only output d.ts files
     "emitDeclarationOnly": true,
@@ -13,7 +14,6 @@
     "outDir": "dist",
     // go to js file when using IDE functions like
     // "Go to Definition" in VSCode
-    "declarationMap": true,
     "target": "es2016",
     "module": "esnext",
     "moduleResolution": "Node",

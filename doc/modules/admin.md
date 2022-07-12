@@ -4,6 +4,10 @@
 
 ## Table of contents
 
+### Namespaces
+
+- [&lt;internal\&gt;](admin._internal_.md)
+
 ### Functions
 
 - [\_createPrivlidgedOAuth2Client](admin.md#_createprivlidgedoauth2client)
@@ -20,7 +24,7 @@
 
 | Name | Type |
 | :------ | :------ |
-| `options` | `WithStateParams`<`usesTenantRealm` \| `usesClientCredentials`\> |
+| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
 
 #### Returns
 
@@ -36,7 +40,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `options` | `WithStateParams`<`usesTenantRealm` \| `usesClientCredentials`\> |
+| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
 
 #### Returns
 
@@ -52,7 +56,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `options` | `WithStateParams`<`usesTenantRealm` \| `usesClientCredentials`\> |
+| `options` | [`WithStateParams`](../interfaces/admin._internal_.WithStateParams.md)<[`usesTenantRealm`](admin._internal_.md#usestenantrealm) \| [`usesClientCredentials`](admin._internal_.md#usesclientcredentials)\> |
 
 #### Returns
 

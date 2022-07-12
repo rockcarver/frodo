@@ -4,6 +4,10 @@
 
 ## Table of contents
 
+### Namespaces
+
+- [&lt;internal\&gt;](log._internal_.md)
+
 ### Functions
 
 - [\_list](log.md#_list)
@@ -31,7 +35,7 @@ _list({
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `config` | `WithTenant` & `WithSecrets` | object |
+| `config` | [`WithTenant`](../interfaces/log._internal_.WithTenant.md) & [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md) | object |
 
 #### Returns
 
@@ -59,7 +63,7 @@ _tail({
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `config` | `WithTenant` & `WithSecrets` | object |
+| `config` | [`WithTenant`](../interfaces/log._internal_.WithTenant.md) & [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md) | object |
 
 #### Returns
 
