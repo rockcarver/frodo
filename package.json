@@ -5,7 +5,7 @@
   "description": "lib-frodo is a multi-platform Node.js library that provides JavaScript bindings for various interactions within ForgeRock your products. lib-frodo enables anyone to build client software such as CLI's, GUI's or other tooling.",
   "main": "src/index.js",
   "scripts": {
-    "doc": "typedoc --plugin typedoc-plugin-markdown --out docs ./src/bindings/*.js",
+    "doc": "typedoc ./src/bindings/*.js",
     "generate-typescript-support": "tsc -p tsconfig.json",
     "test_api": "cd ./test/api/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
     "test_e2e": "cd ./test/e2e/ && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
