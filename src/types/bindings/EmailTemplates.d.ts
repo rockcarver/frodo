@@ -9,9 +9,9 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * @example ``` js
  * $list({
  *  state: {
- *      tenant: 'palantir-logger',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```
@@ -28,9 +28,9 @@ export type List = (
  * @example ``` js
  * $export({
  *  state: {
- *      tenant: 'palantir-logger',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```
@@ -47,9 +47,9 @@ export type Export = (
  * @example ``` js
  * $import({
  *  state: {
- *      tenant: 'palantir-logger',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```

@@ -9,10 +9,10 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * @example ``` js
  * $list({
  *  state: {
- *      tenant: 'palantir-logger',
- *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      realm: '/mordor',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```
@@ -29,10 +29,10 @@ export type List = (
  * @example ``` js
  * $export({
  *  state: {
- *      tenant: 'palantir-logger',
- *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      realm: '/mordor',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```
@@ -49,10 +49,10 @@ export type Export = (
  * @example ``` js
  * $import({
  *  state: {
- *      tenant: 'palantir-logger',
- *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
- *      user: 'example.forgeblock.com',
- *      password: ''
+ *      tenant: 'palantir',
+ *      realm: '/mordor',
+ *      user: 'gandalf',
+ *      password: 'TheAge3021!&^'
  *  },
  * });
  * ```

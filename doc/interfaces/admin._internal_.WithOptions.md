@@ -4,8 +4,10 @@
 
 [admin](../modules/admin.md).[<internal>](../modules/admin._internal_.md).WithOptions
 
-Many functions in  lib-frodo use a pure object pattern which require state to be passed as a object
+Many functions in lib-frodo use a pure object pattern which require state to be passed as a object
+
 ### Why?
+
 1. testability - easy to use static data
 2. flexability - any data can override state
 3. maintainability - args do not rely on order
@@ -18,8 +20,8 @@ func({ a, b, c, state: { username, password } });
 
 ## Type parameters
 
-| Name |
-| :------ |
+| Name   |
+| :----- |
 | `keys` |
 
 ## Table of contents
@@ -40,9 +42,16 @@ The global state object to be injected where keys refer to the required keys fro
 
 ```ts
 // correct
-const x: Pick<GlobalState, 'username' | 'password'> = { username: '', password: '' }
+const x: Pick<GlobalState, 'username' | 'password'> = {
+  username: '',
+  password: 'TheAge3021!&^',
+};
 // incorrect
-const y: Pick<GlobalState, 'username' | 'password'> = { username: '', password: '', insecure: true }
+const y: Pick<GlobalState, 'username' | 'password'> = {
+  username: '',
+  password: 'TheAge3021!&^',
+  insecure: true,
+};
 ```
 
 #### Defined in

@@ -20,28 +20,28 @@ Export applications.
 
 **`Example`**
 
-``` js
+```js
 $export({
- state: {
-     tenant: 'palantir-logger',
-     realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
-     user: 'example.forgeblock.com',
-     password: ''
- },
+  state: {
+    tenant: 'palantir',
+    realm: '/mordor',
+    user: 'gandalf',
+    password: 'TheAge3021!&^',
+  },
 });
 ```
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
+| Name      | Type                                                                                                                     |
+| :-------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"realm"` \| `"username"` \| `"password"`\> |
 
 #### Returns
 
 `void`
 
-___
+---
 
 ### $import
 
@@ -51,28 +51,28 @@ Import application.
 
 **`Example`**
 
-``` js
+```js
 $import({
- state: {
-     tenant: 'palantir-logger',
-     realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
-     user: 'example.forgeblock.com',
-     password: ''
- },
+  state: {
+    tenant: 'palantir',
+    realm: '/mordor',
+    user: 'gandalf',
+    password: 'TheAge3021!&^',
+  },
 });
 ```
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
+| Name      | Type                                                                                                                     |
+| :-------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"realm"` \| `"username"` \| `"password"`\> |
 
 #### Returns
 
 `void`
 
-___
+---
 
 ### $list
 
@@ -82,22 +82,22 @@ List all applications in a realm.
 
 **`Example`**
 
-``` js
+```js
 $list({
- state: {
-     tenant: 'palantir-logger',
-     realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
-     user: 'example.forgeblock.com',
-     password: ''
- },
+  state: {
+    tenant: 'palantir',
+    realm: '/mordor',
+    user: 'gandalf',
+    password: 'TheAge3021!&^',
+  },
 });
 ```
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"realm"`` \| ``"username"`` \| ``"password"``\> |
+| Name      | Type                                                                                                                     |
+| :-------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"realm"` \| `"username"` \| `"password"`\> |
 
 #### Returns
 

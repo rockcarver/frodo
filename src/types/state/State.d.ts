@@ -73,9 +73,9 @@ export interface WithOptions<keys> {
    * The global state object to be injected where keys refer to the required keys from the global state object needed by the calling function
    * @example ```ts
    * // correct
-   * const x: Pick<GlobalState, 'username' | 'password'> = { username: '', password: '' }
+   * const x: Pick<GlobalState, 'username' | 'password'> = { username: '', password: 'TheAge3021!&^' }
    * // incorrect
-   * const y: Pick<GlobalState, 'username' | 'password'> = { username: '', password: '', insecure: true }
+   * const y: Pick<GlobalState, 'username' | 'password'> = { username: '', password: 'TheAge3021!&^', insecure: true }
    * ```
    */
   state: Pick<GlobalState, keys>;
