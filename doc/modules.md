@@ -10,3 +10,4 @@
 - [application](modules/application.md)
 - [email-template](modules/email_template.md)
 - [log](modules/log.md)
+- [realm](modules/realm.md)
