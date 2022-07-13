@@ -16,7 +16,7 @@ import idp from './cli/idp/idp.js';
 import info from './cli/info/info.js';
 import journey from './cli/journey/journey.js';
 import logging from './cli/logging/logs.js';
-import realm from './cli/realm/cmd.js';
+import realm from './cli/realm/realm.js';
 import saml from './cli/saml/saml.js';
 import script from './cli/script/script.js';
 import theme from './cli/theme/theme.js';
