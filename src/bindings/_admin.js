@@ -1,4 +1,8 @@
 /**
+ * @file Platform admin tasks.
+ */
+
+/**
  * Create an oauth2 client with admin privileges.
  * @type {import('../types/bindings/Admin').CreatePrivlidgedOAuth2Client}
  */

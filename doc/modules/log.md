@@ -17,54 +17,58 @@
 
 ### \_list
 
-▸ **_list**(`config`): `Object`
+▸ **_list**(`options`): `void`
 
-A binding to get a list of log sources
+List available ID Cloud log sources.
 
 **`Example`**
 
 ``` js
 _list({
- host: 'https://openam-fr-example.forgeblocks.com/am',
- key: 'some-key',
- secret: '12aw33jgvvjg'
+ state: {
+     key: 'palantir-logger',
+     secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
+     tenant: 'example.forgeblock.com',
+ },
 });
 ```
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `config` | [`WithTenant`](../interfaces/log._internal_.WithTenant.md) & [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md) | object |
+| Name | Type |
+| :------ | :------ |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| keyof [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md)\> |
 
 #### Returns
 
-`Object`
+`void`
 
 ___
 
 ### \_tail
 
-▸ **_tail**(`config`): `Object`
+▸ **_tail**(`options`): `void`
 
-A binding to tail the identity cloud logs
+Tail Identity Cloud logs.
 
 **`Example`**
 
 ``` js
 _tail({
- host: 'https://openam-fr-example.forgeblocks.com/am',
- key: 'some-key',
- secret: '12aw33jgvvjg'
+ state: {
+     key: 'palantir-logger',
+     secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
+     tenant: 'example.forgeblock.com',
+ },
 });
 ```
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `config` | [`WithTenant`](../interfaces/log._internal_.WithTenant.md) & [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md) | object |
+| Name | Type |
+| :------ | :------ |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| keyof [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md)\> |
 
 #### Returns
 
-`Object`
+`void`

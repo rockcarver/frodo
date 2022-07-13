@@ -9,4 +9,3 @@
 ### Interfaces
 
 - [WithSecrets](../interfaces/log._internal_.WithSecrets.md)
-- [WithTenant](../interfaces/log._internal_.WithTenant.md)
