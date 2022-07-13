@@ -20,27 +20,27 @@ Export email templates.
 
 **`Example`**
 
-```js
+``` js
 $export({
-  state: {
-    tenant: 'https://palantir-example.com/am',
-    user: 'gandalf',
-    password: 'TheAge3021!&^',
-  },
+ state: {
+     tenant: 'https://palantir-example.com/am',
+     user: 'gandalf',
+     password: 'TheAge3021!&^'
+ },
 });
 ```
 
 #### Parameters
 
-| Name      | Type                                                                                                        |
-| :-------- | :---------------------------------------------------------------------------------------------------------- |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"username"` \| `"password"`\> |
+| Name | Type |
+| :------ | :------ |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 
 `void`
 
----
+___
 
 ### $import
 
@@ -50,27 +50,27 @@ Import email template.
 
 **`Example`**
 
-```js
+``` js
 $import({
-  state: {
-    tenant: 'https://palantir-example.com/am',
-    user: 'gandalf',
-    password: 'TheAge3021!&^',
-  },
+ state: {
+     tenant: 'https://palantir-example.com/am',
+     user: 'gandalf',
+     password: 'TheAge3021!&^'
+ },
 });
 ```
 
 #### Parameters
 
-| Name      | Type                                                                                                        |
-| :-------- | :---------------------------------------------------------------------------------------------------------- |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"username"` \| `"password"`\> |
+| Name | Type |
+| :------ | :------ |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 
 `void`
 
----
+___
 
 ### $list
 
@@ -80,21 +80,21 @@ List all the email templates in the system.
 
 **`Example`**
 
-```js
+``` js
 $list({
-  state: {
-    tenant: 'https://palantir-example.com/am',
-    user: 'gandalf',
-    password: 'TheAge3021!&^',
-  },
+ state: {
+     tenant: 'https://palantir-example.com/am',
+     user: 'gandalf',
+     password: 'TheAge3021!&^'
+ },
 });
 ```
 
 #### Parameters
 
-| Name      | Type                                                                                                        |
-| :-------- | :---------------------------------------------------------------------------------------------------------- |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<`"tenant"` \| `"username"` \| `"password"`\> |
+| Name | Type |
+| :------ | :------ |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"username"`` \| ``"password"``\> |
 
 #### Returns
 

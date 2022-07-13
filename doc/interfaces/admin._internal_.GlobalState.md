@@ -34,7 +34,7 @@ Descibes the global state of a lib-frodo client
 
 #### Defined in
 
-[src/types/state/State.d.ts:10](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L10)
+[src/types/state/State.d.ts:10](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L10)
 
 ___
 
@@ -46,7 +46,7 @@ which version of ForgeRock Access Management (AM) is in use.
 
 #### Defined in
 
-[src/types/state/State.d.ts:14](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L14)
+[src/types/state/State.d.ts:14](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L14)
 
 ___
 
@@ -58,7 +58,7 @@ The bearer Token, a predominant type of access token used with OAuth 2.0.
 
 #### Defined in
 
-[src/types/state/State.d.ts:18](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L18)
+[src/types/state/State.d.ts:18](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L18)
 
 ___
 
@@ -70,7 +70,7 @@ After auth you will have a cookie with a name and value, this is the name.
 
 #### Defined in
 
-[src/types/state/State.d.ts:22](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L22)
+[src/types/state/State.d.ts:22](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L22)
 
 ___
 
@@ -82,7 +82,7 @@ After auth you will have a cookie with a name and value, this is the value.
 
 #### Defined in
 
-[src/types/state/State.d.ts:26](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L26)
+[src/types/state/State.d.ts:26](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L26)
 
 ___
 
@@ -94,7 +94,7 @@ choose the context of the target environment
 
 #### Defined in
 
-[src/types/state/State.d.ts:30](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L30)
+[src/types/state/State.d.ts:30](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L30)
 
 ___
 
@@ -106,7 +106,7 @@ The version of lib-frodo, this cannot be changed.
 
 #### Defined in
 
-[src/types/state/State.d.ts:34](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L34)
+[src/types/state/State.d.ts:34](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L34)
 
 ___
 
@@ -118,7 +118,7 @@ You provide a generated logging API key from the tenant.
 
 #### Defined in
 
-[src/types/state/State.d.ts:42](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L42)
+[src/types/state/State.d.ts:42](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L42)
 
 ___
 
@@ -130,7 +130,7 @@ You provide a generated logging API secret from the tenant.
 
 #### Defined in
 
-[src/types/state/State.d.ts:46](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L46)
+[src/types/state/State.d.ts:46](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L46)
 
 ___
 
@@ -142,7 +142,7 @@ The password of the admin user.
 
 #### Defined in
 
-[src/types/state/State.d.ts:50](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L50)
+[src/types/state/State.d.ts:50](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L50)
 
 ___
 
@@ -154,7 +154,7 @@ Which realm do the frodo commands affect?
 
 #### Defined in
 
-[src/types/state/State.d.ts:54](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L54)
+[src/types/state/State.d.ts:54](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L54)
 
 ___
 
@@ -166,7 +166,7 @@ What is the url of the tenant?
 
 #### Defined in
 
-[src/types/state/State.d.ts:38](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L38)
+[src/types/state/State.d.ts:38](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L38)
 
 ___
 
@@ -178,4 +178,4 @@ The username of the admin user.
 
 #### Defined in
 
-[src/types/state/State.d.ts:58](https://github.com/adam-cyclones/frodo/blob/6372901/src/types/state/State.d.ts#L58)
+[src/types/state/State.d.ts:58](https://github.com/adam-cyclones/frodo/blob/4889f83/src/types/state/State.d.ts#L58)
