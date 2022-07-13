@@ -1,8 +1,8 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / [\_admin](admin.md) / <internal\>
+[lib-frodo](../README.md) / [Modules](../modules.md) / [admin](admin.md) / <internal\>
 
 # Namespace: <internal\>
 
-[_admin](admin.md).<internal>
+[admin](admin.md).<internal>
 
 ## Table of contents
 
@@ -26,7 +26,7 @@ All AM supported versions
 
 #### Defined in
 
-[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/8f7f760/src/types/journey/OOTBNodeTypes.d.ts#L35)
+[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/journey/OOTBNodeTypes.d.ts#L35)
 
 ___
 

@@ -1,6 +1,6 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / \_email-template
+[lib-frodo](../README.md) / [Modules](../modules.md) / email-template
 
-# Module: \_email-template
+# Module: email-template
 
 ## Table of contents
 

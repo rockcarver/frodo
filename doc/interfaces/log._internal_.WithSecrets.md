@@ -1,8 +1,8 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / [\_log](../modules/log.md) / [<internal\>](../modules/log._internal_.md) / WithSecrets
+[lib-frodo](../README.md) / [Modules](../modules.md) / [log](../modules/log.md) / [<internal\>](../modules/log._internal_.md) / WithSecrets
 
 # Interface: WithSecrets
 
-[_log](../modules/log.md).[<internal>](../modules/log._internal_.md).WithSecrets
+[log](../modules/log.md).[<internal>](../modules/log._internal_.md).WithSecrets
 
 Provide your API key and generated secret
 
@@ -23,7 +23,7 @@ Your ForgeRock API logging key
 
 #### Defined in
 
-[src/types/unions/WithSecrets.d.ts:8](https://github.com/adam-cyclones/frodo/blob/8f7f760/src/types/unions/WithSecrets.d.ts#L8)
+[src/types/unions/WithSecrets.d.ts:8](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/unions/WithSecrets.d.ts#L8)
 
 ___
 
@@ -35,4 +35,4 @@ Your ForgeRock API logging secret
 
 #### Defined in
 
-[src/types/unions/WithSecrets.d.ts:12](https://github.com/adam-cyclones/frodo/blob/8f7f760/src/types/unions/WithSecrets.d.ts#L12)
+[src/types/unions/WithSecrets.d.ts:12](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/unions/WithSecrets.d.ts#L12)

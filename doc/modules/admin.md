@@ -1,6 +1,6 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / \_admin
+[lib-frodo](../README.md) / [Modules](../modules.md) / admin
 
-# Module: \_admin
+# Module: admin
 
 ## Table of contents
 

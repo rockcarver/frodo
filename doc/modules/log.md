@@ -1,6 +1,6 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / \_log
+[lib-frodo](../README.md) / [Modules](../modules.md) / log
 
-# Module: \_log
+# Module: log
 
 ## Table of contents
 

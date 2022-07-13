@@ -1,8 +1,8 @@
-[lib-frodo](../README.md) / [Modules](../modules.md) / [\_log](log.md) / <internal\>
+[lib-frodo](../README.md) / [Modules](../modules.md) / [log](log.md) / <internal\>
 
 # Namespace: <internal\>
 
-[_log](log.md).<internal>
+[log](log.md).<internal>
 
 ## Table of contents
 
