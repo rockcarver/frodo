@@ -5,7 +5,7 @@ const realmPathTemplate = '/realms/%s';
 
 /**
  * Get current realm path
- * @returns {String} a CREST-compliant realm path, e.g. /realms/root/realms/alpha
+ * @returns {string} a CREST-compliant realm path, e.g. /realms/root/realms/alpha
  */
 export function getCurrentRealmPath() {
   let realm = storage.session.getRealm();
@@ -21,7 +21,7 @@ export function getCurrentRealmPath() {
 
 /**
  * Get current realm name
- * @returns {String} name of the current name. /alpha -> alpha
+ * @returns {string} name of the current name. /alpha -> alpha
  */
 export function getCurrentRealmName() {
   const realm = storage.session.getRealm();
@@ -35,8 +35,8 @@ export function getCurrentRealmName() {
 
 /**
  * Get tenant base URL
- * @param {String} tenant tenant URL with path and query params
- * @returns {String} tenant base URL without path and query params
+ * @param {string} tenant tenant URL with path and query params
+ * @returns {string} tenant base URL without path and query params
  */
 export function getTenantURL(tenant) {
   const parsedUrl = new URL(tenant);

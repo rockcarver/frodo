@@ -41,8 +41,8 @@ export async function getProviders() {
 
 /**
  * Find all providers matching the filter and return the requested fields
- * @param {String} filter CREST filter string, eg "entityId+eq+'${entityId}'"
- * @param {String} fields Comma-delimited list of fields to include in the response
+ * @param {string} filter CREST filter string, eg "entityId+eq+'${entityId}'"
+ * @param {string} fields Comma-delimited list of fields to include in the response
  * @returns {Promise} a promise that resolves to an array of saml2 entities
  */
 export async function findProviders(filter = 'true', fields = '*') {
@@ -60,8 +60,8 @@ export async function findProviders(filter = 'true', fields = '*') {
 
 /**
  * Geta SAML2 entity provider by location and id
- * @param {String} location Entity provider location (hosted or remote)
- * @param {String} entityId64 Base64-encoded provider entity id
+ * @param {string} location Entity provider location (hosted or remote)
+ * @param {string} entityId64 Base64-encoded provider entity id
  * @returns {Promise} a promise that resolves to a saml2 entity provider object
  */
 export async function getProviderByLocationAndId(location, entityId64) {
@@ -79,7 +79,7 @@ export async function getProviderByLocationAndId(location, entityId64) {
 
 /**
  * Get SAML2 entity provider by entity id
- * @param {String} entityId Provider entity id
+ * @param {string} entityId Provider entity id
  * @returns {Promise} a promise that resolves to a saml2 entity provider object or null
  */
 export async function getProvider(entityId) {
@@ -99,8 +99,8 @@ export async function getProvider(entityId) {
 
 /**
  * Get a SAML2 entity provider's metadata URL by entity id
- * @param {String} entityId SAML2 entity id
- * @returns {String} the URL to get the metadata from
+ * @param {string} entityId SAML2 entity id
+ * @returns {string} the URL to get the metadata from
  */
 export function getProviderMetadataUrl(entityId) {
   return util.format(
@@ -113,7 +113,7 @@ export function getProviderMetadataUrl(entityId) {
 
 /**
  * Get a SAML2 entity provider's metadata by entity id
- * @param {String} entityId SAML2 entity id
+ * @param {string} entityId SAML2 entity id
  * @returns {Promise} a promise that resolves to an object containing a SAML2 metadata
  */
 export async function getProviderMetadata(entityId) {
@@ -124,9 +124,9 @@ export async function getProviderMetadata(entityId) {
 
 /**
  * Create a SAML2 entity provider
- * @param {String} location 'hosted' or 'remote'
+ * @param {string} location 'hosted' or 'remote'
  * @param {Object} providerData Object representing a SAML entity provider
- * @param {String} metaData Base64-encoded metadata XML. Only required for remote providers
+ * @param {string} metaData Base64-encoded metadata XML. Only required for remote providers
  * @returns {Promise} a promise that resolves to a saml2 entity provider object
  */
 export async function createProvider(location, providerData, metaData) {
@@ -158,7 +158,7 @@ export async function createProvider(location, providerData, metaData) {
 
 /**
  * Update SAML2 entity provider
- * @param {String} location Entity provider location (hosted or remote)
+ * @param {string} location Entity provider location (hosted or remote)
  * @param {Object} providerData Object representing a SAML entity provider
  * @returns {Promise} a promise that resolves to a saml2 entity provider object
  */

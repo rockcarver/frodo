@@ -6,7 +6,7 @@ const base64regex =
 
 /**
  * Is input Base64-encoded
- * @param {String} input
+ * @param {string} input
  * @returns {boolean} true if input is Base64-encoded, false otherwise
  */
 export function isBase64Encoded(input) {
@@ -15,8 +15,8 @@ export function isBase64Encoded(input) {
 
 /**
  * Base64-encode a string
- * @param {String} input String to base64-encode
- * @returns {String} Base64-encoded input string
+ * @param {string} input String to base64-encode
+ * @returns {string} Base64-encoded input string
  */
 export function encode(input, padding = true) {
   if (padding) {
@@ -27,8 +27,8 @@ export function encode(input, padding = true) {
 
 /**
  * Base64-decode a string
- * @param {String} input
- * @returns {String} Base64-decoded input string
+ * @param {string} input
+ * @returns {string} Base64-decoded input string
  */
 export function decode(input) {
   // eslint-disable-next-line no-param-reassign
@@ -50,13 +50,13 @@ if (Buffer.isEncoding('base64url')) {
 /**
  * Decode Base64URL
  * @param {*} input the string to decode
- * @returns {String} the decoded string.
+ * @returns {string} the decoded string.
  */
 export const decodeBase64Url = (input) => `${Buffer.from(input, 'base64')}`;
 
 /**
  * Encode Base65URL
  * @param {*} input the string to encode
- * @returns {String} the encoded string.
+ * @returns {string} the encoded string.
  */
 export const encodeBase64Url = enc;

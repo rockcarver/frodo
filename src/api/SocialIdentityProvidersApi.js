@@ -37,7 +37,7 @@ export async function getSocialIdentityProviderTypes() {
 
 /**
  * Get social identity providers by type
- * @param {String} type social identity provider type
+ * @param {string} type social identity provider type
  * @returns {Promise} a promise that resolves to an object containing an array of social identity providers of the requested type
  */
 export async function getSocialIdentityProvidersByType(type) {
@@ -92,8 +92,8 @@ export async function getProviderByTypeAndId(type, id) {
 
 /**
  * Get social identity provider by type and id
- * @param {String} type social identity provider type
- * @param {String} id social identity provider id/name
+ * @param {string} type social identity provider type
+ * @param {string} id social identity provider id/name
  * @param {Object} data a social identity provider object
  * @returns {Promise} a promise that resolves to an object containing a social identity provider
  */
