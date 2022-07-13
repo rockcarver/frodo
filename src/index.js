@@ -7,6 +7,7 @@ console.debug(
 );
 
 export * as admin from './bindings/admin.js';
-export * as log from './bindings/log.js';
 export * as application from './bindings/application.js';
 export * as emailTemplate from './bindings/email-template.js';
+export * as log from './bindings/log.js';
+export * as realm from './bindings/realm.js';
