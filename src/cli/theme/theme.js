@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default function setup() {
   const program = new Command('theme')
     .helpOption('-h, --help', 'Help')
-    .description('Manages themes.')
+    .description('Manage themes.')
     .executableDir(__dirname);
 
   program.command('list', 'List themes.').showHelpAfterError();
