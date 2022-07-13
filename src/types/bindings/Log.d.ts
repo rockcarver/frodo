@@ -1,5 +1,5 @@
 import { WithOptions } from '../state/State';
-import { WithSecrets } from '../unions/WithSecrets';
+import { WithKey, WithSecret } from '../unions/WithSecrets';
 import { WithTenant } from '../unions/WithTenant';
 import { WithUsername, WithPassword } from '../unions/WithCredentials';
 
@@ -17,7 +17,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * ```
  */
 export type List = (
-  options: WithOptions<keyof WithTenant | keyof WithSecrets>
+  options: WithOptions<keyof WithTenant | keyof WithKey | keyof WithSecret>
 ) => void;
 
 /**
@@ -34,5 +34,5 @@ export type List = (
  * ```
  */
 export type Tail = (
-  options: WithOptions<keyof WithTenant | keyof WithSecrets>
+  options: WithOptions<keyof WithTenant | keyof WithKey | keyof WithSecret>
 ) => void;

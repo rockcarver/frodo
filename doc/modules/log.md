@@ -4,10 +4,6 @@
 
 ## Table of contents
 
-### Namespaces
-
-- [&lt;internal\&gt;](log._internal_.md)
-
 ### Functions
 
 - [$list](log.md#$list)
@@ -37,7 +33,7 @@ $list({
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| keyof [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md)\> |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"key"`` \| ``"secret"``\> |
 
 #### Returns
 
@@ -67,7 +63,7 @@ $tail({
 
 | Name | Type |
 | :------ | :------ |
-| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| keyof [`WithSecrets`](../interfaces/log._internal_.WithSecrets.md)\> |
+| `options` | [`WithOptions`](../interfaces/admin._internal_.WithOptions.md)<``"tenant"`` \| ``"key"`` \| ``"secret"``\> |
 
 #### Returns
 
