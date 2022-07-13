@@ -10,7 +10,7 @@ axiosRetry(axios, {
   // retryCondition: (_error) => true // retry no matter what
 });
 
-export const timeout = 20000;
+export const timeout = 30000;
 export const amApiVersion = 'resource=1.0';
 
 /**
@@ -96,6 +96,36 @@ export function generateIdmApi(requestOverride = {}) {
     baseURL: getTenantURL(storage.session.getTenant()),
     timeout,
     headers: {},
+    ...requestOverride,
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
+    }),
+  };
+
+  if (storage.session.getBearerToken()) {
+    requestDetails.headers.Authorization = `Bearer ${storage.session.getBearerToken()}`;
+  }
+
+  const request = axios.create(requestDetails);
+
+  return request;
+}
+
+/**
+ * Generates a LogKeys API Axios instance
+ * @param {object} requestOverride Takes an object of AXIOS parameters that can be used to either add
+ * on extra information or override default properties https://github.com/axios/axios#request-config
+ *
+ * @returns {AxiosInstance}
+ */
+export function generateLogKeysApi(requestOverride = {}) {
+  const headers = {
+    'Content-type': 'application/json',
+  };
+  const requestDetails = {
+    baseURL: getTenantURL(storage.session.getTenant()),
+    timeout,
+    headers,
     ...requestOverride,
     httpsAgent: new https.Agent({
       rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
