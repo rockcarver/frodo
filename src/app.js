@@ -18,7 +18,7 @@ import journey from './cli/journey/journey.js';
 import logging from './cli/logging/logs.js';
 import realm from './cli/realm/cmd.js';
 import saml from './cli/saml/saml.js';
-import script from './cli/script/cmd.js';
+import script from './cli/script/script.js';
 import theme from './cli/theme/theme.js';
 
 const program = new Command(pkg.name).version(
