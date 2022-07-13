@@ -1,54 +1,80 @@
 import fs from 'fs';
-import _ from 'underscore';
-import storage from '../../storage/SessionStorage.js';
-import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
+import { FRODO_METADATA_ID } from '../../storage/constants.js';
 
-function getCurrentTimestamp() {
-  const ts = new Date();
-  return ts.toISOString();
-}
+// TODO: refactor types to use .d.ts files
+/**
+ * no description provided yet
+ * @typedef {Object} Metadata
+ * @property {string} Metadata.exportedBy username of the creator of this metadata
+ * @property {string} Metadata.exportDate the date this metadata was created
+ * @property {string} Metadata.exportTool The name of the export tool
+ * @property {string} Metadata.exportToolVersion The version of the export tool
+ */
 
-function getMetadata() {
-  const metadata = {
-    origin: storage.session.getTenant(),
-    exportedBy: storage.session.getUsername(),
-    exportDate: getCurrentTimestamp(),
-    exportTool: FRODO_METADATA_ID,
-    exportToolVersion: storage.session.getFrodoVersion(),
-  };
-  return metadata;
-}
+/**
+ * creates a formatted metadata object
+ * @returns {Metadata}
+ * @param {Object} config configObject
+ * @param {Object} config.state configObject typically originates from global state
+ * @param {string} config.state.host The host URL for the tenant
+ * @param {string} config.state.username The username of the tenant
+ * @param {string} config.state.frodoVersion The frodo version in use
+ */
+export const formatMetadata = ({
+  state: { host, username, frodoVersion },
+}) => ({
+  origin: host,
+  exportedBy: username,
+  exportDate: new Date().toISOString(),
+  exportTool: FRODO_METADATA_ID,
+  exportToolVersion: frodoVersion,
+});
 
-function convertBase64ScriptToArray(b64text) {
-  let arrayOut = [];
-  let plainText = Buffer.from(b64text, 'base64').toString();
-  plainText = plainText.replaceAll('\t', '    ');
-  arrayOut = plainText.split('\n');
-  return arrayOut;
-}
+/**
+ * Takes an base64 string and outputs an array of decoded script lines
+ * @param {string} b64text encoded script
+ * @returns {Array<string>} script lines array
+ */
+export const convertBase64ScriptToArray = (b64text) => {
+  return Buffer.from(b64text, 'base64')
+    .toString()
+    .replaceAll('\t', '    ')
+    .split('\n');
+};
 
-function convertArrayToBase64Script(scriptArray) {
-  const joinedText = scriptArray.join('\n');
-  const b64encodedScript = Buffer.from(joinedText).toString('base64');
-  return b64encodedScript;
-}
+/**
+ * Takes an array of decoded script lines and converts to a single base64 string
+ * @param {Array<string>} scriptArray script lines array
+ * @returns {string} encoded script
+ */
+export const convertArrayToBase64Script = (scriptArray) => {
+  return Buffer.from(scriptArray.join('\n')).toString('base64');
+};
 
-function validateImport(metadata) {
-  return true;
-}
+/**
+ * TODO: no-op not implimented yet
+ */
+export const validateImport = (metadata) => true;
 
-function checkTargetCompatibility(type, source, target) {
-  // console.log(`source ${source}, target ${target}`);
-  //   compatibilityKeys[type].forEach((element) => {
-  //     if (source[element] != target[element]) {
-  //       console.warn(`${element} in ${type} mismatch between source and target`);
-  //     }
-  //   });
-}
-
-function saveToFile(type, data, identifier, filename) {
+/**
+ * no description provided yet
+ * @param {Array<any>} data
+ * @param { string } identifier
+ * @param { string } filename
+ * @param {Object.state} state configObject typically originates from global state
+ * @param {string} state.type
+ * @param {string} state.host
+ * @param {string} state.username
+ * @param {string} state.frodoVersion
+ */
+export const saveToFile = ({
+  data,
+  identifier,
+  filename,
+  state: { type, host, username, frodoVersion },
+}) => {
   const exportData = {};
-  exportData.meta = getMetadata();
+  exportData.meta = formatMetadata({ host, username, frodoVersion });
   exportData[type] = {};
   data.forEach((element) => {
     exportData[type][element[identifier]] = element;
@@ -58,12 +84,4 @@ function saveToFile(type, data, identifier, filename) {
       return console.error(`ERROR - can't save ${type} to file`);
     }
   });
-}
-
-export {
-  saveToFile,
-  convertBase64ScriptToArray,
-  convertArrayToBase64Script,
-  validateImport,
-  checkTargetCompatibility,
 };

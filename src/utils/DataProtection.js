@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Data is stored in base64 format. Initially it was binary data
  * Format used in this encryption module.
@@ -9,7 +10,8 @@
  * +--------------------+-----------------------+----------------+----------------+
  * This module doesn't take care of data persistence, it's assumed the consuming method/class/package will do so.
  */
-import fs, { promises as fsp } from 'fs';
+import { writeFile, readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import crypto from 'crypto';
 import { homedir } from 'os';
 import { promisify } from 'util';
@@ -28,11 +30,11 @@ class DataProtection {
     //Generates a master key in base64 format. This master key will be used to derive the key for encryption. this key should be protected by an HSM or KMS
     _masterKey.set(this, async () => {
       try {
-        if (!fs.existsSync(masterKeyPath())) {
+        if (!existsSync(masterKeyPath())) {
           const masterKey = crypto.randomBytes(32).toString('base64');
-          await fsp.writeFile(masterKeyPath(), masterKey);
+          await writeFile(masterKeyPath(), masterKey);
         }
-        return await fsp.readFile(masterKeyPath(), 'utf8');
+        return await readFile(masterKeyPath(), 'utf8');
       } catch (err) {
         console.error(err.message);
       }
@@ -84,8 +86,8 @@ class DataProtection {
     const key = await _key.get(this)(masterKey, salt);
     const decipher = crypto.createDecipheriv('aes-256-gcm', key, nonce);
     decipher.setAuthTag(tag);
-    return (
-      JSON.parse(decipher.update(encrypted, 'binary', 'utf8') + decipher.final('utf8'))
+    return JSON.parse(
+      decipher.update(encrypted, 'binary', 'utf8') + decipher.final('utf8')
     );
   }
 }
