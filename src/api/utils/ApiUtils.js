@@ -21,10 +21,24 @@ export function getCurrentRealmPath() {
 
 /**
  * Get current realm name
- * @returns {String} name of the current name. /alpha -> alpha
+ * @returns {String} name of the current realm. /alpha -> alpha
  */
 export function getCurrentRealmName() {
   const realm = storage.session.getRealm();
+  const components = realm.split('/');
+  let realmName = '/';
+  if (components.length > 0) {
+    realmName = components[components.length - 1];
+  }
+  return realmName;
+}
+
+/**
+ * Get current realm name
+ * @param {String} realm realm
+ * @returns {String} name of the realm. /alpha -> alpha
+ */
+export function getRealmName(realm) {
   const components = realm.split('/');
   let realmName = '/';
   if (components.length > 0) {
