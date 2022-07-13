@@ -24,14 +24,14 @@ program
   .addOption(common.insecureOption)
   .addOption(
     new Option(
-      '-n, --theme-name <theme>',
-      'Name of a theme. If specified, -a and -A are ignored.'
+      '-n, --theme-name <name>',
+      'Name of the theme. If specified, -a and -A are ignored.'
     )
   )
   .addOption(
     new Option(
-      '-i, --theme-id <theme>',
-      'Id of a theme. If specified, -a and -A are ignored.'
+      '-i, --theme-id <uuid>',
+      'Uuid of the theme. If specified, -a and -A are ignored.'
     )
   )
   .addOption(
