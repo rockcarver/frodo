@@ -495,8 +495,8 @@ async function exportDependencies(treeObject, exportData, options) {
 
 /**
  * Export journey by id/name to file
- * @param {String} journeyId journey id/name
- * @param {String} file optional export file name
+ * @param {string} journeyId journey id/name
+ * @param {string} file optional export file name
  */
 export async function exportJourneyToFile(journeyId, file, options) {
   let fileName = file;
@@ -526,7 +526,7 @@ export async function exportJourneyToFile(journeyId, file, options) {
 
 /**
  * Get data for journey by id/name
- * @param {String} journeyId journey id/name
+ * @param {string} journeyId journey id/name
  * @returns
  */
 export async function getJourneyData(journeyId) {
@@ -547,7 +547,7 @@ export async function getJourneyData(journeyId) {
 
 /**
  * Export all journeys to file
- * @param {String} file optional export file name
+ * @param {string} file optional export file name
  */
 export async function exportJourneysToFile(file, options) {
   let fileName = file;
@@ -596,7 +596,7 @@ export async function exportJourneysToFiles(options) {
  * Helper to import a tree with all dependencies from an import data object (typically read from a file)
  * @param {Object} treeObject tree object containing tree and all its dependencies
  * @param {Object} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
- * @returns {String} empty string on success, null otherwise
+ * @returns {string} empty string on success, null otherwise
  */
 async function importTree(treeObject, options) {
   const { reUuid } = options;
@@ -981,8 +981,8 @@ async function importTree(treeObject, options) {
 
 /**
  * Import a journey from file
- * @param {String} journeyId journey id/name
- * @param {String} file import file name
+ * @param {string} journeyId journey id/name
+ * @param {string} file import file name
  * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneyFromFile(journeyId, file, options) {
@@ -1650,7 +1650,7 @@ export async function listJourneys(long = false, analyze = false) {
 
 /**
  * Delete a journey
- * @param {String} journeyId journey id/name
+ * @param {string} journeyId journey id/name
  * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
  */
 export async function deleteJourney(journeyId, options, spinner = true) {

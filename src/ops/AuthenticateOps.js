@@ -23,7 +23,7 @@ let adminClientId = 'idmAdminClient';
 
 /**
  * Helper function to get cookie name
- * @returns {String} cookie name
+ * @returns {string} cookie name
  */
 async function getCookieName() {
   try {
@@ -81,7 +81,7 @@ function checkAndHandle2FA(payload) {
 
 /**
  * Helper function to set the default realm by deployment type
- * @param {String} deploymentType deployment type
+ * @param {string} deploymentType deployment type
  */
 function determineDefaultRealm(deploymentType) {
   if (storage.session.getRealm() === global.DEFAULT_REALM_KEY) {
@@ -91,7 +91,7 @@ function determineDefaultRealm(deploymentType) {
 
 /**
  * Helper function to determine the deployment type
- * @returns {String} deployment type
+ * @returns {string} deployment type
  */
 async function determineDeploymentType() {
   const fidcClientId = 'idmAdminClient';
@@ -144,7 +144,7 @@ async function determineDeploymentType() {
 /**
  * Helper function to extract the semantic version string from a version info object
  * @param {Object} versionInfo version info object
- * @returns {String} semantic version
+ * @returns {string} semantic version
  */
 async function getSemanticVersion(versionInfo) {
   if ('version' in versionInfo) {
@@ -158,7 +158,7 @@ async function getSemanticVersion(versionInfo) {
 
 /**
  * Helper function to authenticate and obtain and store session cookie
- * @returns {String} empty string or null
+ * @returns {string} empty string or null
  */
 async function authenticate() {
   storage.session.setCookieName(await getCookieName());
@@ -210,10 +210,10 @@ async function authenticate() {
 
 /**
  * Helper function to obtain an oauth2 authorization code
- * @param {String} redirectURL oauth2 redirect uri
- * @param {String} codeChallenge PKCE code challenge
- * @param {String} codeChallengeMethod PKCE code challenge method
- * @returns {String} oauth2 authorization code or null
+ * @param {string} redirectURL oauth2 redirect uri
+ * @param {string} codeChallenge PKCE code challenge
+ * @param {string} codeChallengeMethod PKCE code challenge method
+ * @returns {string} oauth2 authorization code or null
  */
 async function getAuthCode(redirectURL, codeChallenge, codeChallengeMethod) {
   try {
@@ -248,7 +248,7 @@ async function getAuthCode(redirectURL, codeChallenge, codeChallengeMethod) {
 
 /**
  * Helper function to obtain oauth2 access token
- * @returns {String} empty string or null
+ * @returns {string} empty string or null
  */
 async function getAccessToken() {
   try {

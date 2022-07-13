@@ -19,7 +19,7 @@ const getConnectionProfilesFolder = () => `${os.homedir()}/.frodo`;
 
 /**
  * Get connection profiles file name
- * @returns {String} connection profiles file name
+ * @returns {string} connection profiles file name
  */
 export function getConnectionProfilesFileName() {
   return `${os.homedir()}/.frodo/.frodorc`;
@@ -28,7 +28,7 @@ export function getConnectionProfilesFileName() {
 /**
  * Find connection profile
  * @param {Object} connectionProfiles connection profile object
- * @param {String} host tenant host url or unique substring
+ * @param {string} host tenant host url or unique substring
  * @returns {Object} connection profile object or null
  */
 function findConnectionProfile(connectionProfiles, host) {
@@ -116,7 +116,7 @@ export function initConnectionProfiles() {
 
 /**
  * Get connection profile by host
- * @param {String} host host tenant host url or unique substring
+ * @param {string} host host tenant host url or unique substring
  * @returns {Object} connection profile or null
  */
 export async function getConnectionProfileByHost(host) {
@@ -200,7 +200,7 @@ export async function saveConnectionProfile() {
 
 /**
  * Delete connection profile
- * @param {String} host host tenant host url or unique substring
+ * @param {string} host host tenant host url or unique substring
  */
 export function deleteConnectionProfile(host) {
   const filename = getConnectionProfilesFileName();

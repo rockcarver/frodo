@@ -52,7 +52,7 @@ function getFileDataTemplate() {
 
 /**
  * List entity providers
- * @param {String} long Long list format with details
+ * @param {string} long Long list format with details
  */
 export async function listProviders(long = false) {
   const providerList = (await getProviders()).data.result;
@@ -117,8 +117,8 @@ async function exportDependencies(providerData, fileData) {
 
 /**
  * Export a single entity provider to file
- * @param {String} entityId Provider entity id
- * @param {String} file Optional filename
+ * @param {string} entityId Provider entity id
+ * @param {string} file Optional filename
  */
 export async function exportProvider(entityId, file = null) {
   let fileName = file;
@@ -163,8 +163,8 @@ export async function exportProvider(entityId, file = null) {
 
 /**
  * Export provider metadata to file
- * @param {String} entityId Provider entity id
- * @param {String} file Optional filename
+ * @param {string} entityId Provider entity id
+ * @param {string} file Optional filename
  */
 export async function exportMetadata(entityId, file = null) {
   let fileName = file;
@@ -190,7 +190,7 @@ export async function exportMetadata(entityId, file = null) {
 
 /**
  * Describe an entity provider's configuration
- * @param {String} entityId Provider entity id
+ * @param {string} entityId Provider entity id
  */
 export async function describeProvider(entityId) {
   const found = await findProviders(
@@ -239,7 +239,7 @@ export async function describeProvider(entityId) {
 
 /**
  * Export all entity providers to one file
- * @param {String} file Optional filename
+ * @param {string} file Optional filename
  */
 export async function exportProvidersToFile(file = null) {
   let fileName = file;
@@ -334,9 +334,9 @@ async function importDependencies(providerData, fileData) {
 
 /**
  * Find provider in import file and return its location
- * @param {String} entityId64 Base64-encoded provider entity id
+ * @param {string} entityId64 Base64-encoded provider entity id
  * @param {Object} fileData Import file json data
- * @returns {String} 'hosted' or 'remote' if found, undefined otherwise
+ * @returns {string} 'hosted' or 'remote' if found, undefined otherwise
  */
 function getLocation(entityId64, fileData) {
   if (_.get(fileData, ['saml', 'hosted', entityId64])) {
@@ -350,8 +350,8 @@ function getLocation(entityId64, fileData) {
 
 /**
  * Import a SAML entity provider by entity id from file
- * @param {String} entityId Provider entity id
- * @param {String} file Import file name
+ * @param {string} entityId Provider entity id
+ * @param {string} file Import file name
  */
 export async function importProvider(entityId, file) {
   const entityId64 = encode(entityId, false);
@@ -392,7 +392,7 @@ export async function importProvider(entityId, file) {
 
 /**
  * Import first SAML entity provider from file
- * @param {String} file Import file name
+ * @param {string} file Import file name
  */
 export async function importFirstProvider(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -442,7 +442,7 @@ export async function importFirstProvider(file) {
 
 /**
  * Import all SAML entity providers from file
- * @param {String} file Import file name
+ * @param {string} file Import file name
  */
 export async function importProvidersFromFile(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
