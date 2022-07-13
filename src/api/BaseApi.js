@@ -3,6 +3,7 @@ import axiosRetry from 'axios-retry';
 import * as https from 'https';
 import storage from '../storage/SessionStorage.js';
 import { getTenantURL } from './utils/ApiUtils.js';
+import pkg from '../../package.json' assert { type: 'json' };
 
 axiosRetry(axios, {
   retries: 3,
@@ -10,8 +11,8 @@ axiosRetry(axios, {
   // retryCondition: (_error) => true // retry no matter what
 });
 
-export const timeout = 30000;
-export const amApiVersion = 'resource=1.0';
+const timeout = 30000;
+const userAgent = `${pkg.name}/${pkg.version}`;
 
 /**
  * Generates an AM Axios API instance
@@ -23,8 +24,9 @@ export const amApiVersion = 'resource=1.0';
  */
 export function generateAmApi(resource, requestOverride = {}) {
   let headers = {
-    'Content-type': 'application/json',
-    'accept-api-version': resource.apiVersion,
+    'User-Agent': userAgent,
+    'Content-Type': 'application/json',
+    'Accept-API-Version': resource.apiVersion,
     Cookie: `${storage.session.raw.cookieName}=${storage.session.raw.cookieValue}`,
   };
   if (requestOverride.headers) {
@@ -59,7 +61,8 @@ export function generateAmApi(resource, requestOverride = {}) {
  */
 export function generateOauth2Api(resource, requestOverride = {}) {
   let headers = {
-    'accept-api-version': resource.apiVersion,
+    'User-Agent': userAgent,
+    'Accept-API-Version': resource.apiVersion,
     Cookie: `${storage.session.raw.cookieName}=${storage.session.raw.cookieValue}`,
   };
   if (requestOverride.headers) {
@@ -95,7 +98,9 @@ export function generateIdmApi(requestOverride = {}) {
   const requestDetails = {
     baseURL: getTenantURL(storage.session.getTenant()),
     timeout,
-    headers: {},
+    headers: {
+      'User-Agent': userAgent,
+    },
     ...requestOverride,
     httpsAgent: new https.Agent({
       rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
@@ -120,7 +125,8 @@ export function generateIdmApi(requestOverride = {}) {
  */
 export function generateLogKeysApi(requestOverride = {}) {
   const headers = {
-    'Content-type': 'application/json',
+    'User-Agent': userAgent,
+    'Content-Type': 'application/json',
   };
   const requestDetails = {
     baseURL: getTenantURL(storage.session.getTenant()),
@@ -150,8 +156,9 @@ export function generateLogKeysApi(requestOverride = {}) {
  */
 export function generateLogApi(requestOverride = {}) {
   const headers = {
-    'x-api-key': storage.session.getLogApiKey(),
-    'x-api-secret': storage.session.getLogApiSecret(),
+    'User-Agent': userAgent,
+    'X-API-Key': storage.session.getLogApiKey(),
+    'X-API-Secret': storage.session.getLogApiSecret(),
   };
   const requestDetails = {
     baseURL: getTenantURL(storage.session.getTenant()),
@@ -177,8 +184,9 @@ export function generateLogApi(requestOverride = {}) {
  */
 export function generateESVApi(resource, requestOverride = {}) {
   const headers = {
-    'Content-type': 'application/json',
-    'accept-api-version': resource.apiVersion,
+    'User-Agent': userAgent,
+    'Content-Type': 'application/json',
+    'Accept-API-Version': resource.apiVersion,
   };
   const requestDetails = {
     baseURL: getTenantURL(storage.session.getTenant()),
