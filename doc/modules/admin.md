@@ -33,7 +33,7 @@ Add AutoId static user mapping to enable dashboards and other AutoId-based funct
 **`Example`**
 
 ```js
-_addAutoIdStaticUserMapping({
+$addAutoIdStaticUserMapping({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -64,7 +64,7 @@ Create an oauth2 client with admin privileges.
 **`Example`**
 
 ``` js
-_createPrivlidgedOAuth2Client({
+$createPrivlidgedOAuth2Client({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -95,7 +95,7 @@ Grant an oauth2 client admin privileges.
 **`Example`**
 
 ```js
-_grantPrivlidgedOAuth2Client({
+$grantPrivlidgedOAuth2Client({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -126,7 +126,7 @@ Hide generic extension attributes.
 **`Example`**
 
 ```js
-_hideGenericExtensionAttributes({
+$hideGenericExtensionAttributes({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -157,7 +157,7 @@ List oauth2 clients with custom privileges.
 **`Example`**
 
 ```js
-_listCustomPrivilegedOAuth2Clients({
+$listCustomPrivilegedOAuth2Clients({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -188,7 +188,7 @@ List oauth2 clients with admin privileges.
 **`Example`**
 
 ```js
-_listPrivlidgedOAuth2Client({
+$listPrivlidgedOAuth2Client({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -219,7 +219,7 @@ List all subjects of static user mappings that are not oauth2 clients.
 **`Example`**
 
 ```js
-_listStaticUserMappings({
+$listStaticUserMappings({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -250,7 +250,7 @@ Remove a subject's static user mapping.
 **`Example`**
 
 ```js
-_removeStaticUserMapping({
+$removeStaticUserMapping({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -281,7 +281,7 @@ Repair org model.
 **`Example`**
 
 ```js
-_repairOrgModel({
+$repairOrgModel({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -312,7 +312,7 @@ Revoke admin privileges from an oauth2.
 **`Example`**
 
 ```js
-_revokePrivlidgedOAuth2Client({
+$revokePrivlidgedOAuth2Client({
  state: {
      username: 'gandalf',
      password: 'maiar',
@@ -343,7 +343,7 @@ Show generic extension attributes.
 **`Example`**
 
 ```js
-_showGenericExtensionAttributes({
+$showGenericExtensionAttributes({
  state: {
      username: 'gandalf',
      password: 'maiar',

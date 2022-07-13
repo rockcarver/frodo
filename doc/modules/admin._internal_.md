@@ -26,7 +26,7 @@ All AM supported versions
 
 #### Defined in
 
-[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/journey/OOTBNodeTypes.d.ts#L35)
+[src/types/journey/OOTBNodeTypes.d.ts:35](https://github.com/adam-cyclones/frodo/blob/d1f7bb7/src/types/journey/OOTBNodeTypes.d.ts#L35)
 
 ___
 

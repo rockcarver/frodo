@@ -23,7 +23,7 @@ Your ForgeRock API logging key
 
 #### Defined in
 
-[src/types/unions/WithSecrets.d.ts:8](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/unions/WithSecrets.d.ts#L8)
+[src/types/unions/WithSecrets.d.ts:8](https://github.com/adam-cyclones/frodo/blob/d1f7bb7/src/types/unions/WithSecrets.d.ts#L8)
 
 ___
 
@@ -35,4 +35,4 @@ Your ForgeRock API logging secret
 
 #### Defined in
 
-[src/types/unions/WithSecrets.d.ts:12](https://github.com/adam-cyclones/frodo/blob/a9b5a54/src/types/unions/WithSecrets.d.ts#L12)
+[src/types/unions/WithSecrets.d.ts:12](https://github.com/adam-cyclones/frodo/blob/d1f7bb7/src/types/unions/WithSecrets.d.ts#L12)

@@ -24,7 +24,7 @@ List available ID Cloud log sources.
 **`Example`**
 
 ``` js
-_list({
+$list({
  state: {
      key: 'palantir-logger',
      secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -54,7 +54,7 @@ Tail Identity Cloud logs.
 **`Example`**
 
 ``` js
-_tail({
+$tail({
  state: {
      key: 'palantir-logger',
      secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',

@@ -21,7 +21,7 @@ Export email templates.
 **`Example`**
 
 ``` js
-_export({
+$export({
  state: {
      tenant: 'palantir-logger',
      user: 'example.forgeblock.com',
@@ -51,7 +51,7 @@ Import email template.
 **`Example`**
 
 ``` js
-_import({
+$import({
  state: {
      tenant: 'palantir-logger',
      user: 'example.forgeblock.com',
@@ -81,7 +81,7 @@ List all the email templates in the system.
 **`Example`**
 
 ``` js
-_list({
+$list({
  state: {
      tenant: 'palantir-logger',
      user: 'example.forgeblock.com',

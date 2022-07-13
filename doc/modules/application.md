@@ -21,7 +21,7 @@ Export applications.
 **`Example`**
 
 ``` js
-_export({
+$export({
  state: {
      tenant: 'palantir-logger',
      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -52,7 +52,7 @@ Import application.
 **`Example`**
 
 ``` js
-_import({
+$import({
  state: {
      tenant: 'palantir-logger',
      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -83,7 +83,7 @@ List all applications in a realm.
 **`Example`**
 
 ``` js
-_list({
+$list({
  state: {
      tenant: 'palantir-logger',
      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
