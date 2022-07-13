@@ -9,7 +9,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * @example ``` js
  * $list({
  *  state: {
- *      tenant: 'palantir',
+ *      tenant: 'https://palantir-example.com/am',
  *      user: 'gandalf',
  *      password: 'TheAge3021!&^'
  *  },
@@ -28,7 +28,7 @@ export type List = (
  * @example ``` js
  * $export({
  *  state: {
- *      tenant: 'palantir',
+ *      tenant: 'https://palantir-example.com/am',
  *      user: 'gandalf',
  *      password: 'TheAge3021!&^'
  *  },
@@ -47,7 +47,7 @@ export type Export = (
  * @example ``` js
  * $import({
  *  state: {
- *      tenant: 'palantir',
+ *      tenant: 'https://palantir-example.com/am',
  *      user: 'gandalf',
  *      password: 'TheAge3021!&^'
  *  },

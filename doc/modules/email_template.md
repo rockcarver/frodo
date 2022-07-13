@@ -23,7 +23,7 @@ Export email templates.
 ```js
 $export({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     user: 'gandalf',
     password: 'TheAge3021!&^',
   },
@@ -53,7 +53,7 @@ Import email template.
 ```js
 $import({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     user: 'gandalf',
     password: 'TheAge3021!&^',
   },
@@ -83,7 +83,7 @@ List all the email templates in the system.
 ```js
 $list({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     user: 'gandalf',
     password: 'TheAge3021!&^',
   },

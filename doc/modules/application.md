@@ -23,7 +23,7 @@ Export applications.
 ```js
 $export({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     realm: '/mordor',
     user: 'gandalf',
     password: 'TheAge3021!&^',
@@ -54,7 +54,7 @@ Import application.
 ```js
 $import({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     realm: '/mordor',
     user: 'gandalf',
     password: 'TheAge3021!&^',
@@ -85,7 +85,7 @@ List all applications in a realm.
 ```js
 $list({
   state: {
-    tenant: 'palantir',
+    tenant: 'https://palantir-example.com/am',
     realm: '/mordor',
     user: 'gandalf',
     password: 'TheAge3021!&^',
