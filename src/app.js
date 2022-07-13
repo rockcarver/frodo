@@ -7,7 +7,7 @@ import { printMessage } from './ops/utils/Console.js';
 
 // commands
 import admin from './cli/admin/admin.js';
-import application from './cli/application/cmd.js';
+import app from './cli/app/app.js';
 import conn from './cli/conn/conn.js';
 import email from './cli/email/email.js';
 import esv from './cli/esv/esv.js';
@@ -31,7 +31,7 @@ const program = new Command(pkg.name).version(
     initConnectionProfiles();
 
     program.addCommand(admin());
-    program.addCommand(application());
+    program.addCommand(app());
     program.addCommand(conn());
     program.addCommand(email());
     program.addCommand(esv());
