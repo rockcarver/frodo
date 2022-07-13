@@ -7,7 +7,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * List all the email templates in the system.
  *
  * @example ``` js
- * _list({
+ * $list({
  *  state: {
  *      tenant: 'palantir-logger',
  *      user: 'example.forgeblock.com',
@@ -26,7 +26,7 @@ export type List = (
  * Export email templates.
  *
  * @example ``` js
- * _export({
+ * $export({
  *  state: {
  *      tenant: 'palantir-logger',
  *      user: 'example.forgeblock.com',
@@ -45,7 +45,7 @@ export type Export = (
  * Import email template.
  *
  * @example ``` js
- * _import({
+ * $import({
  *  state: {
  *      tenant: 'palantir-logger',
  *      user: 'example.forgeblock.com',

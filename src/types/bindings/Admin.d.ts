@@ -7,7 +7,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * Create an oauth2 client with admin privileges.
  *
  * @example ``` js
- * _createPrivlidgedOAuth2Client({
+ * $createPrivlidgedOAuth2Client({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -28,7 +28,7 @@ export type CreatePrivlidgedOAuth2Client = (
  *
  * @example
  * ```js
- * _listPrivlidgedOAuth2Client({
+ * $listPrivlidgedOAuth2Client({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -49,7 +49,7 @@ export type ListPrivlidgedOAuth2Clients = (
  *
  * @example
  * ```js
- * _grantPrivlidgedOAuth2Client({
+ * $grantPrivlidgedOAuth2Client({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -70,7 +70,7 @@ export type GrantPrivlidgedOAuth2Client = (
  *
  * @example
  * ```js
- * _revokePrivlidgedOAuth2Client({
+ * $revokePrivlidgedOAuth2Client({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -91,7 +91,7 @@ export type RevokePrivlidgedOAuth2Client = (
  *
  * @example
  * ```js
- * _listCustomPrivilegedOAuth2Clients({
+ * $listCustomPrivilegedOAuth2Clients({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -112,7 +112,7 @@ export type ListCustomPrivilegedOAuth2Clients = (
  *
  * @example
  * ```js
- * _listStaticUserMappings({
+ * $listStaticUserMappings({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -133,7 +133,7 @@ export type ListStaticUserMappings = (
  *
  * @example
  * ```js
- * _removeStaticUserMapping({
+ * $removeStaticUserMapping({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -154,7 +154,7 @@ export type RemoveStaticUserMapping = (
  *
  * @example
  * ```js
- * _addAutoIdStaticUserMapping({
+ * $addAutoIdStaticUserMapping({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -175,7 +175,7 @@ export type AddAutoIDStaticUserMapping = (
  *
  * @example
  * ```js
- * _hideGenericExtensionAttributes({
+ * $hideGenericExtensionAttributes({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -196,7 +196,7 @@ export type HideGenericExtensionAttributes = (
  *
  * @example
  * ```js
- * _showGenericExtensionAttributes({
+ * $showGenericExtensionAttributes({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',
@@ -217,7 +217,7 @@ export type ShowGenericExtensionAttributes = (
  *
  * @example
  * ```js
- * _repairOrgModel({
+ * $repairOrgModel({
  *  state: {
  *      username: 'gandalf',
  *      password: 'maiar',

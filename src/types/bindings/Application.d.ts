@@ -7,7 +7,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * List all applications in a realm.
  *
  * @example ``` js
- * _list({
+ * $list({
  *  state: {
  *      tenant: 'palantir-logger',
  *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -27,7 +27,7 @@ export type List = (
  * Export applications.
  *
  * @example ``` js
- * _export({
+ * $export({
  *  state: {
  *      tenant: 'palantir-logger',
  *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -47,7 +47,7 @@ export type Export = (
  * Import application.
  *
  * @example ``` js
- * _import({
+ * $import({
  *  state: {
  *      tenant: 'palantir-logger',
  *      realm: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',

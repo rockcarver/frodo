@@ -7,7 +7,7 @@ import { WithUsername, WithPassword } from '../unions/WithCredentials';
  * List available ID Cloud log sources.
  *
  * @example ``` js
- * _list({
+ * $list({
  *  state: {
  *      key: 'palantir-logger',
  *      secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
@@ -24,7 +24,7 @@ export type List = (
  * Tail Identity Cloud logs.
  *
  * @example ``` js
- * _tail({
+ * $tail({
  *  state: {
  *      key: 'palantir-logger',
  *      secret: 'jdajdiwj9uf8f38ffsasdadkoajfiafj',
