@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   \#320: Frodo now identifies itself through the User-Agent header `<name>/<version>` (e.g. frodo/0.7.1-1)
 
+### Changed
+
+-   Renamed `realm details` to `realm describe` but registered `realm details` as an alias for backwards compatibility
+-   Changed to application command
+    -   Renamed command to `app` but registered `application` as an alias for backwards compatibility
+    -   Renamed option -i/--id to -i/--app-id. Short version is not impacted by rename.
+-   Internal restructuring (#133, #134, #141 #142, #146)
+
 ### Fixes
 
 -   \#319: frodo admin create-oauth2-client-with-admin-privileges --llt properly handles name collisions
