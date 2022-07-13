@@ -10,14 +10,14 @@
 
 ### Functions
 
-- [\_list](log.md#_list)
-- [\_tail](log.md#_tail)
+- [$list](log.md#$list)
+- [$tail](log.md#$tail)
 
 ## Functions
 
-### \_list
+### $list
 
-▸ **_list**(`options`): `void`
+▸ **$list**(`options`): `void`
 
 List available ID Cloud log sources.
 
@@ -45,9 +45,9 @@ $list({
 
 ___
 
-### \_tail
+### $tail
 
-▸ **_tail**(`options`): `void`
+▸ **$tail**(`options`): `void`
 
 Tail Identity Cloud logs.
 
