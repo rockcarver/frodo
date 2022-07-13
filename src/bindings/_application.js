@@ -6,7 +6,7 @@
  * List all applications in a realm.
  * @type {import('../types/bindings/Application').List}
  */
-export const _list = ({ state }) => {
+export const $list = ({ state }) => {
   state;
 };
 
@@ -14,7 +14,7 @@ export const _list = ({ state }) => {
  * Export applications.
  * @type {import('../types/bindings/Application').Export}
  */
-export const _export = ({ state }) => {
+export const $export = ({ state }) => {
   state;
 };
 
@@ -22,6 +22,6 @@ export const _export = ({ state }) => {
  * Import application.
  * @type {import('../types/bindings/Application').Import}
  */
-export const _import = ({ state }) => {
+export const $import = ({ state }) => {
   state;
 };

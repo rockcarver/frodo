@@ -6,7 +6,7 @@
  * List all the email templates in the system.
  * @type {import('../types/bindings/EmailTemplates').List}
  */
-export const _list = ({ state }) => {
+export const $list = ({ state }) => {
   state;
 };
 
@@ -14,7 +14,7 @@ export const _list = ({ state }) => {
  * Export email templates.
  * @type {import('../types/bindings/EmailTemplates').Export}
  */
-export const _export = ({ state }) => {
+export const $export = ({ state }) => {
   state;
 };
 
@@ -22,6 +22,6 @@ export const _export = ({ state }) => {
  * Import email template.
  * @type {import('../types/bindings/EmailTemplates').Import}
  */
-export const _import = ({ state }) => {
+export const $import = ({ state }) => {
   state;
 };

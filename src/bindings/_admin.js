@@ -6,7 +6,7 @@
  * Create an oauth2 client with admin privileges.
  * @type {import('../types/bindings/Admin').CreatePrivlidgedOAuth2Client}
  */
-export const _createPrivlidgedOAuth2Client = ({ state }) => {
+export const $createPrivlidgedOAuth2Client = ({ state }) => {
   state;
 };
 
@@ -14,7 +14,7 @@ export const _createPrivlidgedOAuth2Client = ({ state }) => {
  * List oauth2 clients with admin privileges.
  * @type {import('../types/bindings/Admin').ListPrivlidgedOAuth2Clients}
  */
-export const _listPrivlidgedOAuth2Client = ({ state }) => {
+export const $listPrivlidgedOAuth2Client = ({ state }) => {
   state;
 };
 
@@ -22,7 +22,7 @@ export const _listPrivlidgedOAuth2Client = ({ state }) => {
  * Grant an oauth2 client admin privileges.
  * @type {import('../types/bindings/Admin').GrantPrivlidgedOAuth2Client}
  */
-export const _grantPrivlidgedOAuth2Client = ({ state }) => {
+export const $grantPrivlidgedOAuth2Client = ({ state }) => {
   state;
 };
 
@@ -30,7 +30,7 @@ export const _grantPrivlidgedOAuth2Client = ({ state }) => {
  * Revoke admin privileges from an oauth2.
  * @type {import('../types/bindings/Admin').RevokePrivlidgedOAuth2Client}
  */
-export const _revokePrivlidgedOAuth2Client = ({ state }) => {
+export const $revokePrivlidgedOAuth2Client = ({ state }) => {
   state;
 };
 
@@ -38,7 +38,7 @@ export const _revokePrivlidgedOAuth2Client = ({ state }) => {
  * List oauth2 clients with custom privileges.
  * @type {import('../types/bindings/Admin').ListCustomPrivilegedOAuth2Clients}
  */
-export const _listCustomPrivilegedOAuth2Clients = ({ state }) => {
+export const $listCustomPrivilegedOAuth2Clients = ({ state }) => {
   state;
 };
 
@@ -46,7 +46,7 @@ export const _listCustomPrivilegedOAuth2Clients = ({ state }) => {
  * List all subjects of static user mappings that are not oauth2 clients.
  * @type {import('../types/bindings/Admin').ListStaticUserMappings}
  */
-export const _listStaticUserMappings = ({ state }) => {
+export const $listStaticUserMappings = ({ state }) => {
   state;
 };
 
@@ -54,7 +54,7 @@ export const _listStaticUserMappings = ({ state }) => {
  * Remove a subject's static user mapping.
  * @type {import('../types/bindings/Admin').RemoveStaticUserMapping}
  */
-export const _removeStaticUserMapping = ({ state }) => {
+export const $removeStaticUserMapping = ({ state }) => {
   state;
 };
 
@@ -62,7 +62,7 @@ export const _removeStaticUserMapping = ({ state }) => {
  * Add AutoId static user mapping to enable dashboards and other AutoId-based functionality.
  * @type {import('../types/bindings/Admin').AddAutoIDStaticUserMapping}
  */
-export const _addAutoIdStaticUserMapping = ({ state }) => {
+export const $addAutoIdStaticUserMapping = ({ state }) => {
   state;
 };
 
@@ -70,7 +70,7 @@ export const _addAutoIdStaticUserMapping = ({ state }) => {
  * Hide generic extension attributes.
  * @type {import('../types/bindings/Admin').HideGenericExtensionAttributes}
  */
-export const _hideGenericExtensionAttributes = ({ state }) => {
+export const $hideGenericExtensionAttributes = ({ state }) => {
   state;
 };
 
@@ -78,7 +78,7 @@ export const _hideGenericExtensionAttributes = ({ state }) => {
  * Show generic extension attributes.
  * @type {import('../types/bindings/Admin').ShowGenericExtensionAttributes}
  */
-export const _showGenericExtensionAttributes = ({ state }) => {
+export const $showGenericExtensionAttributes = ({ state }) => {
   state;
 };
 
@@ -86,6 +86,6 @@ export const _showGenericExtensionAttributes = ({ state }) => {
  * Repair org model.
  * @type {import('../types/bindings/Admin').RepairOrgModel}
  */
-export const _repairOrgModel = ({ state }) => {
+export const $repairOrgModel = ({ state }) => {
   state;
 };

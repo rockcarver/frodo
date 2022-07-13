@@ -1,8 +1,13 @@
 import packageJSON from '../../package.json';
 
-const stateDebugger = (targetObject, property, value) => {
-  console.debug(`Global state changed, "${property}" set to ${value}`);
-  return Reflect.set(targetObject, property, value);
+/**
+ * Enables debug logging of state in development mode, you may see this in tests.
+ */
+const stateDebugger = {
+  set: (targetObject, property, value) => {
+    console.debug(`Global state changed, "${property}" set to ${value}`);
+    return Reflect.set(targetObject, property, value);
+  },
 };
 
 /**
@@ -27,7 +32,5 @@ export const state = new Proxy(
     username: '',
   },
   // debuging proxy
-  {
-    set: stateDebugger,
-  }
+  ...stateDebugger
 );

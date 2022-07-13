@@ -1,4 +1,4 @@
-import { state } from '../../src/storage/state.js';
+import { state } from '../../src/storage/state';
 
 test('State defaults should be', () => {
   expect(state).toEqual({
