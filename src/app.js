@@ -11,7 +11,7 @@ import application from './cli/application/cmd.js';
 import conn from './cli/conn/conn.js';
 import email from './cli/email/email.js';
 import esv from './cli/esv/esv.js';
-import idm from './cli/idm/cmd.js';
+import idm from './cli/idm/idm.js';
 import idp from './cli/idp/idp.js';
 import info from './cli/info/info.js';
 import journey from './cli/journey/journey.js';
