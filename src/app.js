@@ -10,7 +10,7 @@ import admin from './cli/admin/cmd.js';
 import application from './cli/application/cmd.js';
 import connections from './cli/connections/cmd.js';
 import email from './cli/email/email.js';
-import idm from './cli/idm/cmd.js';
+import idm from './cli/idm/idm.js';
 import idp from './cli/idp/idp.js';
 import info from './cli/info/cmd.js';
 import journey from './cli/journey/journey.js';
