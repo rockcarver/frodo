@@ -31,7 +31,7 @@ function getMetadata() {
  *
  * e.g.: 'ALL UPPERCASE AND all lowercase' = 'All Uppercase And All Lowercase'
  */
-function titleCase(input) {
+export function titleCase(input) {
   const str = input.toString();
   const splitStr = str.toLowerCase().split(' ');
   for (let i = 0; i < splitStr.length; i += 1) {
