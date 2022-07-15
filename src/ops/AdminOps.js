@@ -636,7 +636,7 @@ export async function createLongLivedToken(
       const newSecret = `${secret}-${expires}`;
       printMessage(
         `esv '${secret}' already exists, using ${newSecret}`,
-        'warning'
+        'warn'
       );
       await putSecret(newSecret, response.access_token, description);
       response.secret = newSecret;

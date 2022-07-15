@@ -2,18 +2,12 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
+import { printMessage } from '../../ops/utils/Console.js';
 import {
-  createProgressBar,
-  printMessage,
-  stopProgressBar,
-  updateProgressBar,
-} from '../../ops/utils/Console.js';
-import {
-  convertBase64TextToArray,
-  getTypedFilename,
-  saveToFile,
-} from '../../ops/utils/ExportImportUtils.js';
-import { getScriptByName, listScripts } from '../../api/ScriptApi.js';
+  exportScriptByName,
+  exportScriptsToFile,
+  exportScriptsToFiles,
+} from '../../ops/ScriptOps.js';
 
 const program = new Command('frodo script export');
 
@@ -69,79 +63,23 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        // export
+        // export by name
         if (options.scriptName || options.script) {
           printMessage('Exporting script...');
-          let fileName = getTypedFilename(
+          exportScriptByName(
             options.scriptName || options.script,
-            'script'
+            options.file
           );
-          if (options.file) {
-            fileName = options.file;
-          }
-          const scriptData = await getScriptByName(
-            options.scriptName || options.script
-          );
-          if (scriptData.length > 1) {
-            printMessage(
-              `Multiple scripts with name ${
-                options.scriptName || options.script
-              } found...`,
-              'error'
-            );
-          }
-          scriptData.forEach((element) => {
-            const scriptTextArray = convertBase64TextToArray(element.script);
-            // eslint-disable-next-line no-param-reassign
-            element.script = scriptTextArray;
-          });
-          saveToFile('script', scriptData, '_id', fileName);
         }
         // -a / --all
         else if (options.all) {
           printMessage('Exporting all scripts to a single file...');
-          let fileName = getTypedFilename(
-            `all${storage.session.getRealm()}Scripts`,
-            'script'
-          );
-          const scriptList = await listScripts();
-          const allScriptsData = [];
-          createProgressBar(scriptList.length, 'Exporting script');
-          for (const item of scriptList) {
-            updateProgressBar(`Reading script ${item.name}`);
-            // eslint-disable-next-line no-await-in-loop
-            const scriptData = await getScriptByName(item.name);
-            scriptData.forEach((element) => {
-              const scriptTextArray = convertBase64TextToArray(element.script);
-              // eslint-disable-next-line no-param-reassign
-              element.script = scriptTextArray;
-              allScriptsData.push(element);
-            });
-          }
-          if (options.file) {
-            fileName = options.file;
-          }
-          stopProgressBar('Done');
-          saveToFile('script', allScriptsData, '_id', fileName);
+          exportScriptsToFile(options.file);
         }
         // -A / --all-separate
         else if (options.allSeparate) {
           printMessage('Exporting all scripts to separate files...');
-          const scriptList = await listScripts();
-          createProgressBar(scriptList.length, 'Exporting script');
-          for (const item of scriptList) {
-            updateProgressBar(`Reading script ${item.name}`);
-            // eslint-disable-next-line no-await-in-loop
-            const scriptData = await getScriptByName(item.name);
-            scriptData.forEach((element) => {
-              const scriptTextArray = convertBase64TextToArray(element.script);
-              // eslint-disable-next-line no-param-reassign
-              element.script = scriptTextArray;
-            });
-            const fileName = getTypedFilename(item.name, 'script');
-            saveToFile('script', scriptData, '_id', fileName);
-          }
-          stopProgressBar('Done');
+          exportScriptsToFiles();
         }
         // unrecognized combination of options or no options
         else {

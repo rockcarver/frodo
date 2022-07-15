@@ -3,6 +3,7 @@ import * as common from '../cmd_common.js';
 import storage from '../../storage/SessionStorage.js';
 import { saveConnectionProfile } from '../../ops/ConnectionProfileOps.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
+import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo conn add');
 
@@ -17,7 +18,7 @@ program
   .addArgument(common.passwordArgument)
   .addArgument(common.apiKeyArgument)
   .addArgument(common.apiSecretArgument)
-  .addOption(new Option('--validate', 'Validate connection.'))
+  .addOption(new Option('--no-validate', 'Do not validate connection.'))
   .action(
     // implement command logic inside action handler
     async (host, user, password, key, secret, options) => {
@@ -26,7 +27,7 @@ program
       storage.session.setPassword(password);
       storage.session.setLogApiKey(key);
       storage.session.setLogApiSecret(secret);
-      if (!options.validate || getTokens()) {
+      if ((options.validate && (await getTokens())) || !options.validate) {
         saveConnectionProfile();
       }
     }

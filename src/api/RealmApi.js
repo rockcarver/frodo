@@ -1,5 +1,9 @@
 import util from 'util';
-import { getTenantURL, getCurrentRealmPath } from './utils/ApiUtils.js';
+import {
+  getTenantURL,
+  getCurrentRealmPath,
+  getRealmName,
+} from './utils/ApiUtils.js';
 import { generateAmApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 import { printMessage } from '../ops/utils/Console.js';
@@ -99,7 +103,7 @@ export async function getRealmByName(name) {
   const realms = await listRealms();
   let realm = null;
   realms.forEach((realmConfig) => {
-    if (name === realmConfig.name) {
+    if (getRealmName(name) === realmConfig.name) {
       realm = realmConfig;
     }
   });

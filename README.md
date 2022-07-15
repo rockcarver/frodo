@@ -8,19 +8,26 @@ Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheu
 
 1. Download the platform specific binary archive from the [release page](https://github.com/rockcarver/frodo/releases) and unzip it to a directory.
 2. Open a terminal and change to the above directory.
-3. Run `frodo info` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` will connect, print information about the environment on the console and also save the [connection](#connections) details.
+3. Run `frodo conn add` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` creates a new [connection profile](#connection-profiles). If you are offline and don't want to validate the data you enter, you can use the --no-validate paramter and frodo stores the [connection profile](#connection-profiles) without validating it.
 ```console
-$ frodo info https://openam-example-use1-dev.id.forgerock.io/am username@example.com 5uP3r-53cr3t
-Printing versions and tokens...
+$ frodo conn add https://openam-tenant-name.forgeblocks.com/am john.doe@company.com '5uP3r-53cr3t!'
 ForgeRock Identity Cloud detected.
-Connected to ForgeRock Access Management 7.2.0-2022-4-SNAPSHOT Build 28162a406361e4d7a92a37c15bb1f8d6b6da7f90 (2022-May-04 20:45)
-Cookie name: 27e1d6427df2a07
-Session token: w7nvv <snip> IwMQ..*
-Bearer token: eyJ0eXAiOiJKV1QiL <snip> 68SEpHUg
+Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
+Saving creds in /Users/john.doe/.frodo/.frodorc...
 ```
 **NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](docs/BINARIES.md) if this happens.**
-
-4. Now you can use other frodo commands, like `journey`, `logs`, `applications` etc. as desired. **For detailed usage, refer to [this](#usage)**
+4. Test your connection profile using a simple convenience feature in frodo:
+```console
+$ frodo info tenant-name
+Printing versions and tokens...
+ForgeRock Identity Cloud detected.
+Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
+Cookie name: 6ac6499e9da2071
+Session token: g9CMhj7k9Asq...
+Bearer token: eyJ0eXAiOiJKV...
+```
+Note how the command does not specify the complete tenant URL nor username nor password. I only uses a unique substring that matches the tenant URL and frodo looks up and uses the right [connection profile](#connection-profiles).
+5. Now you can use other frodo commands, like `journey`, `logs`, `applications` etc. as desired. **For detailed usage, refer to [this](#usage)**
 
 ## Quick Nav
 
@@ -76,9 +83,9 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
 
   List, export, and import scripts.
 
-- Manage Identity Cloud secrets.
+- Manage Identity Cloud environment specific variables and secrets.
 
-  List and view details of secrets in Identity Cloud (Note: the nature of secrets does not allow the value to be retrieved, therefore the details only inlude other information about the secret, not the value of the secret).
+  List and view details of secrets and variables in Identity Cloud.
 
 - Platform admin tasks.
 

@@ -2,13 +2,11 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { listScripts } from '../../ops/ScriptOps.js';
 
-const program = new Command('frodo script list');
+const program = new Command('frodo app describe');
 
 program
-  .description('List scripts.')
+  .description('Describe OAuth2 application.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
@@ -17,9 +15,7 @@ program
   .addArgument(common.passwordArgument)
   .addOption(common.deploymentOption)
   .addOption(common.insecureOption)
-  .addOption(
-    new Option('-l, --long', 'Long with all fields.').default(false, 'false')
-  )
+  .addOption(new Option('-i, --app-id <id>', 'OAuth2 application id/name.'))
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -30,10 +26,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
-          `Listing scripts in realm "${storage.session.getRealm()}"...`
-        );
-        await listScripts(options.long);
+        // code goes here
       }
     }
     // end command logic inside action handler

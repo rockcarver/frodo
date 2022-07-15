@@ -7,15 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.8.1-0] - 2022-07-14
+### Added
+
+-   New `-l`/`--long` option to script list command
+
+### Changed
+
+-   Changed default behavior of `frodo conn add` to validate connection details by default and renamed parameter from `--validate` to `--no-validate` to allow disabling validation
+-   Internal restructuring (#169)
+
+### Fixed
+
+-   \#324: Frodo now includes themes assigned at journey level in journey exports
+
+## [0.8.1-0] - 2022-07-14 [YANKED]
 
 ## [0.8.0] - 2022-07-13
 
 ### Added
 
--   \#320: Frodo now identifies itself through the User-Agent header `<name>/<version>` (e.g. frodo/0.7.1-1)
+-   \#320: Frodo now identifies itself through the User-Agent header `<name>/<version>` (e.g. `frodo/0.7.1-1`)
 
-### Fixes
+### Changed
+
+-   Renamed `realm details` to `realm describe` but registered `realm details` as an alias for backwards compatibility
+-   Changes to application command
+    -   Renamed command to `app` but registered `application` as an alias for backwards compatibility
+    -   Renamed option `-i`/`--id` to `-i`/`--app-id`. Short version is not impacted by rename.
+-   Internal restructuring (#133, #134, #141 #142, #146)
+
+### Fixed
 
 -   \#319: frodo admin create-oauth2-client-with-admin-privileges --llt properly handles name collisions
 

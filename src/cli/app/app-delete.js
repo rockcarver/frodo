@@ -2,13 +2,11 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { importScriptsFromFile } from '../../ops/ScriptOps.js';
 
-const program = new Command('frodo script import');
+const program = new Command('frodo cmd delete');
 
 program
-  .description('Import scripts.')
+  .description('Cmd delete.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
@@ -17,25 +15,26 @@ program
   .addArgument(common.passwordArgument)
   .addOption(common.deploymentOption)
   .addOption(common.insecureOption)
-  .addOption(new Option('-f, --file <file>', 'Name of the file to import.'))
   .addOption(
     new Option(
-      '-n, --script-name <name>',
-      'Name of the script. If specified, -a and -A are ignored.'
+      '-i, --app-id <id>',
+      'OAuth2 application id/name. If specified, -a and -A are ignored.'
+    )
+  )
+  .addOption(
+    new Option('-a, --all', 'Delete all cmds in a realm. Ignored with -i.')
+  )
+  .addOption(
+    new Option(
+      '--no-deep',
+      'No deep delete. This leaves orphaned configuration artifacts behind.'
     )
   )
   .addOption(
     new Option(
-      '--re-uuid',
-      'Re-UUID. Create a new UUID for the script upon import. Use this to duplicate a script or create a new version of the same script. Note that you must also choose a new name using -n/--script-name to avoid import errors.'
-    ).default(false, 'false')
-  )
-  // deprecated option
-  .addOption(
-    new Option(
-      '-s, --script <script>',
-      'DEPRECATED! Use -n/--script-name instead. Name of the script.'
-    )
+      '--verbose',
+      'Verbose output during command execution. If specified, may or may not produce additional output.'
+    ).default(false, 'off')
   )
   .action(
     // implement command logic inside action handler
@@ -47,14 +46,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
-          `Importing script(s) into realm "${storage.session.getRealm()}"...`
-        );
-        importScriptsFromFile(
-          options.scriptName || options.script,
-          options.file,
-          options.reUuid
-        );
+        // code goes here
       }
     }
     // end command logic inside action handler

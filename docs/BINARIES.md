@@ -4,16 +4,16 @@ Prebuilt binaries for major OSes (MacOs, Windows and linux) are available on the
 ## MacOS
 - When frodo is run from a terminal for the first time, you may see a popup like below
 
-![warning](docs/images/macos_warn1.png)
+![warning](images/macos_warn1.png)
 
 - You can either click "Show in Finder" or open Finder yourself and navigate to where the `frodo` binary is.
 - **Right click** on `frodo` and then click **Open**
 
-![open](docs/images/macos_warn2.png)
+![open](images/macos_warn2.png)
 
 - Another popup, like below, will show 
 
-![open2](docs/images/macos_warn3.png)
+![open2](images/macos_warn3.png)
 
 - Click **Open** in this popup. A terminal window will open and then exit (it will be quick).
 - Now you will be able to run `frodo` in the terminal

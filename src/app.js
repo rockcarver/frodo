@@ -7,7 +7,7 @@ import { printMessage } from './ops/utils/Console.js';
 
 // commands
 import admin from './cli/admin/admin.js';
-import application from './cli/application/cmd.js';
+import app from './cli/app/app.js';
 import conn from './cli/conn/conn.js';
 import email from './cli/email/email.js';
 import esv from './cli/esv/esv.js';
@@ -16,7 +16,7 @@ import idp from './cli/idp/idp.js';
 import info from './cli/info/info.js';
 import journey from './cli/journey/journey.js';
 import logging from './cli/logging/logs.js';
-import realm from './cli/realm/cmd.js';
+import realm from './cli/realm/realm.js';
 import saml from './cli/saml/saml.js';
 import script from './cli/script/script.js';
 import theme from './cli/theme/theme.js';
@@ -31,7 +31,7 @@ const program = new Command(pkg.name).version(
     initConnectionProfiles();
 
     program.addCommand(admin());
-    program.addCommand(application());
+    program.addCommand(app());
     program.addCommand(conn());
     program.addCommand(email());
     program.addCommand(esv());
