@@ -3,7 +3,7 @@ import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
-import { listScripts } from '../../api/ScriptApi.js';
+import { listScripts } from '../../ops/ScriptOps.js';
 
 const program = new Command('frodo script list');
 
@@ -33,12 +33,7 @@ program
         printMessage(
           `Listing scripts in realm "${storage.session.getRealm()}"...`
         );
-        const scriptList = await listScripts();
-        // console.log(scriptList);
-        scriptList.sort((a, b) => a.name.localeCompare(b.name));
-        scriptList.forEach((item) => {
-          printMessage(`${item.name}`, 'data');
-        });
+        await listScripts(options.long);
       }
     }
     // end command logic inside action handler

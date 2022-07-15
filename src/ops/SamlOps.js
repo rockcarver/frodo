@@ -17,7 +17,7 @@ import {
   createProvider,
   getProviderMetadataUrl,
 } from '../api/Saml2Api.js';
-import { getScript, putScript } from '../api/ScriptApi.js';
+import { getScript } from '../api/ScriptApi.js';
 import {
   convertBase64TextToArray,
   convertBase64UrlTextToArray,
@@ -29,6 +29,7 @@ import {
   saveTextToFile,
   validateImport,
 } from './utils/ExportImportUtils.js';
+import { createOrUpdateScript } from './ScriptOps.js';
 
 const roleMap = {
   identityProvider: 'IDP',
@@ -91,7 +92,7 @@ async function exportDependencies(providerData, fileData) {
     'attributeMapperScript',
   ]);
   if (attrMapperScriptId && attrMapperScriptId !== '[Empty]') {
-    const scriptData = await getScript(attrMapperScriptId);
+    const scriptData = (await getScript(attrMapperScriptId)).data;
     scriptData.script = convertBase64TextToArray(scriptData.script);
     // eslint-disable-next-line no-param-reassign
     fileData.script[attrMapperScriptId] = scriptData;
@@ -103,7 +104,7 @@ async function exportDependencies(providerData, fileData) {
     'idpAdapterScript',
   ]);
   if (idpAdapterScriptId && idpAdapterScriptId !== '[Empty]') {
-    const scriptData = await getScript(idpAdapterScriptId);
+    const scriptData = (await getScript(idpAdapterScriptId)).data;
     scriptData.script = convertBase64TextToArray(scriptData.script);
     // eslint-disable-next-line no-param-reassign
     fileData.script[idpAdapterScriptId] = scriptData;
@@ -317,7 +318,7 @@ async function importDependencies(providerData, fileData) {
   if (attrMapperScriptId && attrMapperScriptId !== '[Empty]') {
     const scriptData = _.get(fileData, ['script', attrMapperScriptId]);
     scriptData.script = convertTextArrayToBase64(scriptData.script);
-    await putScript(attrMapperScriptId, scriptData);
+    await createOrUpdateScript(attrMapperScriptId, scriptData);
   }
   const idpAdapterScriptId = _.get(providerData, [
     'identityProvider',
@@ -328,7 +329,7 @@ async function importDependencies(providerData, fileData) {
   if (idpAdapterScriptId && idpAdapterScriptId !== '[Empty]') {
     const scriptData = _.get(fileData, ['script', idpAdapterScriptId]);
     scriptData.script = convertTextArrayToBase64(scriptData.script);
-    await putScript(attrMapperScriptId, scriptData);
+    await createOrUpdateScript(attrMapperScriptId, scriptData);
   }
 }
 

@@ -3,7 +3,8 @@ import {
   getSocialIdentityProviders,
   putProviderByTypeAndId,
 } from '../api/SocialIdentityProvidersApi.js';
-import { getScript, putScript } from '../api/ScriptApi.js';
+import { getScript } from '../api/ScriptApi.js';
+import { createOrUpdateScript } from './ScriptOps.js';
 import {
   convertBase64TextToArray,
   convertTextArrayToBase64,
@@ -83,7 +84,7 @@ export async function exportProvider(id, file = null) {
     const fileData = getFileDataTemplate();
     fileData.idp[idpData._id] = idpData;
     if (idpData.transform) {
-      const scriptData = await getScript(idpData.transform);
+      const scriptData = (await getScript(idpData.transform)).data;
       scriptData.script = convertBase64TextToArray(scriptData.script);
       fileData.script[idpData.transform] = scriptData;
     }
@@ -112,7 +113,7 @@ export async function exportProvidersToFile(file) {
     fileData.idp[idpData._id] = idpData;
     if (idpData.transform) {
       // eslint-disable-next-line no-await-in-loop
-      const scriptData = await getScript(idpData.transform);
+      const scriptData = (await getScript(idpData.transform)).data;
       scriptData.script = convertBase64TextToArray(scriptData.script);
       fileData.script[idpData.transform] = scriptData;
     }
@@ -135,7 +136,7 @@ export async function exportProvidersToFiles() {
     fileData.idp[idpData._id] = idpData;
     if (idpData.transform) {
       // eslint-disable-next-line no-await-in-loop
-      const scriptData = await getScript(idpData.transform);
+      const scriptData = (await getScript(idpData.transform)).data;
       scriptData.script = convertBase64TextToArray(scriptData.script);
       fileData.script[idpData.transform] = scriptData;
     }
@@ -166,7 +167,7 @@ export async function importProviderById(id, file) {
             if (scriptId && scriptData) {
               scriptData.script = convertTextArrayToBase64(scriptData.script);
               // eslint-disable-next-line no-await-in-loop
-              await putScript(
+              await createOrUpdateScript(
                 fileData.idp[idpId].transform,
                 fileData.script[fileData.idp[idpId].transform]
               );
@@ -219,7 +220,7 @@ export async function importFirstProvider(file) {
           if (scriptId && scriptData) {
             scriptData.script = convertTextArrayToBase64(scriptData.script);
             // eslint-disable-next-line no-await-in-loop
-            await putScript(
+            await createOrUpdateScript(
               fileData.idp[idpId].transform,
               fileData.script[fileData.idp[idpId].transform]
             );
@@ -272,7 +273,7 @@ export async function importProvidersFromFile(file) {
           if (scriptId && scriptData) {
             scriptData.script = convertTextArrayToBase64(scriptData.script);
             // eslint-disable-next-line no-await-in-loop
-            await putScript(
+            await createOrUpdateScript(
               fileData.idp[idpId].transform,
               fileData.script[fileData.idp[idpId].transform]
             );

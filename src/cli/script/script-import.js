@@ -1,20 +1,9 @@
-import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
-import {
-  createProgressBar,
-  printMessage,
-  stopProgressBar,
-  updateProgressBar,
-} from '../../ops/utils/Console.js';
-import {
-  convertTextArrayToBase64,
-  validateImport,
-} from '../../ops/utils/ExportImportUtils.js';
-import { putScript } from '../../api/ScriptApi.js';
+import { printMessage } from '../../ops/utils/Console.js';
+import { importScriptsFromFile } from '../../ops/ScriptOps.js';
 
 const program = new Command('frodo script import');
 
@@ -61,54 +50,11 @@ program
         printMessage(
           `Importing script(s) into realm "${storage.session.getRealm()}"...`
         );
-        fs.readFile(options.file, 'utf8', (err, data) => {
-          if (err) throw err;
-          const scriptData = JSON.parse(data);
-          if (validateImport(scriptData.meta)) {
-            createProgressBar(Object.keys(scriptData.script).length, '');
-            for (const existingId in scriptData.script) {
-              if ({}.hasOwnProperty.call(scriptData.script, existingId)) {
-                let newId = existingId;
-                // console.log(id);
-                const encodedScript = convertTextArrayToBase64(
-                  scriptData.script[existingId].script
-                );
-                scriptData.script[existingId].script = encodedScript;
-                if (options.reUuid) {
-                  newId = uuidv4();
-                  // printMessage(
-                  //   `Re-uuid-ing script ${scriptData.script[existingId].name} ${existingId} => ${newId}...`
-                  // );
-                  scriptData.script[existingId]._id = newId;
-                }
-                if (options.script) {
-                  // printMessage(
-                  //   `Renaming script ${scriptData.script[existingId].name} => ${options.script}...`
-                  // );
-                  scriptData.script[existingId].name = options.script;
-                }
-                updateProgressBar(
-                  `Importing ${scriptData.script[existingId].name}`
-                );
-                // console.log(scriptData.script[id]);
-                putScript(newId, scriptData.script[existingId]).then(
-                  (result) => {
-                    if (result == null)
-                      printMessage(
-                        `Error importing ${scriptData.script[existingId].name}`,
-                        'error'
-                      );
-                  }
-                );
-                if (options.script) break;
-              }
-            }
-            stopProgressBar('Done');
-            // printMessage('Done');
-          } else {
-            printMessage('Import validation failed...', 'error');
-          }
-        });
+        importScriptsFromFile(
+          options.scriptName || options.script,
+          options.file,
+          options.reUuid
+        );
       }
     }
     // end command logic inside action handler

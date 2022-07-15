@@ -25,7 +25,7 @@ import {
   deleteTree,
 } from '../api/TreeApi.js';
 import { getEmailTemplate, putEmailTemplate } from '../api/EmailTemplateApi.js';
-import { getScript, putScript } from '../api/ScriptApi.js';
+import { getScript } from '../api/ScriptApi.js';
 import * as global from '../storage/StaticStorage.js';
 import {
   printMessage,
@@ -64,6 +64,7 @@ import {
   putProviderByTypeAndId,
 } from '../api/SocialIdentityProvidersApi.js';
 import { getThemes, putThemes } from '../api/ThemeApi.js';
+import { createOrUpdateScript } from './ScriptOps.js';
 
 const containerNodes = ['PageNode', 'CustomPageNode'];
 
@@ -193,13 +194,12 @@ async function exportDependencies(treeObject, exportData, options) {
   const innerNodePromises = [];
   const saml2ConfigPromises = [];
   let socialProviderPromise = null;
-  const socialProviderTransformScriptPromises = [];
-  let themePromise = null;
+  const themePromise = getThemes();
 
   let allSaml2Providers = null;
   let allCirclesOfTrust = null;
   let filteredSocialProviders = null;
-  let themes = null;
+  const themes = [];
 
   const { useStringArrays } = options.useStringArrays;
 
@@ -313,10 +313,6 @@ async function exportDependencies(treeObject, exportData, options) {
         }
 
         if (themeId) {
-          if (!themePromise) {
-            themePromise = getThemes();
-          }
-          themes = themes || [];
           if (!themes.includes(themeId)) themes.push(themeId);
         }
       }
@@ -399,19 +395,6 @@ async function exportDependencies(treeObject, exportData, options) {
     }
   }
 
-  // Process scripts
-  const scripts = await Promise.all(scriptPromises);
-  scripts.forEach((scriptObject) => {
-    if (scriptObject) {
-      if (useStringArrays) {
-        scriptObject.script = convertBase64TextToArray(scriptObject.script);
-      } else {
-        scriptObject.script = JSON.stringify(decode(scriptObject.script));
-      }
-      exportData.scripts[scriptObject._id] = scriptObject;
-    }
-  });
-
   // Process email templates
   const settledEmailTemplatePromises = await Promise.allSettled(
     emailTemplatePromises
@@ -445,52 +428,44 @@ async function exportDependencies(treeObject, exportData, options) {
       if (
         socialProvider &&
         (!filteredSocialProviders ||
+          filteredSocialProviders.length === 0 ||
           filteredSocialProviders.includes(socialProvider._id))
       ) {
-        socialProviderTransformScriptPromises.push(
-          getScript(socialProvider.transform)
-        );
+        scriptPromises.push(getScript(socialProvider.transform));
         exportData.socialIdentityProviders[socialProvider._id] = socialProvider;
       }
     });
-    // socialIdentityProvider objects have a "transform" property which refers to a script. Get those scripts here.
-    await Promise.all(socialProviderTransformScriptPromises).then(
-      (socialIdentityProviderTransFormScriptPromiseResults) => {
-        socialIdentityProviderTransFormScriptPromiseResults.forEach(
-          (scriptObject) => {
-            if (scriptObject) {
-              if (useStringArrays) {
-                scriptObject.script = convertBase64TextToArray(
-                  scriptObject.script
-                );
-              } else {
-                scriptObject.script = JSON.stringify(
-                  decode(scriptObject.script)
-                );
-              }
-              // Add each script object to exportData.
-              exportData.scripts[scriptObject._id] = scriptObject;
-            }
-          }
-        );
-      }
-    );
   }
 
+  // Process scripts
+  const scripts = await Promise.all(scriptPromises);
+  scripts.forEach((scriptResultObject) => {
+    const scriptObject = _.get(scriptResultObject, 'data');
+    if (scriptObject) {
+      if (useStringArrays) {
+        scriptObject.script = convertBase64TextToArray(scriptObject.script);
+      } else {
+        scriptObject.script = JSON.stringify(decode(scriptObject.script));
+      }
+      exportData.scripts[scriptObject._id] = scriptObject;
+    }
+  });
+
   // Process themes
-  if (themes) {
-    await Promise.resolve(themePromise).then((themePromiseResults) => {
-      themePromiseResults.forEach((themeObject) => {
-        if (
-          themeObject &&
-          (themes.includes(themeObject._id) ||
-            themes.includes(themeObject.name))
-        ) {
-          exportData.themes.push(themeObject);
-        }
-      });
+  await Promise.resolve(themePromise).then((themePromiseResults) => {
+    themePromiseResults.forEach((themeObject) => {
+      if (
+        themeObject &&
+        // has the theme been specified by id or name in a page node?
+        (themes.includes(themeObject._id) ||
+          themes.includes(themeObject.name) ||
+          // has this journey been linked to a theme?
+          themeObject.linkedTrees.includes(treeObject._id))
+      ) {
+        exportData.themes.push(themeObject);
+      }
     });
-  }
+  });
 }
 
 /**
@@ -619,7 +594,7 @@ async function importTree(treeObject, options) {
         scriptObject.script = encode(JSON.parse(scriptObject.script));
       }
       // eslint-disable-next-line no-await-in-loop
-      if ((await putScript(scriptId, scriptObject)) == null) {
+      if ((await createOrUpdateScript(scriptId, scriptObject)) == null) {
         printMessage(
           `importJourney ERROR: error importing script ${scriptObject.name} (${scriptId}) in journey ${treeId}`,
           'error'
@@ -664,14 +639,17 @@ async function importTree(treeObject, options) {
       if (verbose) printMessage(`    - ${theme._id} (${theme.name})`, 'info');
       themes[theme._id] = theme;
     }
-    await putThemes(themes).then((result) => {
+    try {
+      const result = await putThemes(themes);
       if (result == null) {
         printMessage(
           `Error importing ${Object.keys(themes).length} themes from ${themes}`,
           'error'
         );
       }
-    });
+    } catch (error) {
+      printMessage(`Error importing themes: ${error.message}`, 'error');
+    }
   }
 
   // Process social providers
