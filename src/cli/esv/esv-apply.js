@@ -5,10 +5,12 @@ import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
 import { applyUpdates, checkForUpdates } from '../../ops/StartupOps.js';
 
-const program = new Command('frodo esv variable');
+const program = new Command('frodo esv apply');
 
 program
-  .description('Manage variables.')
+  .description(
+    'Apply pending changes to secrets and variables. Applying pending changes requires a restart of the AM and IDM pods and can take up to 10 minutes to complete.'
+  )
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
