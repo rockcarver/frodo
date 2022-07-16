@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.2-1] - 2022-07-16
+
 ### Fixed
 
 -   \#325: Frodo now gracefully reports and skips node types causing errors during pruning
@@ -218,7 +220,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.8.2-0...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.8.2-1...HEAD
+
+[0.8.2-1]: https://github.com/rockcarver/frodo/compare/v0.8.2-0...v0.8.2-1
 
 [0.8.2-0]: https://github.com/rockcarver/frodo/compare/v0.8.1...v0.8.2-0
 
