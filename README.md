@@ -16,6 +16,7 @@ Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039
 Saving creds in /Users/john.doe/.frodo/.frodorc...
 ```
 **NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](docs/BINARIES.md) if this happens.**
+
 4. Test your connection profile using a simple convenience feature in frodo:
 ```console
 $ frodo info tenant-name
@@ -27,6 +28,7 @@ Session token: g9CMhj7k9Asq...
 Bearer token: eyJ0eXAiOiJKV...
 ```
 Note how the command does not specify the complete tenant URL nor username nor password. I only uses a unique substring that matches the tenant URL and frodo looks up and uses the right [connection profile](#connection-profiles).
+
 5. Now you can use other frodo commands, like `journey`, `logs`, `applications` etc. as desired. **For detailed usage, refer to [this](#usage)**
 
 ## Quick Nav
