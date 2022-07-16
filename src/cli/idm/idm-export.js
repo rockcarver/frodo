@@ -53,8 +53,8 @@ program
   )
   .addOption(
     new Option(
-      '-A, --all-separate <directory>',
-      'Export all IDM configuration objects into separate JSON files in a directory specified by <directory>. Ignored with -N, and -a.'
+      '-A, --all-separate',
+      'Export all IDM configuration objects into separate JSON files in directory -D. Ignored with -N, and -a.'
     )
   )
   .addOption(
