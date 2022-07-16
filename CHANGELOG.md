@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.8.2-0] - 2022-07-16
+### Fixed
+
+-   \#325: Frodo now gracefully reports and skips node types causing errors during pruning
+
+## [0.8.2-0] - 2022-07-16 [YANKED]
 
 ## [0.8.1] - 2022-07-15
 
