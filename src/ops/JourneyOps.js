@@ -38,6 +38,7 @@ import {
   spinSpinner,
   failSpinner,
   stopSpinner,
+  warnSpinner,
 } from './utils/Console.js';
 import wordwrap from './utils/Wordwrap.js';
 import {
@@ -1209,23 +1210,41 @@ export function describeTree(treeData) {
 async function findOrphanedNodes() {
   const allNodes = [];
   const orphanedNodes = [];
+  let types = [];
   const allJourneys = (await getTrees()).data.result;
+  let errorMessage = '';
+  const errorTypes = [];
 
   showSpinner(`Counting total nodes...`);
-  const types = (await getNodeTypes()).data.result;
-  for (const type of types) {
-    // eslint-disable-next-line no-await-in-loop
-    (await getNodesByType(type._id)).data.result.forEach((node) => {
-      allNodes.push(node);
-      spinSpinner(`${allNodes.length} total nodes`);
-    });
+  try {
+    types = (await getNodeTypes()).data.result;
+  } catch (error) {
+    printMessage('Error retrieving all available node types:', 'error');
+    printMessage(error.response.data, 'error');
+    return [];
   }
-  succeedSpinner(`${allNodes.length} total nodes`);
+  for (const type of types) {
+    try {
+      // eslint-disable-next-line no-await-in-loop, no-loop-func
+      (await getNodesByType(type._id)).data.result.forEach((node) => {
+        allNodes.push(node);
+        spinSpinner(`${allNodes.length} total nodes${errorMessage}`);
+      });
+    } catch (error) {
+      errorTypes.push(type._id);
+      errorMessage = ` (Skipped type(s): ${errorTypes})`.yellow;
+      spinSpinner(`${allNodes.length} total nodes${errorMessage}`);
+    }
+  }
+  if (errorTypes.length > 0) {
+    warnSpinner(`${allNodes.length} total nodes${errorMessage}`);
+  } else {
+    succeedSpinner(`${allNodes.length} total nodes`);
+  }
 
   showSpinner('Counting active nodes...');
   const activeNodes = [];
   for (const journey of allJourneys) {
-    // allJourneys.forEach(async (journey) => {
     for (const nodeId in journey.nodes) {
       if ({}.hasOwnProperty.call(journey.nodes, nodeId)) {
         activeNodes.push(nodeId);
