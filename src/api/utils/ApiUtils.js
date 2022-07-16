@@ -1,9 +1,12 @@
 import util from 'util';
 import storage from '../../storage/SessionStorage.js';
-import * as global from '../../storage/StaticStorage.js';
 
 const realmPathTemplate = '/realms/%s';
 
+/**
+ * Get current realm path
+ * @returns {String} a CREST-compliant realm path, e.g. /realms/root/realms/alpha
+ */
 export function getCurrentRealmPath() {
   let realm = storage.session.getRealm();
   if (realm.startsWith('/') && realm.length > 1) {
@@ -16,64 +19,40 @@ export function getCurrentRealmPath() {
   return realmPath;
 }
 
+/**
+ * Get current realm name
+ * @returns {String} name of the current realm. /alpha -> alpha
+ */
+export function getCurrentRealmName() {
+  const realm = storage.session.getRealm();
+  const components = realm.split('/');
+  let realmName = '/';
+  if (components.length > 0) {
+    realmName = components[components.length - 1];
+  }
+  return realmName;
+}
+
+/**
+ * Get current realm name
+ * @param {String} realm realm
+ * @returns {String} name of the realm. /alpha -> alpha
+ */
+export function getRealmName(realm) {
+  const components = realm.split('/');
+  let realmName = '/';
+  if (components.length > 0) {
+    realmName = components[components.length - 1];
+  }
+  return realmName;
+}
+
+/**
+ * Get tenant base URL
+ * @param {String} tenant tenant URL with path and query params
+ * @returns {String} tenant base URL without path and query params
+ */
 export function getTenantURL(tenant) {
   const parsedUrl = new URL(tenant);
   return `${parsedUrl.protocol}//${parsedUrl.host}`;
-}
-
-export function applyNameCollisionPolicy(name) {
-  const capturingRegex = /(.* - imported) \(([0-9]+)\)/;
-  const found = name.match(capturingRegex);
-  if (found && found.length > 0 && found.length === 3) {
-    // already renamed one or more times
-    // return the next number
-    return `${found[1]} (${parseInt(found[2], 10) + 1})`;
-  }
-  // first time
-  return `${name} - imported (1)`;
-}
-
-export function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
-export function replaceAll(str, find, replace) {
-  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-}
-
-export function getRealmManagedUser() {
-  let realmManagedUser = 'user';
-  if (
-    storage.session.getDeploymentType() === global.CLOUD_DEPLOYMENT_TYPE_KEY
-  ) {
-    realmManagedUser = `${storage.session.getRealm()}_user`;
-  }
-  return realmManagedUser;
-}
-
-// return true if the two json objects have the same length and all the properties have the same value
-export function isEqualJson(obj1, obj2, ignoreKeys = []) {
-  const obj1Keys = Object.keys(obj1).filter((key) => !ignoreKeys.includes(key));
-  const obj2Keys = Object.keys(obj2).filter((key) => !ignoreKeys.includes(key));
-
-  if (obj1Keys.length !== obj2Keys.length) {
-    return false;
-  }
-
-  for (const objKey of obj1Keys) {
-    if (obj1[objKey] !== obj2[objKey]) {
-      if (
-        typeof obj1[objKey] === 'object' &&
-        typeof obj2[objKey] === 'object'
-      ) {
-        if (!isEqualJson(obj1[objKey], obj2[objKey], ignoreKeys)) {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    }
-  }
-
-  return true;
 }

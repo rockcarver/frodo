@@ -3,6 +3,9 @@ frodo-linux
 frodo-macos
 frodo-win.exe
 
+jsconfig.json
+package.json
+package-lock.json
 connections.json
 journey-*.json
 

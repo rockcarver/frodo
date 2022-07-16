@@ -1,6 +1,6 @@
 import util from 'util';
 import { encode } from './utils/Base64.js';
-import { getTenantURL, getCurrentRealmPath } from './utils/ApiUtils.js';
+import { getTenantURL } from './utils/ApiUtils.js';
 import { generateESVApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 
@@ -13,51 +13,19 @@ const secretURLTemplate = '%s/environment/secrets/%s';
 const secretSetDescriptionURLTemplate = `${secretURLTemplate}?_action=setDescription`;
 
 const apiVersion = 'protocol=1.0,resource=1.0';
-const getApiConfig = () => {
-  const configPath = getCurrentRealmPath();
-  return {
-    path: `${configPath}/environment/secrets`,
-    apiVersion,
-  };
-};
+const getApiConfig = () => ({
+  path: `/environment/secrets`,
+  apiVersion,
+});
 
-export async function listSecrets() {
+export async function getSecrets() {
   const urlString = util.format(
     secretsListURLTemplate,
     getTenantURL(storage.session.getTenant())
   );
-  const response = await generateESVApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return [];
-    });
-  return response.data.result;
+  return generateESVApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
 export async function getSecret(id) {
@@ -66,82 +34,34 @@ export async function getSecret(id) {
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateESVApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
-export async function createSecret(id, value, description) {
+export async function putSecret(
+  id,
+  value,
+  description,
+  encoding = 'generic',
+  useInPlaceholders = true
+) {
+  if (encoding !== 'generic')
+    throw new Error(`Unsupported encoding: ${encoding}`);
   const data = {
     valueBase64: encode(value),
     description,
-    encoding: 'generic',
-    useInPlaceholders: true,
+    encoding,
+    useInPlaceholders,
   };
   const urlString = util.format(
     secretURLTemplate,
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateESVApi(getApiConfig())
-    .put(urlString, data, { withCredentials: true })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).put(urlString, data, {
+    withCredentials: true,
+  });
 }
 
 export async function setSecretDescription(id, description) {
@@ -150,36 +70,11 @@ export async function setSecretDescription(id, description) {
     getTenantURL(storage.session.getTenant()),
     id
   );
-  await generateESVApi(getApiConfig())
-    .post(urlString, { description }, { withCredentials: true })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return '';
+  return generateESVApi(getApiConfig()).post(
+    urlString,
+    { description },
+    { withCredentials: true }
+  );
 }
 
 export async function deleteSecret(id) {
@@ -188,78 +83,20 @@ export async function deleteSecret(id) {
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateESVApi(getApiConfig())
-    .delete(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).delete(urlString, {
+    withCredentials: true,
+  });
 }
 
-export async function listSecretVersions(id) {
+export async function getSecretVersions(id) {
   const urlString = util.format(
     secretListVersionsURLTemplate,
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateESVApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return [];
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
 export async function createNewVersionOfSecret(id, value) {
@@ -268,36 +105,11 @@ export async function createNewVersionOfSecret(id, value) {
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateESVApi(getApiConfig())
-    .post(urlString, { valueBase64: encode(value) }, { withCredentials: true })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).post(
+    urlString,
+    { valueBase64: encode(value) },
+    { withCredentials: true }
+  );
 }
 
 export async function getVersionOfSecret(id, version) {
@@ -307,38 +119,9 @@ export async function getVersionOfSecret(id, version) {
     id,
     version
   );
-  const response = await generateESVApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
 export async function setStatusOfVersionOfSecret(id, version, status) {
@@ -348,44 +131,11 @@ export async function setStatusOfVersionOfSecret(id, version, status) {
     id,
     version
   );
-  const response = await generateESVApi(getApiConfig())
-    .post(urlString, { status }, { withCredentials: true })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
-}
-
-export async function enableVersionOfSecret(id, version) {
-  return setStatusOfVersionOfSecret(id, version, 'ENABLED');
-}
-
-export async function disableVersionOfSecret(id, version) {
-  return setStatusOfVersionOfSecret(id, version, 'DISABLED');
+  return generateESVApi(getApiConfig()).post(
+    urlString,
+    { status },
+    { withCredentials: true }
+  );
 }
 
 export async function deleteVersionOfSecret(id, version) {
@@ -395,36 +145,7 @@ export async function deleteVersionOfSecret(id, version) {
     id,
     version
   );
-  const response = await generateESVApi(getApiConfig())
-    .delete(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(
-          'Error! The request was made and the server responded with a status code!',
-          error.message
-        );
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(
-          'Error! The request was made but no response was received!',
-          error.message
-        );
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error setting up request', error.message);
-      }
-      console.log(error.config);
-      return null;
-    });
-  return response.data;
+  return generateESVApi(getApiConfig()).delete(urlString, {
+    withCredentials: true,
+  });
 }

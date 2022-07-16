@@ -1,13 +1,14 @@
 import util from 'util';
 import { generateIdmApi } from './BaseApi.js';
 import { getTenantURL } from './utils/ApiUtils.js';
-import { queryManagedObjects } from './IdmConfigApi.js';
+import { queryAllManagedObjectsByType } from './IdmConfigApi.js';
 import storage from '../storage/SessionStorage.js';
+import { printMessage } from '../ops/utils/Console.js';
 
 const organizationURLTemplate = '%s/openidm/managed/%s/%s';
 const organizationQueryTemplate = '%s/openidm/managed/%s?_queryId=query-all';
-const organizationHierarchyQueryTemplate =
-  '%s/openidm/managed/%s?_queryId=query-all&_fields=name,parent/*/name,children/*/name';
+// const organizationHierarchyQueryTemplate =
+//   '%s/openidm/managed/%s?_queryId=query-all&_fields=name,parent/*/name,children/*/name';
 // const organizationRootsQueryTemplate =
 // '%s/openidm/managed/%s?_queryFilter=!(parent/*/_ref+pr)&_fields=name,children/*/name';
 
@@ -30,22 +31,23 @@ export async function listOrganizations() {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'listOrganizations ERROR: list organizations data call returned %d',
-        response.status
+      printMessage(
+        `listOrganizations ERROR: list organizations data call returned ${response.status}`,
+        'error'
       );
       return [];
     }
     return response.data.result;
   } catch (e) {
-    console.error(
-      'listOrganizations ERROR: list organizations data error - ',
-      e.message
+    printMessage(
+      `listOrganizations ERROR: list organizations data error - ${e.message}`,
+      'error'
     );
     return [];
   }
 }
 
+// TODO: Move to ops layer
 export async function listOrganizationsTopDown() {
   const orgs = [];
   let result = {
@@ -58,13 +60,19 @@ export async function listOrganizationsTopDown() {
   };
   do {
     // eslint-disable-next-line no-await-in-loop
-    result = await queryManagedObjects(
+    result = await queryAllManagedObjectsByType(
       getRealmManagedOrganization(),
       ['name', 'parent/*/name', 'children/*/name'],
       result.pagedResultsCookie
-    );
+    ).catch((queryAllManagedObjectsByTypeError) => {
+      printMessage(queryAllManagedObjectsByTypeError, 'error');
+      printMessage(
+        `Error querying ${getRealmManagedOrganization()} objects: ${queryAllManagedObjectsByTypeError}`,
+        'error'
+      );
+    });
     orgs.concat(result.result);
-    process.stdout.write('.');
+    printMessage('.', 'text', false);
   } while (result.pagedResultsCookie);
   return orgs;
 }
@@ -79,17 +87,17 @@ export async function getOrganization(id) {
     );
     const response = await generateIdmApi().get(urlString);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        'getOrganization ERROR: get organization data call returned %d',
-        response.status
+      printMessage(
+        `getOrganization ERROR: get organization data call returned ${response.status}`,
+        'error'
       );
       return [];
     }
     return response.data;
   } catch (e) {
-    console.error(
-      'getOrganization ERROR: get organization data error - ',
-      e.message
+    printMessage(
+      `getOrganization ERROR: get organization data error - ${e.message}`,
+      'error'
     );
     return [];
   }
@@ -105,14 +113,18 @@ export async function putOrganization(id, data) {
     );
     const response = await generateIdmApi().put(urlString, data);
     if (response.status < 200 || response.status > 399) {
-      console.error(
-        `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`
+      printMessage(
+        `putOrganization ERROR: put organization call returned ${response.status}, details: ${response}`,
+        'error'
       );
       return null;
     }
     return response.data;
   } catch (e) {
-    console.error(`putOrganization ERROR: organization ${id} - ${e.message}`);
+    printMessage(
+      `putOrganization ERROR: organization ${id} - ${e.message}`,
+      'error'
+    );
     return null;
   }
 }
