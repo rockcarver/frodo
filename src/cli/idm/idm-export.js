@@ -23,8 +23,8 @@ program
   .addOption(common.insecureOption)
   .addOption(
     new Option(
-      '-i, --idm-name <idm-name>',
-      'Name of an object. If specified, -a and -A are ignored.'
+      '-N, --name <name>',
+      'Config entity name. E.g. "managed", "sync", "provisioner-<connector-name>", etc.'
     )
   )
   .addOption(
@@ -35,26 +35,32 @@ program
   )
   .addOption(
     new Option(
-      '-ef, --entities-file [entities-file]',
-      'Name of the entity file to write the exported object to. Ignored with -A.'
+      '-E, --entities-file [entities-file]',
+      'Name of the entity file. Ignored with -A.'
     )
   )
   .addOption(
     new Option(
-      '-env, --env-file [envfile]',
-      'Name of the env file to write the exported object to. Ignored with -A.'
+      '-e, --env-file [envfile]',
+      'Name of the env file. Ignored with -A.'
     )
   )
   .addOption(
     new Option(
       '-a, --all <directory> [file] [envFile]',
-      'Export all the objects in a realm to a single file. Ignored with -i.'
+      'Export all the objects in a realm to a single file. Ignored with -N.'
     )
   )
   .addOption(
     new Option(
       '-A, --all-separate <directory>',
-      'Export all IDM configuration objects into separate JSON files in a directory specified by <directory>. Ignored with -i, and -a.'
+      'Export all IDM configuration objects into separate JSON files in a directory specified by <directory>. Ignored with -N, and -a.'
+    )
+  )
+  .addOption(
+    new Option(
+      '-D, --directory <directory>',
+      'Export directory. Required with and ignored without -A.'
     )
   )
   .action(
@@ -87,11 +93,11 @@ program
           );
         }
         // --all-separate -A
-        else if (options.allSeparate) {
+        else if (options.allSeparate && options.directory) {
           printMessage(
-            `Exporting all IDM configuration objects into separate JSON files in ${options.allSeparate}...`
+            `Exporting all IDM configuration objects into separate JSON files in ${options.directory}...`
           );
-          exportAllRawConfigEntities(options.allSeparate);
+          exportAllRawConfigEntities(options.directory);
         }
         // unrecognized combination of options or no options
         else {
