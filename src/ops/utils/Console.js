@@ -228,6 +228,19 @@ export function succeedSpinner(message = null) {
 }
 
 /**
+ * Warn the spinner
+ * @param {String} message optional message to update the spinner
+ */
+export function warnSpinner(message = null) {
+  const spinner = storage.session.getItem('Spinner');
+  if (spinner) {
+    let options = {};
+    if (message) options = { text: message };
+    spinner.warn(options);
+  }
+}
+
+/**
  * Fail the spinner
  * @param {String} message optional message to update the spinner
  */
