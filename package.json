@@ -1,6 +1,6 @@
 {
   "name": "frodo",
-  "version": "0.8.2-1",
+  "version": "0.8.2",
   "type": "module",
   "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
   "main": "src/app.js",
