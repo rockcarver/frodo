@@ -75,7 +75,9 @@ export async function queryAllManagedObjectsByType(type, fields, pageCookie) {
   const fieldsParam =
     fields.length > 0 ? `&_fields=${fields.join(',')}` : '&_fields=_id';
   const urlTemplate = pageCookie
-    ? `${idmManagedObjectURLTemplate}${fieldsParam}&_pagedResultsCookie=${pageCookie}`
+    ? `${idmManagedObjectURLTemplate}${fieldsParam}&_pagedResultsCookie=${encodeURIComponent(
+        pageCookie
+      )}`
     : `${idmManagedObjectURLTemplate}${fieldsParam}`;
   const urlString = util.format(
     urlTemplate,

@@ -210,21 +210,18 @@ export async function countManagedObjects(type) {
     totalPagedResults: -1,
     remainingPagedResults: -1,
   };
-  do {
-    // eslint-disable-next-line no-await-in-loop
-    result = await queryAllManagedObjectsByType(
-      type,
-      [],
-      result.pagedResultsCookie
-    ).catch((queryAllManagedObjectsByTypeError) => {
-      printMessage(queryAllManagedObjectsByTypeError, 'error');
-      printMessage(
-        `Error querying managed objects by type: ${queryAllManagedObjectsByTypeError}`,
-        'error'
-      );
-    });
-    count += result.resultCount;
-    // count.active += result.result.filter(value => (value.accountStatus === 'active' || value.accountStatus === 'Active')).length;
-  } while (result.pagedResultsCookie);
-  printMessage(`${type}: ${count}`);
+  try {
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      result = (
+        await queryAllManagedObjectsByType(type, [], result.pagedResultsCookie)
+      ).data;
+      count += result.resultCount;
+      // printMessage(result);
+    } while (result.pagedResultsCookie);
+    printMessage(`${type}: ${count}`);
+  } catch (error) {
+    printMessage(error.response.data, 'error');
+    printMessage(`Error querying managed objects by type: ${error}`, 'error');
+  }
 }
