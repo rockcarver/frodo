@@ -8,7 +8,7 @@ import { printMessage } from '../../ops/utils/Console.js';
 const program = new Command('frodo idm list');
 
 program
-  .description('List all IDM configuration objects.')
+  .description('List IDM configuration objects.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)

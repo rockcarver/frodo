@@ -1,6 +1,6 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import { countManagedObjects } from '../../ops/IdmOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
@@ -8,18 +8,20 @@ import { printMessage } from '../../ops/utils/Console.js';
 const program = new Command('frodo idm count');
 
 program
-  .description('Count number of managed objects of a given type.')
+  .description('Count managed objects.')
   .helpOption('-h, --help', 'Help')
   .showHelpAfterError()
   .addArgument(common.hostArgumentM)
   .addArgument(common.realmArgument)
   .addArgument(common.userArgument)
   .addArgument(common.passwordArgument)
-  .addOption(common.managedNameOptionM)
   .addOption(common.insecureOption)
-  // .addOption(
-  //   new Option('-l, --long', 'Long with all fields.').default(false, 'false')
-  // )
+  .addOption(
+    new Option(
+      '-m, --managed-object <type>',
+      'Type of managed object to count. E.g. "alpha_user", "alpha_role", "user", "role".'
+    )
+  )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -30,8 +32,8 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(`Counting managed ${options.name} objects...`);
-        countManagedObjects(options.name);
+        printMessage(`Counting managed ${options.managedObject} objects...`);
+        countManagedObjects(options.managedObject);
       }
     }
     // end command logic inside action handler

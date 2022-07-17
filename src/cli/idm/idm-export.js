@@ -1,6 +1,6 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 import {
   exportAllConfigEntities,
   exportAllRawConfigEntities,
@@ -28,10 +28,7 @@ program
     )
   )
   .addOption(
-    new Option(
-      '-f, --file [file]',
-      'Name of the file to write the exported object to. Ignored with -A.'
-    )
+    new Option('-f, --file [file]', 'Export file. Ignored with -A.')
   )
   .addOption(
     new Option(
@@ -47,8 +44,8 @@ program
   )
   .addOption(
     new Option(
-      '-a, --all <directory> [file] [envFile]',
-      'Export all the objects in a realm to a single file. Ignored with -N.'
+      '-a, --all',
+      'Export all IDM configuration objects into a single file in directory -D. Ignored with -N.'
     )
   )
   .addOption(
@@ -60,7 +57,7 @@ program
   .addOption(
     new Option(
       '-D, --directory <directory>',
-      'Export directory. Required with and ignored without -A.'
+      'Export directory. Required with and ignored without -a/-A.'
     )
   )
   .action(
@@ -73,7 +70,6 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        console.log(options);
         // export by id/name
         if (options.idmName) {
           printMessage(
@@ -83,19 +79,26 @@ program
           );
           exportConfigEntity(options.idmName, options.file);
         }
-        // --all -a
-        else if (options.all) {
-          printMessage('Exporting all IDM configuration objects...');
+        // --all-separate -A
+        else if (
+          options.allSeparate &&
+          options.directory &&
+          options.entitiesFile &&
+          options.envFile
+        ) {
+          printMessage(
+            `Exporting IDM configuration objects specified in ${options.entitiesFile} into separate files in ${options.directory} using ${options.envFile} for variable replacement...`
+          );
           exportAllConfigEntities(
-            options.all,
+            options.directory,
             options.entitiesFile,
             options.envFile
           );
         }
-        // --all-separate -A
+        // --all-separate -A without variable replacement
         else if (options.allSeparate && options.directory) {
           printMessage(
-            `Exporting all IDM configuration objects into separate JSON files in ${options.directory}...`
+            `Exporting all IDM configuration objects into separate files in ${options.directory}...`
           );
           exportAllRawConfigEntities(options.directory);
         }
