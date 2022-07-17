@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+-   \#325: Frodo now gracefully reports and skips node types causing errors during pruning
 -   \#331: Frodo now correctly counts managed objects when using the `idm count` command
 
 ## [0.8.2-1] - 2022-07-16
