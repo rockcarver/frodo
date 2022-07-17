@@ -1,0 +1,8 @@
+{
+  "idm": [
+    "managed",
+    "sync",
+    "provisioner.openicf.connectorinfoprovider",
+    "authentication"
+  ]
+}
