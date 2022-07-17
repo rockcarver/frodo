@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.2] - 2022-07-17
+
+### Changed
+
+-   Changed `idm` sub-commands to align with other commands:
+    -   The sub-commands `export`, `exportAll`, and `exportAllRaw` have been collapsed into one: `export`
+        -   `idm export -A` (`--all-separate`) is now the way to export all idm configuration. 
+            -   Options `-e` and `-E` select old `exportAll` functionality with variable replacement and filtering
+            -   Omitting options `-e` and `-E`,  selects the old `exportAllRaw` functionality without variable replacement and without filtering
+    -   Renamed sample resource files for `idm export` command:
+        -   `<frodo home>/resources/sampleEntitiesFile.json`
+        -   `<frodo home>/resources/sampleEnvFile.env`
+    -   The `-N`/`--name` option of the count command has been renamed to `-m`/`--managed-object`
+-   Internal restructuring (#137)
+
+### Fixed
+
+-   \#325: Frodo now gracefully reports and skips node types causing errors during pruning
+-   \#331: Frodo now correctly counts managed objects when using the `idm count` command
+
 ## [0.8.2-1] - 2022-07-16
 
 ### Fixed
@@ -220,7 +240,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.8.2-1...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.8.2...HEAD
+
+[0.8.2]: https://github.com/rockcarver/frodo/compare/v0.8.2-1...v0.8.2
 
 [0.8.2-1]: https://github.com/rockcarver/frodo/compare/v0.8.2-0...v0.8.2-1
 
