@@ -65,6 +65,7 @@
     "cli-table3": "^0.6.2",
     "commander": "^9.3.0",
     "fs-extra": "^10.0.0",
+    "https-proxy-agent": "^5.0.1",
     "lodash": "^4.17.21",
     "nanospinner": "^1.1.0",
     "properties-reader": "^2.2.0",
@@ -72,6 +73,7 @@
     "readline-sync": "^1.4.10",
     "replaceall": "^0.1.6",
     "slugify": "^1.6.5",
+    "url": "^0.11.0",
     "uuid": "^8.3.2",
     "yesno": "^0.4.0"
   },

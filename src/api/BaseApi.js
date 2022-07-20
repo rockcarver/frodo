@@ -1,6 +1,8 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import * as https from 'https';
+import HttpsProxyAgent from 'https-proxy-agent';
+import url from 'url';
 import storage from '../storage/SessionStorage.js';
 import { getTenantURL } from './utils/ApiUtils.js';
 import pkg from '../../package.json' assert { type: 'json' };
@@ -13,6 +15,35 @@ axiosRetry(axios, {
 
 const timeout = 30000;
 const userAgent = `${pkg.name}/${pkg.version}`;
+let httpsAgent;
+
+/**
+ * Helper method to create properly configured httpsAgent
+ * @returns {any} appropriate httpsAgent
+ */
+function getHttpsAgent() {
+  if (httpsAgent) return httpsAgent;
+  const options = {
+    rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
+  };
+  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+  if (httpsProxy) {
+    // https://github.com/axios/axios/issues/3459
+    const parsed = url.parse(httpsProxy);
+    options.host = parsed.hostname;
+    options.port = parsed.port;
+    options.protocol = parsed.protocol;
+    options.rejectUnauthorized = !storage.session.getAllowInsecureConnection();
+    httpsAgent = new HttpsProxyAgent(options);
+    return httpsAgent;
+  }
+  httpsAgent = new https.Agent(options);
+  return httpsAgent;
+}
+
+function getProxy() {
+  return !(process.env.HTTPS_PROXY || process.env.https_proxy);
+}
 
 /**
  * Generates an AM Axios API instance
@@ -41,9 +72,8 @@ export function generateAmApi(resource, requestOverride = {}) {
     timeout,
     ...requestOverride,
     headers,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   const request = axios.create(requestDetails);
@@ -77,9 +107,8 @@ export function generateOauth2Api(resource, requestOverride = {}) {
     timeout,
     ...requestOverride,
     headers,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   const request = axios.create(requestDetails);
@@ -102,9 +131,8 @@ export function generateIdmApi(requestOverride = {}) {
       'User-Agent': userAgent,
     },
     ...requestOverride,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   if (storage.session.getBearerToken()) {
@@ -133,9 +161,8 @@ export function generateLogKeysApi(requestOverride = {}) {
     timeout,
     headers,
     ...requestOverride,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   if (storage.session.getBearerToken()) {
@@ -165,9 +192,8 @@ export function generateLogApi(requestOverride = {}) {
     timeout,
     headers,
     ...requestOverride,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   const request = axios.create(requestDetails);
@@ -193,9 +219,8 @@ export function generateESVApi(resource, requestOverride = {}) {
     timeout,
     headers,
     ...requestOverride,
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: !storage.session.getAllowInsecureConnection(),
-    }),
+    httpsAgent: getHttpsAgent(),
+    proxy: getProxy(),
   };
 
   if (storage.session.getBearerToken()) {
