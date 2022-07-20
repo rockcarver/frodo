@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../api/AuthApi.js';
 import { listAllConfigEntities } from '../../ops/IdmOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
+import { getTokens } from '../../ops/AuthenticateOps.js';
 
 const program = new Command('frodo idm list');
 
