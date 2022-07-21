@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   \#311: Added explicit support for network proxies (`HTTPS_PROXY=<protocol>://<host>:<port>`)
+    Frodo now supports using system enviroment variable `HTTPS_PROXY` (and `HTTP_PROXY`) to connect through a network proxy.
+
+### Fixed
+
+-   \#329: Fixed help info for `esv apply` command
+-   \#335: Fixed error when running `idm list` command
+
 ## [0.8.2] - 2022-07-17
 
 ### Changed
