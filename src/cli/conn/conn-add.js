@@ -18,6 +18,8 @@ program
   .addArgument(common.passwordArgument)
   .addArgument(common.apiKeyArgument)
   .addArgument(common.apiSecretArgument)
+  .addOption(common.deploymentOption)
+  .addOption(common.insecureOption)
   .addOption(new Option('--no-validate', 'Do not validate connection.'))
   .action(
     // implement command logic inside action handler
@@ -27,6 +29,8 @@ program
       storage.session.setPassword(password);
       storage.session.setLogApiKey(key);
       storage.session.setLogApiSecret(secret);
+      storage.session.setDeploymentType(options.type);
+      storage.session.setAllowInsecureConnection(options.insecure);
       if ((options.validate && (await getTokens())) || !options.validate) {
         saveConnectionProfile();
       }

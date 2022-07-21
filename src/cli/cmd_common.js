@@ -81,7 +81,7 @@ export const deploymentOptionM = new Option(
 
 export const insecureOption = new Option(
   '-k, --insecure',
-  'Allow insecure connections when using SSL/TLS'
+  'Allow insecure connections when using SSL/TLS. Has no effect when using a network proxy for https (HTTPS_PROXY=http://<host>:<port>), in that case the proxy must provide this capability.'
 ).default(false, "Don't allow insecure connections");
 
 export const nameOption = new Option(
