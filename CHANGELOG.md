@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1-1] - 2022-07-21
+
 ### Fixed
 
 -   \#338: Frodo now successfully authenticates with or without using a proxy
@@ -265,7 +267,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.1-0...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.1-1...HEAD
+
+[0.9.1-1]: https://github.com/rockcarver/frodo/compare/v0.9.1-0...v0.9.1-1
 
 [0.9.1-0]: https://github.com/rockcarver/frodo/compare/v0.9.0...v0.9.1-0
 
