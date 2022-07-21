@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+-   Changes to `frodo realm describe` command:
+    -   The realm argument now exclusively determines the realm
+    -   Removed `-n`/`--name` parameter
+-   Internal restructuring (#167)
+
 ## [0.9.0] - 2022-07-21
 
 ### Added

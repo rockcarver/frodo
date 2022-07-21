@@ -1,9 +1,10 @@
-import { Command, Option } from 'commander';
+import { Command } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { createKeyValueTable, printMessage } from '../../ops/utils/Console.js';
-import { getRealmByName } from '../../api/RealmApi.js';
+import { printMessage } from '../../ops/utils/Console.js';
+import { describe } from '../../ops/RealmOps.js';
+import { getRealmName } from '../../api/utils/ApiUtils.js';
 
 const program = new Command('frodo realm describe');
 
@@ -17,7 +18,6 @@ program
   .addArgument(common.passwordArgument)
   .addOption(common.deploymentOption)
   .addOption(common.insecureOption)
-  .addOption(new Option('-i, --cmd-id <cmd-id>', 'Cmd id.'))
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -31,24 +31,7 @@ program
         printMessage(
           `Retrieving details of realm ${storage.session.getRealm()}...`
         );
-        const realmConfig = await getRealmByName(storage.session.getRealm());
-        if (realmConfig != null) {
-          const table = createKeyValueTable();
-          table.push(['Name'.brightCyan, realmConfig.name]);
-          table.push([
-            'Status'.brightCyan,
-            realmConfig.active ? 'active'.brightGreen : 'inactive'.brightRed,
-          ]);
-          table.push([
-            'Custom Domains'.brightCyan,
-            realmConfig.aliases.join('\n'),
-          ]);
-          table.push(['Parent'.brightCyan, realmConfig.parentPath]);
-          table.push(['Id'.brightCyan, realmConfig._id]);
-          printMessage(table.toString());
-        } else {
-          printMessage(`No realm found with name ${options.target}`, 'warn');
-        }
+        describe(getRealmName(storage.session.getRealm()));
       }
     }
     // end command logic inside action handler
