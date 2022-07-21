@@ -7,13 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.1-1] - 2022-07-21
+### Added
 
-### Fixed
-
--   \#338: Frodo now successfully authenticates with or without using a proxy
-
-## [0.9.1-0] - 2022-07-21 [YANKED]
+-   \#311: Added explicit support for network proxies (`HTTPS_PROXY=<protocol>://<host>:<port>`)
+    Frodo now supports using system enviroment variable `HTTPS_PROXY` (and `HTTP_PROXY`) to connect through a network proxy.
 
 ### Changed
 
@@ -22,17 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   Removed `-n`/`--name` parameter
 -   Internal restructuring (#167)
 
-## [0.9.0] - 2022-07-21 [YANKED]
-
-### Added
-
--   \#311: Added explicit support for network proxies (`HTTPS_PROXY=<protocol>://<host>:<port>`)
-    Frodo now supports using system enviroment variable `HTTPS_PROXY` (and `HTTP_PROXY`) to connect through a network proxy.
-
 ### Fixed
 
 -   \#329: Fixed help info for `esv apply` command
 -   \#335: Fixed error when running `idm list` command
+-   \#338: Frodo now successfully authenticates with or without using a proxy
+
+## [0.9.1-1] - 2022-07-21
+
+## [0.9.1-0] - 2022-07-21 [YANKED]
+
+## [0.9.0] - 2022-07-21 [YANKED]
 
 ## [0.8.2] - 2022-07-17
 
