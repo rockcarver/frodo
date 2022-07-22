@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   \#341: Added initial smoke tests to validate basic functionality
+
 ## [0.9.1] - 2022-07-21
 
 ### Added
@@ -28,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   \#338: Frodo now successfully authenticates with or without using a proxy
 
 ## [0.9.1-1] - 2022-07-21
+
+### Fixed
+
+-   \#338: Frodo now successfully authenticates with or without using a proxy
 
 ## [0.9.1-0] - 2022-07-21 [YANKED]
 
