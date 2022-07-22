@@ -21,10 +21,6 @@ jobs:
           # Maps tcp port 3128 on the host to the same port in the service container
           - 3128:3128
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -34,7 +30,8 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+          node-version: 18
           cache: 'npm'
 
       - name: Install dependencies and install frodo globally
