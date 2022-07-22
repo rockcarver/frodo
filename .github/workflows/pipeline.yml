@@ -6,11 +6,12 @@ on:
       - 'main'
 
 jobs:
-  smoke-test:
+  smoke-tests:
+    name: 'Smoke Tests'
     # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
-    # Service containers to run with `smoke-test`
+    # Service containers to run with `smoke-tests`
     services:
       # Label used to access the service container
       squid:
@@ -66,7 +67,7 @@ jobs:
           frodo info "$FIDC_TENANT_URL"
 
   update-changelog:
-    needs: smoke-test
+    needs: smoke-tests
     name: 'Update Changelog'
     runs-on: ubuntu-latest
 
