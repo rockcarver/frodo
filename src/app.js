@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-json-modules --no-warnings --enable-source-maps
+#!/usr/bin/env -S node --no-warnings --enable-source-maps
 
 import { Command } from 'commander';
 import { initConnectionProfiles } from './ops/ConnectionProfileOps.js';

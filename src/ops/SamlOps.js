@@ -53,7 +53,7 @@ function getFileDataTemplate() {
 
 /**
  * List entity providers
- * @param {String} long Long list format with details
+ * @param {boolean} long Long list format with details
  */
 export async function listProviders(long = false) {
   const providerList = (await getProviders()).data.result;

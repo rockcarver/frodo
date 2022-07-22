@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2022-07-21
+
+### Added
+
+-   \#311: Added explicit support for network proxies (`HTTPS_PROXY=<protocol>://<host>:<port>`)
+    Frodo now supports using system enviroment variable `HTTPS_PROXY` (and `HTTP_PROXY`) to connect through a network proxy.
+
+### Changed
+
+-   Changes to `frodo realm describe` command:
+    -   The realm argument now exclusively determines the realm
+    -   Removed `-n`/`--name` parameter
+-   Internal restructuring (#167)
+
+### Fixed
+
+-   \#329: Fixed help info for `esv apply` command
+-   \#335: Fixed error when running `idm list` command
+-   \#338: Frodo now successfully authenticates with or without using a proxy
+
+## [0.9.1-1] - 2022-07-21
+
+## [0.9.1-0] - 2022-07-21 [YANKED]
+
+## [0.9.0] - 2022-07-21 [YANKED]
+
 ## [0.8.2] - 2022-07-17
 
 ### Changed
@@ -240,7 +266,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.8.2...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.1...HEAD
+
+[0.9.1]: https://github.com/rockcarver/frodo/compare/v0.9.1-1...v0.9.1
+
+[0.9.1-1]: https://github.com/rockcarver/frodo/compare/v0.9.1-0...v0.9.1-1
+
+[0.9.1-0]: https://github.com/rockcarver/frodo/compare/v0.9.0...v0.9.1-0
+
+[0.9.0]: https://github.com/rockcarver/frodo/compare/v0.8.2...v0.9.0
 
 [0.8.2]: https://github.com/rockcarver/frodo/compare/v0.8.2-1...v0.8.2
 

@@ -6,7 +6,6 @@ import {
 } from './utils/ApiUtils.js';
 import { generateAmApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
-import { printMessage } from '../ops/utils/Console.js';
 
 const realmsListURLTemplate = '%s/json/global-config/realms/?_queryFilter=true';
 const realmURLTemplate = '%s/json/global-config/realms/%s';
@@ -20,207 +19,81 @@ const getApiConfig = () => {
   };
 };
 
-export async function listRealms() {
+/**
+ * Get all realms
+ * @returns {Promise} a promise that resolves to an object containing an array of realm objects
+ */
+export async function getRealms() {
   const urlString = util.format(
     realmsListURLTemplate,
     storage.session.getTenant()
   );
-  const response = await generateAmApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        printMessage(
-          `Error! The request was made and the server responded with a status code! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.response.data, 'error');
-        printMessage(error.response.status, 'error');
-        printMessage(error.response.headers, 'error');
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        printMessage(
-          `Error! The request was made but no response was received! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.request, 'error');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        printMessage('Error setting up request', error.message, 'error');
-      }
-      printMessage(error.config, 'error');
-      return [];
-    });
-  return response.data.result;
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
+  });
 }
 
+/**
+ * Get realm by id
+ * @param {String} id realm id
+ * @returns {Promise} a promise that resolves to an object containing a realm object
+ */
 export async function getRealm(id) {
   const urlString = util.format(
     realmURLTemplate,
     storage.session.getTenant(),
     id
   );
-  const response = await generateAmApi(getApiConfig())
-    .get(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        printMessage(
-          `Error! The request was made and the server responded with a status code! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.response.data, 'error');
-        printMessage(error.response.status, 'error');
-        printMessage(error.response.headers, 'error');
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        printMessage(
-          `Error! The request was made but no response was received! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.request, 'error');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        printMessage(`Error setting up request - ${error.message}`, 'error');
-      }
-      printMessage(error.config, 'error');
-      return null;
-    });
-  return response.data;
-}
-
-export async function getRealmByName(name) {
-  const realms = await listRealms();
-  let realm = null;
-  realms.forEach((realmConfig) => {
-    if (getRealmName(name) === realmConfig.name) {
-      realm = realmConfig;
-    }
+  return generateAmApi(getApiConfig()).get(urlString, {
+    withCredentials: true,
   });
-  return realm;
 }
 
-export async function createRealm(id, data) {
+/**
+ * Get realm by name
+ * @param {String} name realm name
+ * @returns {Promise} a promise that resolves to a realm object
+ */
+export async function getRealmByName(name) {
+  return getRealms().then((realms) => {
+    for (const realm of realms.data.result) {
+      if (getRealmName(name) === realm.name) {
+        return realm;
+      }
+    }
+    throw new Error(`Realm ${name} not found!`);
+  });
+}
+
+/**
+ * Put realm
+ * @param {String} id realm id
+ * @param {Object} data realm config object
+ * @returns {Promise} a promise that resolves to an object containing a realm object
+ */
+export async function putRealm(id, data) {
   const urlString = util.format(
     realmURLTemplate,
     storage.session.getTenant(),
     id
   );
-  const response = await generateAmApi(getApiConfig())
-    .put(urlString, data, { withCredentials: true })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        printMessage(
-          `Error! The request was made and the server responded with a status code! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.response.data, 'error');
-        printMessage(error.response.status, 'error');
-        printMessage(error.response.headers, 'error');
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        printMessage(
-          `Error! The request was made but no response was received! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.request, 'error');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        printMessage(`Error setting up request - ${error.message}`, 'error');
-      }
-      printMessage(error.config, 'error');
-      return null;
-    });
-  return response.data;
+  return generateAmApi(getApiConfig()).put(urlString, data, {
+    withCredentials: true,
+  });
 }
 
-export async function updateRealm(id, data) {
-  return createRealm(id, data);
-}
-
-export async function addCustomDomain(name, domain) {
-  const realmConfig = await getRealmByName(name);
-  if (realmConfig) {
-    let exists = false;
-    realmConfig.aliases.forEach((alias) => {
-      if (domain.toLowerCase() === alias.toLowerCase()) {
-        exists = true;
-      }
-    });
-    if (!exists) {
-      realmConfig.aliases.push(domain.toLowerCase());
-      return updateRealm(realmConfig._id, realmConfig);
-    }
-    return realmConfig;
-  }
-  return null;
-}
-
-export async function removeCustomDomain(name, domain) {
-  const realmConfig = await getRealmByName(name);
-  if (realmConfig) {
-    const aliases = realmConfig.aliases.filter(
-      (alias) => domain.toLowerCase() !== alias.toLowerCase()
-    );
-    if (aliases.length < realmConfig.aliases.length) {
-      realmConfig.aliases = aliases;
-      return updateRealm(realmConfig._id, realmConfig);
-    }
-    return realmConfig;
-  }
-  return null;
-}
-
+/**
+ * Delete realm
+ * @param {String} id realm id
+ * @returns {Promise} a promise that resolves to an object containing a realm object
+ */
 export async function deleteRealm(id) {
   const urlString = util.format(
     realmURLTemplate,
     getTenantURL(storage.session.getTenant()),
     id
   );
-  const response = await generateAmApi(getApiConfig())
-    .delete(urlString, {
-      withCredentials: true,
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        printMessage(
-          `Error! The request was made and the server responded with a status code! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.response.data, 'error');
-        printMessage(error.response.status, 'error');
-        printMessage(error.response.headers, 'error');
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        printMessage(
-          `Error! The request was made but no response was received! - ${error.message}`,
-          'error'
-        );
-        printMessage(error.request, 'error');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        printMessage(`Error setting up request - ${error.message}`, 'error');
-      }
-      printMessage(error.config, 'error');
-      return null;
-    });
-  return response.data;
+  return generateAmApi(getApiConfig()).delete(urlString, {
+    withCredentials: true,
+  });
 }
