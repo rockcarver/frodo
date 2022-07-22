@@ -33,6 +33,8 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if ((options.validate && (await getTokens())) || !options.validate) {
         saveConnectionProfile();
+      } else {
+        process.exitCode = 1;
       }
     }
     // end command logic inside action handler
