@@ -54,6 +54,10 @@ Frodo is currently in a pre-1.0.0 phase. We are striving to release 1.0.0 very s
 
 The trigger event is any `push` to the `main` branch in the repository.
 
+### Smoke Tests
+
+This step performs a quick smoke test of the vital functions like login with and without network proxy. All smoke tests must pass or pipeline execution terminates.
+
 ### Update Changelog
 
 This step calculates the new version but doesn't modify `package.json` and `package-lock.json`. Based on that new version, it creates a new heading in the [CHANGELOG.md](../CHANGELOG.md) file and moves everything from the `Unreleased` section into the new version section. It also creates links to the release tags at the bottom of the [CHANGELOG.md](../CHANGELOG.md) file. Last but not least, it commits the updated [CHANGELOG.md](../CHANGELOG.md) file to the repository.
