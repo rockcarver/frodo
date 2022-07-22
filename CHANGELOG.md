@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.2-3] - 2022-07-22
-
 ### Added
 
 -   \#341: Added initial smoke tests to validate basic functionality
@@ -16,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 -   Updated PIPELINE.md with latest papeline changes
+
+## [0.9.2-3] - 2022-07-22 [YANKED]
 
 ## [0.9.2-2] - 2022-07-22 [YANKED]
 
