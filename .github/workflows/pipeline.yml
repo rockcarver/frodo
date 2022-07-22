@@ -69,6 +69,7 @@ jobs:
           frodo info "$FIDC_TENANT_URL"
 
   update-changelog:
+    needs: smoke-test
     name: 'Update Changelog'
     runs-on: ubuntu-latest
 
