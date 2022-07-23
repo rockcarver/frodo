@@ -1,9 +1,10 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
-import { listOAuth2Applications } from '../../api/ApplicationApi.js';
+import { getOAuth2Clients } from '../../api/OAuth2ClientApi.js';
+import { listOAuth2Clients } from '../../ops/OAuth2ClientOps.js';
 
 const program = new Command('frodo app list');
 
@@ -17,9 +18,9 @@ program
   .addArgument(common.passwordArgument)
   .addOption(common.deploymentOption)
   .addOption(common.insecureOption)
-  // .addOption(
-  //   new Option('-l, --long', 'Long with all fields.').default(false, 'false')
-  // )
+  .addOption(
+    new Option('-l, --long', 'Long with all fields.').default(false, 'false')
+  )
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
@@ -31,11 +32,7 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         printMessage(`Listing OAuth2 applications...`);
-        const applicationList = await listOAuth2Applications();
-        applicationList.sort((a, b) => a._id.localeCompare(b._id));
-        applicationList.forEach((item) => {
-          printMessage(`${item._id}`);
-        });
+        listOAuth2Clients(options.long);
       }
     }
     // end command logic inside action handler

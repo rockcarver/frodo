@@ -67,7 +67,7 @@ export async function putConfigEntity(id, data) {
 /**
  * Query managed objects
  * @param {String} type managed object type
- * @param {String} fields fields to retrieve
+ * @param {[String]} fields fields to retrieve
  * @param {String} pageCookie paged results cookie
  * @returns {Promise} a promise that resolves to an object containing managed objects of the desired type
  */

@@ -43,11 +43,13 @@ program
         printMessage(
           `Getting an access token using client "${options.clientId}"...`
         );
-        const response = await clientCredentialsGrant(
-          options.clientId,
-          options.clientSecret,
-          options.scope
-        );
+        const response = (
+          await clientCredentialsGrant(
+            options.clientId,
+            options.clientSecret,
+            options.scope
+          )
+        ).data;
         printMessage(`Token: ${response.access_token}`);
       }
     }

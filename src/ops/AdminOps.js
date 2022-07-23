@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import {
-  listOAuth2Clients,
+  getOAuth2Clients,
   getOAuth2Client,
   putOAuth2Client,
 } from '../api/OAuth2ClientApi.js';
 import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
-import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
-import { getOAuth2Provider } from '../api/AmServiceApi.js';
+import { getRealmManagedOrganization } from './OrganizationOps.js';
+import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
 import { putSecret } from '../api/SecretsApi.js';
 import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
@@ -68,7 +68,7 @@ const autoIdRoles = [
   }
  */
 export async function listOAuth2CustomClients() {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
@@ -103,7 +103,7 @@ export async function listOAuth2CustomClients() {
   }
  */
 export async function listOAuth2AdminClients() {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .filter((client) => {
       let isPrivileged = false;
@@ -179,7 +179,7 @@ export async function listOAuth2AdminClients() {
   }
  */
 export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
@@ -209,7 +209,7 @@ export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
 }
 
 async function getDynamicClientRegistrationScope() {
-  const provider = await getOAuth2Provider();
+  const provider = (await getOAuth2Provider()).data;
   return provider.clientDynamicRegistrationConfig
     .dynamicClientRegistrationScope;
 }
@@ -616,7 +616,8 @@ export async function createLongLivedToken(
   // set long token lifetime
   client.coreOAuth2ClientConfig.accessTokenLifetime.value = lifetime;
   await putOAuth2Client(clientId, client);
-  const response = await clientCredentialsGrant(clientId, clientSecret, scope);
+  const response = (await clientCredentialsGrant(clientId, clientSecret, scope))
+    .data;
   const expires = new Date().getTime() + 1000 * response.expires_in;
   response.expires_on = new Date(expires).toLocaleString();
   // reset token lifetime
