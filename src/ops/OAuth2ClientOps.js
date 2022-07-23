@@ -3,6 +3,7 @@ import { createTable, printMessage } from './utils/Console.js';
 import {
   getTypedFilename,
   saveToFile,
+  titleCase,
   validateImport,
 } from './utils/ExportImportUtils.js';
 import storage from '../storage/SessionStorage.js';
@@ -12,6 +13,7 @@ import {
   putOAuth2Client,
 } from '../api/OAuth2ClientApi.js';
 import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
+import { getRealmName } from '../api/utils/ApiUtils.js';
 
 /**
  * List OAuth2 clients
@@ -91,7 +93,7 @@ export async function exportOAuth2ClientToFile(id, file) {
  */
 export async function exportOAuth2ClientsToFile(file) {
   let fileName = getTypedFilename(
-    `all${storage.session.getRealm()}Applications`,
+    `all${titleCase(getRealmName(storage.session.getRealm()))}Applications`,
     'oauth2.app'
   );
   if (file) {
