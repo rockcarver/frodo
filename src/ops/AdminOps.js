@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {
-  listOAuth2Clients,
+  getOAuth2Clients,
   getOAuth2Client,
   putOAuth2Client,
 } from '../api/OAuth2ClientApi.js';
@@ -68,7 +68,7 @@ const autoIdRoles = [
   }
  */
 export async function listOAuth2CustomClients() {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
@@ -103,7 +103,7 @@ export async function listOAuth2CustomClients() {
   }
  */
 export async function listOAuth2AdminClients() {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .filter((client) => {
       let isPrivileged = false;
@@ -179,7 +179,7 @@ export async function listOAuth2AdminClients() {
   }
  */
 export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
-  let clients = await listOAuth2Clients();
+  let clients = (await getOAuth2Clients()).data.result;
   clients = clients
     .map((client) => client._id)
     .filter((client) => !protectedClients.includes(client));
