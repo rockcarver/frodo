@@ -6,7 +6,7 @@ import {
 } from '../api/OAuth2ClientApi.js';
 import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
-import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
+import { getRealmManagedOrganization } from './OrganizationOps.js';
 import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
 import { putSecret } from '../api/SecretsApi.js';
 import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
