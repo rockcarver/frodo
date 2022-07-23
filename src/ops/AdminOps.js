@@ -7,7 +7,7 @@ import {
 import { getConfigEntity, putConfigEntity } from '../api/IdmConfigApi.js';
 import { isEqualJson, getRealmManagedUser } from './utils/OpsUtils.js';
 import { getRealmManagedOrganization } from '../api/OrganizationApi.js';
-import { getOAuth2Provider } from '../api/AmServiceApi.js';
+import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
 import { putSecret } from '../api/SecretsApi.js';
 import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
 import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
@@ -209,7 +209,7 @@ export async function listNonOAuth2AdminStaticUserMappings(showProtected) {
 }
 
 async function getDynamicClientRegistrationScope() {
-  const provider = await getOAuth2Provider();
+  const provider = (await getOAuth2Provider()).data;
   return provider.clientDynamicRegistrationConfig
     .dynamicClientRegistrationScope;
 }

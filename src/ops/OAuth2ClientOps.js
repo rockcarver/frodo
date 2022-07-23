@@ -1,21 +1,8 @@
 import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
-import { applyNameCollisionPolicy } from './utils/OpsUtils.js';
+import { createTable, printMessage } from './utils/Console.js';
 import {
-  createProgressBar,
-  createTable,
-  printMessage,
-  stopProgressBar,
-  updateProgressBar,
-} from './utils/Console.js';
-import { getScriptByName, getScripts, putScript } from '../api/ScriptApi.js';
-import wordwrap from './utils/Wordwrap.js';
-import {
-  convertBase64TextToArray,
-  convertTextArrayToBase64,
   getTypedFilename,
   saveToFile,
-  titleCase,
   validateImport,
 } from './utils/ExportImportUtils.js';
 import storage from '../storage/SessionStorage.js';
@@ -24,7 +11,7 @@ import {
   getOAuth2Clients,
   putOAuth2Client,
 } from '../api/OAuth2ClientApi.js';
-import { getOAuth2Provider } from '../api/AmServiceApi.js';
+import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
 
 /**
  * List OAuth2 clients
@@ -92,7 +79,7 @@ export async function exportOAuth2ClientToFile(id, file) {
   if (file) {
     fileName = file;
   }
-  const oauth2Service = await getOAuth2Provider();
+  const oauth2Service = (await getOAuth2Provider()).data;
   const client = (await getOAuth2Client(id)).data;
   client._provider = oauth2Service;
   saveToFile('application', [client], '_id', fileName);
@@ -110,7 +97,7 @@ export async function exportOAuth2ClientsToFile(file) {
   if (file) {
     fileName = file;
   }
-  const oauth2Service = await getOAuth2Provider();
+  const oauth2Service = (await getOAuth2Provider()).data;
   const clients = (await getOAuth2Clients()).data.result;
   const exportData = [];
   for (const client of clients) {
@@ -124,7 +111,7 @@ export async function exportOAuth2ClientsToFile(file) {
  * Export all OAuth2 clients to separate files
  */
 export async function exportOAuth2ClientsToFiles() {
-  const oauth2Service = await getOAuth2Provider();
+  const oauth2Service = (await getOAuth2Provider()).data;
   const clients = (await getOAuth2Clients()).data.result;
   for (const client of clients) {
     client._provider = oauth2Service;
