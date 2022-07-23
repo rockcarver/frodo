@@ -1,11 +1,9 @@
-import fs from 'fs';
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
 import { printMessage } from '../../ops/utils/Console.js';
-import { validateImport } from '../../ops/utils/ExportImportUtils.js';
-import { putApplication } from '../../api/ApplicationApi.js';
+import { importOAuth2ClientsFromFile } from '../../ops/OAuth2ClientOps.js';
 
 const program = new Command('frodo app import');
 
@@ -49,30 +47,7 @@ program
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         printMessage(`Importing OAuth2 application(s) ...`);
-        fs.readFile(options.file, 'utf8', (err, data) => {
-          if (err) throw err;
-          const applicationData = JSON.parse(data);
-          if (validateImport(applicationData.meta)) {
-            for (const id in applicationData.application) {
-              if (
-                Object.prototype.hasOwnProperty.call(
-                  applicationData.application,
-                  id
-                )
-              ) {
-                delete applicationData.application[id]._provider;
-                delete applicationData.application[id]._rev;
-                putApplication(id, applicationData.application[id]).then(
-                  (result) => {
-                    if (!result == null) printMessage(`Imported ${id}`);
-                  }
-                );
-              }
-            }
-          } else {
-            printMessage('Import validation failed...', 'error');
-          }
-        });
+        importOAuth2ClientsFromFile(options.file);
       }
     }
     // end command logic inside action handler

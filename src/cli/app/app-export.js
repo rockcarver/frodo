@@ -2,13 +2,12 @@ import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import { getTokens } from '../../ops/AuthenticateOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { getOAuth2Provider } from '../../api/AmServiceApi.js';
 import { printMessage } from '../../ops/utils/Console.js';
 import {
-  getOAuth2Application,
-  listOAuth2Applications,
-} from '../../api/ApplicationApi.js';
-import { saveToFile } from '../../ops/utils/ExportImportUtils.js';
+  exportOAuth2ClientsToFile,
+  exportOAuth2ClientsToFiles,
+  exportOAuth2ClientToFile,
+} from '../../ops/OAuth2ClientOps.js';
 
 const program = new Command('frodo app export');
 
@@ -50,50 +49,21 @@ program
       storage.session.setPassword(password);
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
-      let applicationData = null;
-      let oauthServiceData = null;
       if (await getTokens()) {
-        oauthServiceData = await getOAuth2Provider();
         // export
         if (options.appId) {
           printMessage('Exporting OAuth2 application...');
-          let fileName = `${options.appId}.oauth2.app.json`;
-          if (options.file) {
-            fileName = options.file;
-          }
-          applicationData = await getOAuth2Application(options.appId);
-          // console.log(applicationData);
-          applicationData._provider = oauthServiceData;
-          saveToFile('application', [applicationData], '_id', fileName);
+          exportOAuth2ClientToFile(options.appId, options.file);
         }
         // -a/--all
         else if (options.all) {
-          printMessage('Exporting all applications to a single file...');
-          let fileName = 'allApplications.json';
-          const applicationList = await listOAuth2Applications();
-          const allApplicationsData = [];
-          for (const item of applicationList) {
-            // eslint-disable-next-line no-await-in-loop
-            applicationData = await getOAuth2Application(item._id);
-            applicationData._provider = oauthServiceData;
-            allApplicationsData.push(applicationData);
-          }
-          if (options.file) {
-            fileName = options.file;
-          }
-          saveToFile('application', allApplicationsData, '_id', fileName);
+          printMessage('Exporting all OAuth2 applications to file...');
+          exportOAuth2ClientsToFile(options.file);
         }
         // -A/--all-separate
         else if (options.allSeparate) {
           printMessage('Exporting all applications to separate files...');
-          const applicationList = await listOAuth2Applications();
-          for (const item of applicationList) {
-            // eslint-disable-next-line no-await-in-loop
-            applicationData = await getOAuth2Application(item._id);
-            applicationData._provider = oauthServiceData;
-            const fileName = `./${item._id}.oauth2.app.json`;
-            saveToFile('application', [applicationData], '_id', fileName);
-          }
+          exportOAuth2ClientsToFiles();
         }
         // unrecognized combination of options or no options
         else {
