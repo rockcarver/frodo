@@ -616,7 +616,8 @@ export async function createLongLivedToken(
   // set long token lifetime
   client.coreOAuth2ClientConfig.accessTokenLifetime.value = lifetime;
   await putOAuth2Client(clientId, client);
-  const response = await clientCredentialsGrant(clientId, clientSecret, scope);
+  const response = (await clientCredentialsGrant(clientId, clientSecret, scope))
+    .data;
   const expires = new Date().getTime() + 1000 * response.expires_in;
   response.expires_on = new Date(expires).toLocaleString();
   // reset token lifetime
