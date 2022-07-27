@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2-6] - 2022-07-27
+
 ### Fixed
 
 -   \#349: Frodo now properly exports journeys from classing deployments
@@ -298,7 +300,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-5...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-6...HEAD
+
+[0.9.2-6]: https://github.com/rockcarver/frodo/compare/v0.9.2-5...v0.9.2-6
 
 [0.9.2-5]: https://github.com/rockcarver/frodo/compare/v0.9.2-4...v0.9.2-5
 
