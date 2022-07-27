@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+-   \#349: Frodo now properly exports journeys from classing deployments
+
 ## [0.9.2-5] - 2022-07-23
 
 ### Changed
