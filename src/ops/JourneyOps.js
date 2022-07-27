@@ -195,7 +195,12 @@ async function exportDependencies(treeObject, exportData, options) {
   const innerNodePromises = [];
   const saml2ConfigPromises = [];
   let socialProviderPromise = null;
-  const themePromise = getThemes();
+  const themePromise =
+    storage.session.getDeploymentType() !== global.CLASSIC_DEPLOYMENT_TYPE_KEY
+      ? getThemes().catch((error) => {
+          printMessage(error, 'error');
+        })
+      : null;
 
   let allSaml2Providers = null;
   let allCirclesOfTrust = null;
@@ -453,20 +458,22 @@ async function exportDependencies(treeObject, exportData, options) {
   });
 
   // Process themes
-  await Promise.resolve(themePromise).then((themePromiseResults) => {
-    themePromiseResults.forEach((themeObject) => {
-      if (
-        themeObject &&
-        // has the theme been specified by id or name in a page node?
-        (themes.includes(themeObject._id) ||
-          themes.includes(themeObject.name) ||
-          // has this journey been linked to a theme?
-          themeObject.linkedTrees.includes(treeObject._id))
-      ) {
-        exportData.themes.push(themeObject);
-      }
+  if (themePromise) {
+    await Promise.resolve(themePromise).then((themePromiseResults) => {
+      themePromiseResults.forEach((themeObject) => {
+        if (
+          themeObject &&
+          // has the theme been specified by id or name in a page node?
+          (themes.includes(themeObject._id) ||
+            themes.includes(themeObject.name) ||
+            // has this journey been linked to a theme?
+            themeObject.linkedTrees.includes(treeObject._id))
+        ) {
+          exportData.themes.push(themeObject);
+        }
+      });
     });
-  });
+  }
 }
 
 /**
@@ -486,7 +493,11 @@ export async function exportJourneyToFile(journeyId, file, options) {
       const fileData = getSingleTreeFileDataTemplate();
       fileData.tree = treeData;
       spinSpinner();
-      await exportDependencies(treeData, fileData, options);
+      try {
+        await exportDependencies(treeData, fileData, options);
+      } catch (error) {
+        printMessage(`Error exporting journey ${journeyId}: ${error}`, 'error');
+      }
       saveJsonToFile(fileData, fileName);
       succeedSpinner();
       printMessage(
@@ -495,7 +506,7 @@ export async function exportJourneyToFile(journeyId, file, options) {
       );
     })
     .catch((err) => {
-      succeedSpinner();
+      failSpinner();
       printMessage(err, 'error');
     });
 }
@@ -535,14 +546,18 @@ export async function exportJourneysToFile(file, options) {
   createProgressBar(trees.length, 'Exporting journeys...');
   for (const tree of trees) {
     updateProgressBar(`${tree._id}`);
-    // eslint-disable-next-line no-await-in-loop
-    const treeData = (await getTree(tree._id)).data;
-    const exportData = getSingleTreeFileDataTemplate();
-    delete exportData.meta;
-    exportData.tree = treeData;
-    // eslint-disable-next-line no-await-in-loop
-    await exportDependencies(treeData, exportData, options);
-    fileData.trees[tree._id] = exportData;
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const treeData = (await getTree(tree._id)).data;
+      const exportData = getSingleTreeFileDataTemplate();
+      delete exportData.meta;
+      exportData.tree = treeData;
+      // eslint-disable-next-line no-await-in-loop
+      await exportDependencies(treeData, exportData, options);
+      fileData.trees[tree._id] = exportData;
+    } catch (error) {
+      printMessage(`Error exporting journey ${tree._id}: ${error}`, 'error');
+    }
   }
   saveJsonToFile(fileData, fileName);
   stopProgressBar(`Exported to ${fileName}`);
