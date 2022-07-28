@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+-   \#353: Frodo now properly imports social IDPs when using the `frodo journey import` command.
+
 ## [0.9.2-7] - 2022-07-28
+
+### Fixed
+
+-   \#351: Frodo now properly shows IDM messages using the `frodo logs tail` command.
 
 ## [0.9.2-6] - 2022-07-27
 

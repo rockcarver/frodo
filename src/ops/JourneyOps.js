@@ -678,19 +678,19 @@ async function importTree(treeObject, options) {
       treeObject.socialIdentityProviders
     )) {
       if (verbose) printMessage(`    - ${providerId}`, 'info');
-      if (
+      try {
         // eslint-disable-next-line no-await-in-loop
-        (await putProviderByTypeAndId(
+        await putProviderByTypeAndId(
           providerData._type._id,
           providerId,
           providerData
-        )) == null
-      ) {
+        );
+      } catch (error) {
         printMessage(
-          `importJourney ERROR: error importing provider ${providerId} in journey ${treeId}`,
+          `Error importing provider ${providerId} in journey ${treeId}: ${error}`,
           'error'
         );
-        return null;
+        printMessage(error.response.data, 'error');
       }
     }
   }
@@ -832,11 +832,11 @@ async function importTree(treeObject, options) {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, innerNodeData);
       } catch (nodeImportError) {
-        printMessage(nodeImportError, 'error');
         printMessage(
           `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
           'error'
         );
+        printMessage(nodeImportError.response.data, 'error');
         return null;
       }
       if (verbose) printMessage('');
@@ -895,11 +895,11 @@ async function importTree(treeObject, options) {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, nodeData);
       } catch (nodeImportError) {
-        printMessage(nodeImportError, 'error');
         printMessage(
           `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
           'error'
         );
+        printMessage(nodeImportError.response.data, 'error');
         return null;
       }
       if (verbose) printMessage('');
