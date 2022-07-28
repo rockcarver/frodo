@@ -10,8 +10,11 @@ import storage from '../storage/SessionStorage.js';
 
 import * as LogApi from '../api/LogApi.js';
 
+const unfilterableNoise = [
+  'text/plain'  // Unfortunately, it is impossible to filter out those without excluding IDM script logging as well
+]
+
 const miscNoise = [
-  'text/plain',
   'com.iplanet.dpro.session.operations.ServerSessionOperationStrategy',
   'com.iplanet.dpro.session.SessionIDFactory',
   'com.iplanet.dpro.session.share.SessionEncodeURL',
@@ -239,6 +242,12 @@ export function resolveLevel(level) {
   return logLevelMap[numLogLevelMap[level][0]];
 }
 
+// It seems that the undesirable 'text/plain' logs start with a date, not a LEVEL 
+// Therefore, for those, this function returns null, and thus filters out the undesirable
+export function resolvePayloadLevel(log) {
+  return log.type !== 'text/plain' ? log.payload.level : log.payload.match(/^([^:]*):/)[1];
+}
+
 export async function getLogSources() {
   const sources = [];
   await getSources()
@@ -277,7 +286,7 @@ export async function tailLogs(source, levels, txid, cookie) {
         (el) =>
           !noise.includes(el.payload.logger) &&
           !noise.includes(el.type) &&
-          (levels[0] === 'ALL' || levels.includes(el.payload.level)) &&
+          (levels[0] === 'ALL' || levels.includes(resolvePayloadLevel(el))) &&
           (typeof txid === 'undefined' ||
             txid === null ||
             el.payload.transactionId.includes(txid))
