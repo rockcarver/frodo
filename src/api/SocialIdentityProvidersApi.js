@@ -99,6 +99,10 @@ export async function getProviderByTypeAndId(type, id) {
  */
 export async function putProviderByTypeAndId(type, id, data) {
   const providerData = data;
+  // until we figure out a way to use transport keys in Frodo,
+  // we'll have to drop those encrypted attributes.
+  // There might be a better way of doing it than one by one.
+  delete providerData['clientSecret-encrypted'];
   const urlString = util.format(
     providerByTypeAndIdURLTemplate,
     storage.session.getTenant(),
