@@ -685,12 +685,34 @@ async function importTree(treeObject, options) {
           providerId,
           providerData
         );
-      } catch (error) {
-        printMessage(
-          `Error importing provider ${providerId} in journey ${treeId}: ${error}`,
-          'error'
-        );
-        printMessage(error.response.data, 'error');
+      } catch (importError) {
+        if (
+          importError.response.status === 500 &&
+          importError.response.data.message ===
+            'Unable to update SMS config: Data validation failed for the attribute, Redirect after form post URL'
+        ) {
+          providerData.redirectAfterFormPostURI = '';
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            await putProviderByTypeAndId(
+              providerData._type._id,
+              providerId,
+              providerData
+            );
+          } catch (importError2) {
+            printMessage(
+              `Error importing provider ${providerId} in journey ${treeId}: ${importError}`,
+              'error'
+            );
+            printMessage(importError.response.data, 'error');
+          }
+        } else {
+          printMessage(
+            `Error importing provider ${providerId} in journey ${treeId}: ${importError}`,
+            'error'
+          );
+          printMessage(importError.response.data, 'error');
+        }
       }
     }
   }
