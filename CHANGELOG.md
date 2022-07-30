@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+-   \#355: Frodo now properly imports social IDPs into 7.1 environments when using the `frodo journey import` command.
+
 ## [0.9.2-8] - 2022-07-28
 
 ### Fixed
