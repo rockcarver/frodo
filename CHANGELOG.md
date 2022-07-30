@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2-9] - 2022-07-30
+
 ### Fixed
 
 -   \#355: Frodo now properly imports social IDPs into 7.1 environments when using the `frodo journey import` command.
@@ -316,7 +318,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-8...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-9...HEAD
+
+[0.9.2-9]: https://github.com/rockcarver/frodo/compare/v0.9.2-8...v0.9.2-9
 
 [0.9.2-8]: https://github.com/rockcarver/frodo/compare/v0.9.2-7...v0.9.2-8
 
