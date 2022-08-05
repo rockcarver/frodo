@@ -245,7 +245,11 @@ export function resolveLevel(level) {
 // It seems that the undesirable 'text/plain' logs start with a date, not a LEVEL 
 // Therefore, for those, this function returns null, and thus filters out the undesirable
 export function resolvePayloadLevel(log) {
-  return log.type !== 'text/plain' ? log.payload.level : log.payload.match(/^([^:]*):/)[1];
+  try {
+    return log.type !== 'text/plain' ? log.payload.level : log.payload.match(/^([^:]*):/)[1];
+  } catch (e) { // Fail-safe for no group match
+    return null
+  }
 }
 
 export async function getLogSources() {
