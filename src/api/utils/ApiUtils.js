@@ -27,7 +27,7 @@ export function getCurrentRealmName() {
   const realm = storage.session.getRealm();
   const components = realm.split('/');
   let realmName = '/';
-  if (components.length > 0) {
+  if (components.length > 0 && realmName !== realm) {
     realmName = components[components.length - 1];
   }
   return realmName;
@@ -41,7 +41,7 @@ export function getCurrentRealmName() {
 export function getRealmName(realm) {
   const components = realm.split('/');
   let realmName = '/';
-  if (components.length > 0) {
+  if (components.length > 0 && realmName !== realm) {
     realmName = components[components.length - 1];
   }
   return realmName;
