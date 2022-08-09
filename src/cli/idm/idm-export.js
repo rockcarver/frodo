@@ -27,9 +27,7 @@ program
       'Config entity name. E.g. "managed", "sync", "provisioner-<connector-name>", etc.'
     )
   )
-  .addOption(
-    new Option('-f, --file [file]', 'Export file. Ignored with -A.')
-  )
+  .addOption(new Option('-f, --file [file]', 'Export file. Ignored with -A.'))
   .addOption(
     new Option(
       '-E, --entities-file [entities-file]',
