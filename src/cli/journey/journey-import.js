@@ -70,7 +70,7 @@ program
       if (await getTokens()) {
         // import
         if (options.journeyId) {
-          printMessage('Importing journey...');
+          printMessage(`Importing journey ${options.journeyId}...`);
           importJourneyFromFile(options.journeyId, options.file, {
             reUuid: options.reUuid,
             verbose: options.verbose,
@@ -96,9 +96,9 @@ program
             verbose: options.verbose,
           });
         }
-        // import single journey in file
+        // import first journey in file
         else if (options.file) {
-          printMessage('Importing journey...');
+          printMessage('Importing first journey in file...');
           importFirstJourneyFromFile(options.file, {
             reUuid: options.reUuid,
             verbose: options.verbose,
