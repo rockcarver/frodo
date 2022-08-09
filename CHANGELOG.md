@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2-12] - 2022-08-09
+
 ### Fixed
 
 -   \#359: Frodo now properly exports themes from forgeops deployments.
@@ -339,7 +341,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-11...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-12...HEAD
+
+[0.9.2-12]: https://github.com/rockcarver/frodo/compare/v0.9.2-11...v0.9.2-12
 
 [0.9.2-11]: https://github.com/rockcarver/frodo/compare/v0.9.2-10...v0.9.2-11
 
