@@ -7,9 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+-   \#359: Frodo now properly exports themes from forgeops deployments.
+
 ## [0.9.2-11] - 2022-08-09
 
+### Changed
+
+-   \#363: Frodo now performs dependency resolution and reports unresolved dependencies on single journey imports.
+-   \#364: Frodo now uses a spinner and no longer a progress bar to indicate progress on single journey imports.
+
+### Fixed
+
+-   \#362: Frodo now properly imports journeys with email templates.
+
 ## [0.9.2-10] - 2022-08-05
+
+### Fixed
+
+-   \#357: Frodo no longer throws an error and exits occasionally when running the `frodo log tail` command.
 
 ## [0.9.2-9] - 2022-07-30
 
