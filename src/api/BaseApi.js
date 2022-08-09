@@ -131,6 +131,7 @@ export function generateIdmApi(requestOverride = {}) {
     timeout,
     headers: {
       'User-Agent': userAgent,
+      'Content-Type': 'application/json',
     },
     ...requestOverride,
     httpsAgent: getHttpsAgent(),

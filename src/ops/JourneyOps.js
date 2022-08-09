@@ -630,18 +630,22 @@ async function importTree(treeObject, options) {
     for (const [templateId, templateData] of Object.entries(
       treeObject.emailTemplates
     )) {
-      const templateLongId = templateData._id;
       if (verbose) printMessage(`    - ${templateId}`, 'info', false);
-      if (
+      try {
         // eslint-disable-next-line no-await-in-loop
-        (await putEmailTemplate(templateId, templateLongId, templateData)) ==
-        null
-      ) {
+        const result = await putEmailTemplate(templateId, templateData);
+        if (result == null) {
+          printMessage(
+            `Error importing ${templateId} email template.`,
+            'error'
+          );
+        }
+      } catch (error) {
         printMessage(
-          `importJourney ERROR: error importing template ${templateId} in journey ${treeId}`,
+          `Error importing email templates: ${error.message}`,
           'error'
         );
-        return null;
+        printMessage(error.response.data, 'error');
       }
       if (verbose) printMessage('');
     }
@@ -918,7 +922,9 @@ async function importTree(treeObject, options) {
         await putNode(newUuid, nodeType, nodeData);
       } catch (nodeImportError) {
         printMessage(
-          `importJourney ERROR: error importing node ${nodeId}:${newUuid} in journey ${treeId}`,
+          `importJourney ERROR: error importing node ${nodeId}${
+            nodeId === newUuid ? '' : `[${newUuid}]`
+          } in journey ${treeId}`,
           'error'
         );
         printMessage(nodeImportError.response.data, 'error');
@@ -995,74 +1001,6 @@ async function importTree(treeObject, options) {
   }
 }
 
-/**
- * Import a journey from file
- * @param {String} journeyId journey id/name
- * @param {String} file import file name
- * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
- */
-export async function importJourneyFromFile(journeyId, file, options) {
-  createProgressBar(1, `${journeyId}`);
-  fs.readFile(file, 'utf8', (err, data) => {
-    if (err) throw err;
-    let journeyData = JSON.parse(data);
-    // check if this is a file with multiple trees and get journey by id
-    if (journeyData.trees && journeyData.trees[journeyId]) {
-      journeyData = journeyData.trees[journeyId];
-    } else if (journeyData.trees) {
-      journeyData = null;
-    }
-    // if a journeyId was specified, only import the matching journey
-    if (journeyData && journeyId === journeyData.tree._id) {
-      importTree(journeyData, options)
-        .then(() => {
-          updateProgressBar();
-        })
-        .finally(() => {
-          stopProgressBar();
-        });
-    } else {
-      stopProgressBar(`${journeyId} not found!`);
-    }
-  });
-}
-
-export async function importFirstJourneyFromFile(file, options) {
-  fs.readFile(file, 'utf8', async (err, data) => {
-    if (err) throw err;
-    let journeyData = _.cloneDeep(JSON.parse(data));
-    let journeyId = null;
-    // single tree
-    if (journeyData.tree) {
-      journeyId = _.cloneDeep(journeyData.tree._id);
-    }
-    // multiple trees, so get the first tree
-    else if (journeyData.trees) {
-      for (const treeId in journeyData.trees) {
-        if (Object.hasOwnProperty.call(journeyData.trees, treeId)) {
-          journeyId = treeId;
-          journeyData = journeyData.trees[treeId];
-          break;
-        }
-      }
-    }
-    // if a journeyId was specified, only import the matching journey
-    if (journeyData && journeyId) {
-      createProgressBar(1, `${journeyId}`);
-      importTree(journeyData, options)
-        .then(() => {
-          updateProgressBar();
-          stopProgressBar();
-        })
-        .catch((importError) => {
-          stopProgressBar(`${importError}`);
-        });
-    } else {
-      stopProgressBar(`No journeys found!`);
-    }
-  });
-}
-
 async function resolveDependencies(
   installedJorneys,
   journeyMap,
@@ -1128,6 +1066,129 @@ async function resolveDependencies(
       after
     );
   }
+}
+
+/**
+ * Import a journey from file
+ * @param {String} journeyId journey id/name
+ * @param {String} file import file name
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
+ */
+export async function importJourneyFromFile(journeyId, file, options) {
+  fs.readFile(file, 'utf8', async (err, data) => {
+    if (err) throw err;
+    let journeyData = JSON.parse(data);
+    // check if this is a file with multiple trees and get journey by id
+    if (journeyData.trees && journeyData.trees[journeyId]) {
+      journeyData = journeyData.trees[journeyId];
+    } else if (journeyData.trees) {
+      journeyData = null;
+    }
+
+    // if a journeyId was specified, only import the matching journey
+    if (journeyData && journeyId === journeyData.tree._id) {
+      // attempt dependency resolution for single tree import
+      const installedJourneys = (await getTrees()).data.result.map(
+        (x) => x._id
+      );
+      const unresolvedJourneys = {};
+      const resolvedJourneys = [];
+      showSpinner('Resolving dependencies');
+      await resolveDependencies(
+        installedJourneys,
+        { [journeyId]: journeyData },
+        unresolvedJourneys,
+        resolvedJourneys
+      );
+      if (Object.keys(unresolvedJourneys).length === 0) {
+        succeedSpinner(`Resolved all dependencies.`);
+
+        showSpinner(`Importing ${journeyId}...`);
+        importTree(journeyData, options)
+          .then(() => {
+            succeedSpinner(`Imported ${journeyId}.`);
+          })
+          .catch((importError) => {
+            failSpinner(`${importError}`);
+          });
+      } else {
+        failSpinner(`Unresolved dependencies:`);
+        for (const journey of Object.keys(unresolvedJourneys)) {
+          printMessage(
+            `  ${journey} requires ${unresolvedJourneys[journey]}`,
+            'error'
+          );
+        }
+      }
+      // end dependency resolution for single tree import
+    } else {
+      showSpinner(`Importing ${journeyId}...`);
+      failSpinner(`${journeyId} not found!`);
+    }
+  });
+}
+
+export async function importFirstJourneyFromFile(file, options) {
+  fs.readFile(file, 'utf8', async (err, data) => {
+    if (err) throw err;
+    let journeyData = _.cloneDeep(JSON.parse(data));
+    let journeyId = null;
+    // single tree
+    if (journeyData.tree) {
+      journeyId = _.cloneDeep(journeyData.tree._id);
+    }
+    // multiple trees, so get the first tree
+    else if (journeyData.trees) {
+      for (const treeId in journeyData.trees) {
+        if (Object.hasOwnProperty.call(journeyData.trees, treeId)) {
+          journeyId = treeId;
+          journeyData = journeyData.trees[treeId];
+          break;
+        }
+      }
+    }
+
+    // if a journeyId was specified, only import the matching journey
+    if (journeyData && journeyId) {
+      // attempt dependency resolution for single tree import
+      const installedJourneys = (await getTrees()).data.result.map(
+        (x) => x._id
+      );
+      const unresolvedJourneys = {};
+      const resolvedJourneys = [];
+      showSpinner('Resolving dependencies');
+      await resolveDependencies(
+        installedJourneys,
+        { [journeyId]: journeyData },
+        unresolvedJourneys,
+        resolvedJourneys
+      );
+      if (Object.keys(unresolvedJourneys).length === 0) {
+        succeedSpinner(`Resolved all dependencies.`);
+
+        showSpinner(`Importing ${journeyId}...`);
+        importTree(journeyData, options)
+          .then(() => {
+            succeedSpinner(`Imported ${journeyId}.`);
+          })
+          .catch((importError) => {
+            failSpinner(`${importError}`);
+          });
+      } else {
+        failSpinner(`Unresolved dependencies:`);
+        for (const journey of Object.keys(unresolvedJourneys)) {
+          printMessage(
+            `  ${journey} requires ${unresolvedJourneys[journey]}`,
+            'error'
+          );
+        }
+      }
+    } else {
+      showSpinner(`Importing...`);
+      failSpinner(`No journeys found!`);
+    }
+    // end dependency resolution for single tree import
+  });
 }
 
 /**

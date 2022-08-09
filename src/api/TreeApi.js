@@ -1,5 +1,5 @@
 import util from 'util';
-import { getCurrentRealmPath } from './utils/ApiUtils.js';
+import { deleteDeepByKey, getCurrentRealmPath } from './utils/ApiUtils.js';
 import { generateAmApi } from './BaseApi.js';
 import storage from '../storage/SessionStorage.js';
 
@@ -104,7 +104,10 @@ export async function getNode(id, nodeType) {
  * @param {Object} data node object
  * @returns {Promise} a promise that resolves to an object containing a node object
  */
-export async function putNode(id, nodeType, data) {
+export async function putNode(id, nodeType, nodeData) {
+  // until we figure out a way to use transport keys in Frodo,
+  // we'll have to drop those encrypted attributes.
+  const data = deleteDeepByKey(nodeData, '-encrypted');
   const urlString = util.format(
     nodeURLTemplate,
     storage.session.getTenant(),
