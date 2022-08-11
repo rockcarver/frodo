@@ -184,11 +184,30 @@ async function getSaml2NodeDependencies(
 }
 
 /**
- * Helper to add all dependencies for a given tree object to the export data
+ * Helper method to create export data for a tree with all its
+ * dependencies. The export data can be written to a file as is
+ * (but it doesn't contain meta data).
  * @param {Object} treeObject tree object
  * @param {Object} exportData export data
+ * @param {Object} options options object
  */
-async function exportDependencies(treeObject, exportData, options) {
+async function exportTree(treeObject, exportData, options) {
+  const { useStringArrays } = options;
+  const { deps } = options;
+  const { verbose } = options;
+
+  if (verbose) printMessage(`\n- ${treeObject._id}\n`, 'info', false);
+
+  // Process tree
+  if (verbose) printMessage('  - Flow');
+  exportData.tree = treeObject;
+  if (verbose && treeObject.identityResource)
+    printMessage(
+      `    - identityResource: ${treeObject.identityResource}`,
+      'info'
+    );
+  if (verbose) printMessage(`    - Done`, 'info');
+
   const nodePromises = [];
   const scriptPromises = [];
   const emailTemplatePromises = [];
@@ -196,6 +215,7 @@ async function exportDependencies(treeObject, exportData, options) {
   const saml2ConfigPromises = [];
   let socialProviderPromise = null;
   const themePromise =
+    deps &&
     storage.session.getDeploymentType() !== global.CLASSIC_DEPLOYMENT_TYPE_KEY
       ? getThemes().catch((error) => {
           printMessage(error, 'error');
@@ -207,33 +227,36 @@ async function exportDependencies(treeObject, exportData, options) {
   let filteredSocialProviders = null;
   const themes = [];
 
-  const { useStringArrays } = options.useStringArrays;
-
   // get all the nodes
   for (const [nodeId, nodeInfo] of Object.entries(treeObject.nodes)) {
     nodePromises.push(
       getNode(nodeId, nodeInfo.nodeType).then((response) => response.data)
     );
   }
+  if (verbose && nodePromises.length > 0) printMessage('  - Nodes:');
   const nodeObjects = await Promise.all(nodePromises);
 
   // iterate over every node in tree
   for (const nodeObject of nodeObjects) {
+    const nodeId = nodeObject._id;
+    const nodeType = nodeObject._type._id;
+    if (verbose) printMessage(`    - ${nodeId} (${nodeType})`, 'info', true);
     exportData.nodes[nodeObject._id] = nodeObject;
 
     // handle script node types
-    if (scriptedNodes.includes(nodeObject._type._id)) {
+    if (deps && scriptedNodes.includes(nodeType)) {
       scriptPromises.push(getScript(nodeObject.script));
     }
 
     // frodo supports email templates in platform deployments
     if (
-      storage.session.getDeploymentType() ===
-        global.CLOUD_DEPLOYMENT_TYPE_KEY ||
+      (deps &&
+        storage.session.getDeploymentType() ===
+          global.CLOUD_DEPLOYMENT_TYPE_KEY) ||
       storage.session.getDeploymentType() ===
         global.FORGEOPS_DEPLOYMENT_TYPE_KEY
     ) {
-      if (emailTemplateNodes.includes(nodeObject._type._id)) {
+      if (emailTemplateNodes.includes(nodeType)) {
         emailTemplatePromises.push(
           getEmailTemplate(nodeObject.emailTemplateName).catch((error) => {
             let message = `${error}`;
@@ -250,7 +273,7 @@ async function exportDependencies(treeObject, exportData, options) {
     }
 
     // handle SAML2 node dependencies
-    if (nodeObject._type._id === 'product-Saml2Node') {
+    if (deps && nodeType === 'product-Saml2Node') {
       if (!allSaml2Providers) {
         // eslint-disable-next-line no-await-in-loop
         allSaml2Providers = (await getProviders()).data.result;
@@ -270,14 +293,15 @@ async function exportDependencies(treeObject, exportData, options) {
 
     // If this is a SocialProviderHandlerNode get each enabled social identity provider.
     if (
+      deps &&
       !socialProviderPromise &&
-      nodeObject._type._id === 'SocialProviderHandlerNode'
+      nodeType === 'SocialProviderHandlerNode'
     ) {
       socialProviderPromise = getSocialIdentityProviders();
     }
 
     // If this is a SelectIdPNode and filteredProviters is not already set to empty array set filteredSocialProviers.
-    if (!filteredSocialProviders && nodeObject._type._id === 'SelectIdPNode') {
+    if (deps && !filteredSocialProviders && nodeType === 'SelectIdPNode') {
       filteredSocialProviders = filteredSocialProviders || [];
       for (const filteredProvider of nodeObject.filteredProviders) {
         if (!filteredSocialProviders.includes(filteredProvider)) {
@@ -287,7 +311,7 @@ async function exportDependencies(treeObject, exportData, options) {
     }
 
     // get inner nodes (nodes inside container nodes)
-    if (containerNodes.includes(nodeObject._type._id)) {
+    if (containerNodes.includes(nodeType)) {
       for (const innerNode of nodeObject.nodes) {
         innerNodePromises.push(
           getNode(innerNode._id, innerNode.nodeType).then(
@@ -297,8 +321,9 @@ async function exportDependencies(treeObject, exportData, options) {
       }
       // frodo supports themes in platform deployments
       if (
-        storage.session.getDeploymentType() ===
-          global.CLOUD_DEPLOYMENT_TYPE_KEY ||
+        (deps &&
+          storage.session.getDeploymentType() ===
+            global.CLOUD_DEPLOYMENT_TYPE_KEY) ||
         storage.session.getDeploymentType() ===
           global.FORGEOPS_DEPLOYMENT_TYPE_KEY
       ) {
@@ -326,23 +351,29 @@ async function exportDependencies(treeObject, exportData, options) {
   }
 
   // Process inner nodes
+  if (verbose && innerNodePromises.length > 0) printMessage('  - Inner nodes:');
   const innerNodeDataResults = await Promise.all(innerNodePromises);
   for (const innerNodeObject of innerNodeDataResults) {
-    exportData.innerNodes[innerNodeObject._id] = innerNodeObject;
+    const innerNodeId = innerNodeObject._id;
+    const innerNodeType = innerNodeObject._type._id;
+    if (verbose)
+      printMessage(`    - ${innerNodeId} (${innerNodeType})`, 'info', true);
+    exportData.innerNodes[innerNodeId] = innerNodeObject;
 
     // handle script node types
-    if (scriptedNodes.includes(innerNodeObject._type._id)) {
+    if (deps && scriptedNodes.includes(innerNodeType)) {
       scriptPromises.push(getScript(innerNodeObject.script));
     }
 
     // frodo supports email templates in platform deployments
     if (
-      storage.session.getDeploymentType() ===
-        global.CLOUD_DEPLOYMENT_TYPE_KEY ||
+      (deps &&
+        storage.session.getDeploymentType() ===
+          global.CLOUD_DEPLOYMENT_TYPE_KEY) ||
       storage.session.getDeploymentType() ===
         global.FORGEOPS_DEPLOYMENT_TYPE_KEY
     ) {
-      if (emailTemplateNodes.includes(innerNodeObject._type._id)) {
+      if (emailTemplateNodes.includes(innerNodeType)) {
         emailTemplatePromises.push(
           getEmailTemplate(innerNodeObject.emailTemplateName).catch((error) => {
             let message = `${error}`;
@@ -359,7 +390,7 @@ async function exportDependencies(treeObject, exportData, options) {
     }
 
     // handle SAML2 node dependencies
-    if (innerNodeObject._type._id === 'product-Saml2Node') {
+    if (deps && innerNodeType === 'product-Saml2Node') {
       printMessage('SAML2 inner node', 'error');
       if (!allSaml2Providers) {
         // eslint-disable-next-line no-await-in-loop
@@ -380,16 +411,18 @@ async function exportDependencies(treeObject, exportData, options) {
 
     // If this is a SocialProviderHandlerNode get each enabled social identity provider.
     if (
+      deps &&
       !socialProviderPromise &&
-      innerNodeObject._type._id === 'SocialProviderHandlerNode'
+      innerNodeType === 'SocialProviderHandlerNode'
     ) {
       socialProviderPromise = getSocialIdentityProviders();
     }
 
     // If this is a SelectIdPNode and filteredProviters is not already set to empty array set filteredSocialProviers.
     if (
+      deps &&
       !filteredSocialProviders &&
-      innerNodeObject._type._id === 'SelectIdPNode' &&
+      innerNodeType === 'SelectIdPNode' &&
       innerNodeObject.filteredProviders
     ) {
       filteredSocialProviders = filteredSocialProviders || [];
@@ -402,24 +435,44 @@ async function exportDependencies(treeObject, exportData, options) {
   }
 
   // Process email templates
+  if (verbose && emailTemplatePromises.length > 0)
+    printMessage('  - Email templates:');
   const settledEmailTemplatePromises = await Promise.allSettled(
     emailTemplatePromises
   );
   settledEmailTemplatePromises.forEach((settledPromise) => {
     if (settledPromise.status === 'fulfilled' && settledPromise.value) {
+      if (verbose)
+        printMessage(
+          `    - ${settledPromise.value.data._id.split('/')[1]}${
+            settledPromise.value.data.displayName
+              ? ` (${settledPromise.value.data.displayName})`
+              : ''
+          }`,
+          'info',
+          true
+        );
       exportData.emailTemplates[settledPromise.value.data._id.split('/')[1]] =
         settledPromise.value.data;
     }
   });
 
-  // Process SAML2 providers
+  // Process SAML2 providers and circles of trust
   const saml2NodeDependencies = await Promise.all(saml2ConfigPromises);
   saml2NodeDependencies.forEach((saml2NodeDependency) => {
     if (saml2NodeDependency) {
+      if (verbose) printMessage('  - SAML2 entity providers:');
       saml2NodeDependency.saml2Entities.forEach((saml2Entity) => {
+        if (verbose)
+          printMessage(
+            `    - ${saml2Entity.entityLocation} ${saml2Entity.entityId}`,
+            'info'
+          );
         exportData.saml2Entities[saml2Entity._id] = saml2Entity;
       });
+      if (verbose) printMessage('  - SAML2 circles of trust:');
       saml2NodeDependency.circlesOfTrust.forEach((circleOfTrust) => {
+        if (verbose) printMessage(`    - ${circleOfTrust._id}`, 'info');
         exportData.circlesOfTrust[circleOfTrust._id] = circleOfTrust;
       });
     }
@@ -428,6 +481,7 @@ async function exportDependencies(treeObject, exportData, options) {
   // Process socialIdentityProviders
   const socialProvidersResponse = await Promise.resolve(socialProviderPromise);
   if (socialProvidersResponse) {
+    if (verbose) printMessage('  - OAuth2/OIDC (social) identity providers:');
     socialProvidersResponse.data.result.forEach((socialProvider) => {
       // If the list of socialIdentityProviders needs to be filtered based on the
       // filteredProviders property of a SelectIdPNode do it here.
@@ -437,6 +491,7 @@ async function exportDependencies(treeObject, exportData, options) {
           filteredSocialProviders.length === 0 ||
           filteredSocialProviders.includes(socialProvider._id))
       ) {
+        if (verbose) printMessage(`    - ${socialProvider._id}`, 'info');
         scriptPromises.push(getScript(socialProvider.transform));
         exportData.socialIdentityProviders[socialProvider._id] = socialProvider;
       }
@@ -444,10 +499,17 @@ async function exportDependencies(treeObject, exportData, options) {
   }
 
   // Process scripts
+  if (verbose && scriptPromises.length > 0) printMessage('  - Scripts:');
   const scripts = await Promise.all(scriptPromises);
   scripts.forEach((scriptResultObject) => {
     const scriptObject = _.get(scriptResultObject, 'data');
     if (scriptObject) {
+      if (verbose)
+        printMessage(
+          `    - ${scriptObject._id} (${scriptObject.name})`,
+          'info',
+          true
+        );
       if (useStringArrays) {
         scriptObject.script = convertBase64TextToArray(scriptObject.script);
       } else {
@@ -459,6 +521,7 @@ async function exportDependencies(treeObject, exportData, options) {
 
   // Process themes
   if (themePromise) {
+    if (verbose) printMessage('  - Themes:');
     await Promise.resolve(themePromise).then((themePromiseResults) => {
       themePromiseResults.forEach((themeObject) => {
         if (
@@ -469,6 +532,11 @@ async function exportDependencies(treeObject, exportData, options) {
             // has this journey been linked to a theme?
             themeObject.linkedTrees.includes(treeObject._id))
         ) {
+          if (verbose)
+            printMessage(
+              `    - ${themeObject._id} (${themeObject.name})`,
+              'info'
+            );
           exportData.themes.push(themeObject);
         }
       });
@@ -480,56 +548,34 @@ async function exportDependencies(treeObject, exportData, options) {
  * Export journey by id/name to file
  * @param {String} journeyId journey id/name
  * @param {String} file optional export file name
+ * @param {Object} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output, deps:boolean: include dependencies
  */
 export async function exportJourneyToFile(journeyId, file, options) {
+  const { verbose } = options;
   let fileName = file;
   if (!fileName) {
     fileName = getTypedFilename(journeyId, 'journey');
   }
-  showSpinner(`${journeyId}`);
+  if (!verbose) showSpinner(`${journeyId}`);
   getTree(journeyId)
     .then(async (response) => {
       const treeData = response.data;
       const fileData = getSingleTreeFileDataTemplate();
-      fileData.tree = treeData;
-      spinSpinner();
       try {
-        await exportDependencies(treeData, fileData, options);
+        await exportTree(treeData, fileData, options);
+        if (verbose) showSpinner(`${journeyId}`);
+        saveJsonToFile(fileData, fileName);
+        succeedSpinner(
+          `Exported ${journeyId.brightCyan} to ${fileName.brightCyan}.`
+        );
       } catch (error) {
-        printMessage(`Error exporting journey ${journeyId}: ${error}`, 'error');
+        if (verbose) showSpinner(`${journeyId}`);
+        failSpinner(`Error exporting journey ${journeyId}: ${error}`);
       }
-      saveJsonToFile(fileData, fileName);
-      succeedSpinner();
-      printMessage(
-        `Exported ${journeyId.brightCyan} to ${fileName.brightCyan}.`,
-        'info'
-      );
     })
     .catch((err) => {
-      failSpinner();
-      printMessage(err, 'error');
+      failSpinner(err.message);
     });
-}
-
-/**
- * Get data for journey by id/name
- * @param {String} journeyId journey id/name
- * @returns
- */
-export async function getJourneyData(journeyId) {
-  showSpinner(`${journeyId}`);
-  const journeyData = getSingleTreeFileDataTemplate();
-  const treeData = (
-    await getTree(journeyId).catch((err) => {
-      succeedSpinner();
-      printMessage(err, 'error');
-    })
-  ).data;
-  journeyData.tree = treeData;
-  spinSpinner();
-  await exportDependencies(treeData, journeyData, { useStringArrays: true });
-  succeedSpinner();
-  return journeyData;
 }
 
 /**
@@ -551,9 +597,8 @@ export async function exportJourneysToFile(file, options) {
       const treeData = (await getTree(tree._id)).data;
       const exportData = getSingleTreeFileDataTemplate();
       delete exportData.meta;
-      exportData.tree = treeData;
       // eslint-disable-next-line no-await-in-loop
-      await exportDependencies(treeData, exportData, options);
+      await exportTree(treeData, exportData, options);
       fileData.trees[tree._id] = exportData;
     } catch (error) {
       printMessage(`Error exporting journey ${tree._id}: ${error}`, 'error');
@@ -575,22 +620,41 @@ export async function exportJourneysToFiles(options) {
     // eslint-disable-next-line no-await-in-loop
     const treeData = (await getTree(tree._id)).data;
     const exportData = getSingleTreeFileDataTemplate();
-    exportData.tree = treeData;
     // eslint-disable-next-line no-await-in-loop
-    await exportDependencies(treeData, exportData, options);
+    await exportTree(treeData, exportData, options);
     saveJsonToFile(exportData, fileName);
   }
   stopProgressBar('Done');
 }
 
 /**
+ * Get data for journey by id/name
+ * @param {String} journeyId journey id/name
+ * @returns {Object} object containing all journey data
+ */
+export async function getJourneyData(journeyId) {
+  showSpinner(`${journeyId}`);
+  const journeyData = getSingleTreeFileDataTemplate();
+  const treeData = (
+    await getTree(journeyId).catch((err) => {
+      succeedSpinner();
+      printMessage(err, 'error');
+    })
+  ).data;
+  spinSpinner();
+  await exportTree(treeData, journeyData, { useStringArrays: true });
+  succeedSpinner();
+  return journeyData;
+}
+
+/**
  * Helper to import a tree with all dependencies from an import data object (typically read from a file)
  * @param {Object} treeObject tree object containing tree and all its dependencies
  * @param {Object} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
- * @returns {String} empty string on success, null otherwise
  */
 async function importTree(treeObject, options) {
   const { reUuid } = options;
+  const { deps } = options;
   const { verbose } = options;
   if (verbose) printMessage(`\n- ${treeObject.tree._id}\n`, 'info', false);
   let newUuid = '';
@@ -598,7 +662,11 @@ async function importTree(treeObject, options) {
   const treeId = treeObject.tree._id;
 
   // Process scripts
-  if (treeObject.scripts && Object.entries(treeObject.scripts).length > 0) {
+  if (
+    deps &&
+    treeObject.scripts &&
+    Object.entries(treeObject.scripts).length > 0
+  ) {
     if (verbose) printMessage('  - Scripts:');
     for (const [scriptId, scriptObject] of Object.entries(treeObject.scripts)) {
       if (verbose)
@@ -611,11 +679,9 @@ async function importTree(treeObject, options) {
       }
       // eslint-disable-next-line no-await-in-loop
       if ((await createOrUpdateScript(scriptId, scriptObject)) == null) {
-        printMessage(
-          `importJourney ERROR: error importing script ${scriptObject.name} (${scriptId}) in journey ${treeId}`,
-          'error'
+        throw new Error(
+          `Error importing script ${scriptObject.name} (${scriptId}) in journey ${treeId}`
         );
-        return null;
       }
       if (verbose) printMessage('');
     }
@@ -623,6 +689,7 @@ async function importTree(treeObject, options) {
 
   // Process email templates
   if (
+    deps &&
     treeObject.emailTemplates &&
     Object.entries(treeObject.emailTemplates).length > 0
   ) {
@@ -633,26 +700,17 @@ async function importTree(treeObject, options) {
       if (verbose) printMessage(`    - ${templateId}`, 'info', false);
       try {
         // eslint-disable-next-line no-await-in-loop
-        const result = await putEmailTemplate(templateId, templateData);
-        if (result == null) {
-          printMessage(
-            `Error importing ${templateId} email template.`,
-            'error'
-          );
-        }
+        await putEmailTemplate(templateId, templateData);
       } catch (error) {
-        printMessage(
-          `Error importing email templates: ${error.message}`,
-          'error'
-        );
         printMessage(error.response.data, 'error');
+        throw new Error(`Error importing email templates: ${error.message}`);
       }
       if (verbose) printMessage('');
     }
   }
 
   // Process themes
-  if (treeObject.themes && treeObject.themes.length > 0) {
+  if (deps && treeObject.themes && treeObject.themes.length > 0) {
     if (verbose) printMessage('  - Themes:');
     const themes = {};
     for (const theme of treeObject.themes) {
@@ -660,20 +718,15 @@ async function importTree(treeObject, options) {
       themes[theme._id] = theme;
     }
     try {
-      const result = await putThemes(themes);
-      if (result == null) {
-        printMessage(
-          `Error importing ${Object.keys(themes).length} themes from ${themes}`,
-          'error'
-        );
-      }
+      await putThemes(themes);
     } catch (error) {
-      printMessage(`Error importing themes: ${error.message}`, 'error');
+      throw new Error(`Error importing themes: ${error.message}`);
     }
   }
 
   // Process social providers
   if (
+    deps &&
     treeObject.socialIdentityProviders &&
     Object.entries(treeObject.socialIdentityProviders).length > 0
   ) {
@@ -704,18 +757,16 @@ async function importTree(treeObject, options) {
               providerData
             );
           } catch (importError2) {
-            printMessage(
-              `Error importing provider ${providerId} in journey ${treeId}: ${importError}`,
-              'error'
-            );
             printMessage(importError.response.data, 'error');
+            throw new Error(
+              `Error importing provider ${providerId} in journey ${treeId}: ${importError}`
+            );
           }
         } else {
-          printMessage(
-            `Error importing provider ${providerId} in journey ${treeId}: ${importError}`,
-            'error'
-          );
           printMessage(importError.response.data, 'error');
+          throw new Error(
+            `\nError importing provider ${providerId} in journey ${treeId}: ${importError}`
+          );
         }
       }
     }
@@ -723,6 +774,7 @@ async function importTree(treeObject, options) {
 
   // Process saml providers
   if (
+    deps &&
     treeObject.saml2Entities &&
     Object.entries(treeObject.saml2Entities).length > 0
   ) {
@@ -751,16 +803,16 @@ async function importTree(treeObject, options) {
         // eslint-disable-next-line no-await-in-loop
         await createProvider(entityLocation, providerData, metaData).catch(
           (createProviderErr) => {
-            printMessage(`\nError creating provider ${entityId}`, 'error');
             printMessage(createProviderErr.response.data, 'error');
+            throw new Error(`Error creating provider ${entityId}`);
           }
         );
       } else {
         // eslint-disable-next-line no-await-in-loop
         await updateProvider(entityLocation, providerData).catch(
           (updateProviderErr) => {
-            printMessage(`\nError updating provider ${entityId}`, 'error');
             printMessage(updateProviderErr.response.data, 'error');
+            throw new Error(`Error updating provider ${entityId}`);
           }
         );
       }
@@ -769,6 +821,7 @@ async function importTree(treeObject, options) {
 
   // Process circles of trust
   if (
+    deps &&
     treeObject.circlesOfTrust &&
     Object.entries(treeObject.circlesOfTrust).length > 0
   ) {
@@ -786,17 +839,16 @@ async function importTree(treeObject, options) {
           ) {
             await updateCircleOfTrust(cotId, cotData).catch(
               async (updateCotErr) => {
-                printMessage(
-                  `\nError creating/updating circle of trust ${cotId}`,
-                  'error'
-                );
                 printMessage(createCotErr.response.data, 'error');
                 printMessage(updateCotErr.response.data, 'error');
+                throw new Error(
+                  `Error creating/updating circle of trust ${cotId}`
+                );
               }
             );
           } else {
-            printMessage(`\nError creating circle of trust ${cotId}`, 'error');
             printMessage(createCotErr.response.data, 'error');
+            throw new Error(`Error creating circle of trust ${cotId}`);
           }
         });
     }
@@ -858,12 +910,26 @@ async function importTree(treeObject, options) {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, innerNodeData);
       } catch (nodeImportError) {
-        printMessage(
-          `importJourney ERROR: error importing inner node ${innerNodeId}:${newUuid} in journey ${treeId}`,
-          'error'
-        );
-        printMessage(nodeImportError.response.data, 'error');
-        return null;
+        if (
+          nodeImportError.response.status === 400 &&
+          nodeImportError.response.data.message ===
+            'Data validation failed for the attribute, Script'
+        ) {
+          throw new Error(
+            `Missing script ${
+              innerNodeData.script
+            } referenced by inner node ${innerNodeId}${
+              innerNodeId === newUuid ? '' : ` [${newUuid}]`
+            } (${innerNodeData._type._id}) in journey ${treeId}.`
+          );
+        } else {
+          printMessage(nodeImportError.response.data, 'error');
+          throw new Error(
+            `Error importing inner node ${innerNodeId}${
+              innerNodeId === newUuid ? '' : ` [${newUuid}]`
+            } in journey ${treeId}`
+          );
+        }
       }
       if (verbose) printMessage('');
     }
@@ -921,14 +987,24 @@ async function importTree(treeObject, options) {
         // eslint-disable-next-line no-await-in-loop
         await putNode(newUuid, nodeType, nodeData);
       } catch (nodeImportError) {
-        printMessage(
-          `importJourney ERROR: error importing node ${nodeId}${
-            nodeId === newUuid ? '' : `[${newUuid}]`
-          } in journey ${treeId}`,
-          'error'
-        );
-        printMessage(nodeImportError.response.data, 'error');
-        return null;
+        if (
+          nodeImportError.response.status === 400 &&
+          nodeImportError.response.data.message ===
+            'Data validation failed for the attribute, Script'
+        ) {
+          throw new Error(
+            `Missing script ${nodeData.script} referenced by node ${nodeId}${
+              nodeId === newUuid ? '' : ` [${newUuid}]`
+            } (${nodeData._type._id}) in journey ${treeId}.`
+          );
+        } else {
+          printMessage(nodeImportError.response.data, 'error');
+          throw new Error(
+            `Error importing node ${nodeId}${
+              nodeId === newUuid ? '' : ` [${newUuid}]`
+            } in journey ${treeId}`
+          );
+        }
       }
       if (verbose) printMessage('');
     }
@@ -965,7 +1041,6 @@ async function importTree(treeObject, options) {
   try {
     await putTree(treeObject.tree._id, treeObject.tree);
     if (verbose) printMessage(`\n    - Done`, 'info', true);
-    return '';
   } catch (importError) {
     if (
       importError.response.status === 400 &&
@@ -987,20 +1062,25 @@ async function importTree(treeObject, options) {
       try {
         await putTree(treeObject.tree._id, treeObject.tree);
         if (verbose) printMessage(`\n    - Done`, 'info', true);
-        return '';
       } catch (importError2) {
-        printMessage(importError2, 'error');
-        printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
-        return null;
+        printMessage(importError2.response.data, 'error');
+        throw new Error(`Error importing journey flow ${treeId}`);
       }
     } else {
-      printMessage(importError, 'error');
-      printMessage(`ERROR: error importing journey flow ${treeId}`, 'error');
-      return null;
+      printMessage(importError.response.data, 'error');
+      throw new Error(`\nError importing journey flow ${treeId}`);
     }
   }
 }
 
+/**
+ * Resolve journey dependencies
+ * @param {Map} installedJorneys Map of installed journeys
+ * @param {Map} journeyMap Map of journeys to resolve dependencies for
+ * @param {[String]} unresolvedJourneys Map to hold the names of unresolved journeys and their dependencies
+ * @param {[String]} resolvedJourneys Array to hold the names of resolved journeys
+ * @param {int} index Depth of recursion
+ */
 async function resolveDependencies(
   installedJorneys,
   journeyMap,
@@ -1075,6 +1155,7 @@ async function resolveDependencies(
  * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneyFromFile(journeyId, file, options) {
+  const { verbose } = options;
   fs.readFile(file, 'utf8', async (err, data) => {
     if (err) throw err;
     let journeyData = JSON.parse(data);
@@ -1103,12 +1184,14 @@ export async function importJourneyFromFile(journeyId, file, options) {
       if (Object.keys(unresolvedJourneys).length === 0) {
         succeedSpinner(`Resolved all dependencies.`);
 
-        showSpinner(`Importing ${journeyId}...`);
+        if (!verbose) showSpinner(`Importing ${journeyId}...`);
         importTree(journeyData, options)
           .then(() => {
+            if (verbose) showSpinner(`Importing ${journeyId}...`);
             succeedSpinner(`Imported ${journeyId}.`);
           })
           .catch((importError) => {
+            if (verbose) showSpinner(`Importing ${journeyId}...`);
             failSpinner(`${importError}`);
           });
       } else {
@@ -1128,7 +1211,13 @@ export async function importJourneyFromFile(journeyId, file, options) {
   });
 }
 
+/**
+ * Import first journey from file
+ * @param {String} file import file name
+ * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
+ */
 export async function importFirstJourneyFromFile(file, options) {
+  const { verbose } = options;
   fs.readFile(file, 'utf8', async (err, data) => {
     if (err) throw err;
     let journeyData = _.cloneDeep(JSON.parse(data));
@@ -1166,12 +1255,14 @@ export async function importFirstJourneyFromFile(file, options) {
       if (Object.keys(unresolvedJourneys).length === 0) {
         succeedSpinner(`Resolved all dependencies.`);
 
-        showSpinner(`Importing ${journeyId}...`);
+        if (!verbose) showSpinner(`Importing ${journeyId}...`);
         importTree(journeyData, options)
           .then(() => {
+            if (verbose) showSpinner(`Importing ${journeyId}...`);
             succeedSpinner(`Imported ${journeyId}.`);
           })
           .catch((importError) => {
+            if (verbose) showSpinner(`Importing ${journeyId}...`);
             failSpinner(`${importError}`);
           });
       } else {
@@ -1225,8 +1316,12 @@ async function importAllTrees(treesMap, options) {
   createProgressBar(resolvedJourneys.length, 'Importing');
   for (const tree of resolvedJourneys) {
     updateProgressBar(`${tree}`);
-    // eslint-disable-next-line no-await-in-loop
-    await importTree(treesMap[tree], options);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await importTree(treesMap[tree], options);
+    } catch (error) {
+      printMessage(`\n${error.message}`, 'error');
+    }
   }
   stopProgressBar('Done');
 }

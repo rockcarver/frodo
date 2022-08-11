@@ -54,6 +54,12 @@ program
   )
   .addOption(
     new Option(
+      '--no-deps',
+      'Do not include any dependencies (scripts, email templates, SAML entity providers and circles of trust, social identity providers, themes).'
+    )
+  )
+  .addOption(
+    new Option(
       '--verbose',
       'Verbose output during command execution. If specified, may or may not produce additional output.'
     ).default(false, 'off')
@@ -73,6 +79,7 @@ program
           printMessage(`Importing journey ${options.journeyId}...`);
           importJourneyFromFile(options.journeyId, options.file, {
             reUuid: options.reUuid,
+            deps: options.deps,
             verbose: options.verbose,
           });
         }
@@ -83,6 +90,7 @@ program
           );
           importJourneysFromFile(options.file, {
             reUuid: options.reUuid,
+            deps: options.deps,
             verbose: options.verbose,
           });
         }
@@ -93,6 +101,7 @@ program
           );
           importJourneysFromFiles({
             reUuid: options.reUuid,
+            deps: options.deps,
             verbose: options.verbose,
           });
         }
@@ -101,6 +110,7 @@ program
           printMessage('Importing first journey in file...');
           importFirstJourneyFromFile(options.file, {
             reUuid: options.reUuid,
+            deps: options.deps,
             verbose: options.verbose,
           });
         }
