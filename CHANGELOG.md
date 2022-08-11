@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+-   \#368: Progress bar no longer overrides verbose output on journey import
+
 ## [0.9.2] - 2022-08-11
 
 ### Added
