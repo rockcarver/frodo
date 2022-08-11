@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2] - 2022-08-11
+
 ### Added
 
 -   \#205: Added `--no-deps` option to `journey export`/`import` commands. This allows users to omit all external dependency from a journey export and/or import. One use case where this comes in handy is when using frodo as a CI/CD tool to extract and deploy individual configuration artifacts and it is desirable to not mingle multiple types of configuration in a single file but keep each type of configuration in its own file for version and change control.
@@ -364,7 +366,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2-12...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2...HEAD
+
+[0.9.2]: https://github.com/rockcarver/frodo/compare/v0.9.2-12...v0.9.2
 
 [0.9.2-12]: https://github.com/rockcarver/frodo/compare/v0.9.2-11...v0.9.2-12
 
