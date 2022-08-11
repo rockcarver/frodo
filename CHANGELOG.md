@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--   \#205: Added `--no-deps` option to `journey export`/`import` commands. This allows users to omit all external dependency from a journey export and/or import. One use case where this comes in handy is when using frodo as a CI/CD tool to extract and deploy individual configuration artifacts and it is desirable to not mingle multiple types of configuration in a single file but keep each type of configuration in its own file for version and change control.
+-   \#205: Added `--no-deps` option to `journey export`/`import` commands. This allows users to omit all external dependencies from a journey export and/or import. One use case where this comes in handy is when using frodo as a CI/CD tool to extract and deploy individual configuration artifacts and it is desirable to not mingle multiple types of configuration in a single file but keep each type of configuration in its own file for version and change control.
 -   Added `--verbose` option to `journey export` command.
 -   \#341: Added initial smoke tests to validate basic functionality
 
@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   \#363: Frodo now performs dependency resolution and reports unresolved dependencies on single journey imports.
 -   \#364: Frodo now uses a spinner and no longer a progress bar to indicate progress on single journey imports.
 -   Internal restructuring (#158, #159, #164, #165)
--   Updated PIPELINE.md with latest papeline changes
+-   Updated PIPELINE.md with latest pipeline changes
 
 ### Fixed
 
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--   Updated PIPELINE.md with latest papeline changes
+-   Updated PIPELINE.md with latest pipeline changes
 
 ## [0.9.2-3] - 2022-07-22 [YANKED]
 
