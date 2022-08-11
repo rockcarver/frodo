@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   \#205: Added `--no-deps` option to `journey export`/`import` commands. This allows users to omit all external dependency from a journey export and/or import. One use case where this comes in handy is when using frodo as a CI/CD tool to extract and deploy individual configuration artifacts and it is desirable to not mingle multiple types of configuration in a single file but keep each type of configuration in its own file for version and change control.
+-   Added `--verbose` option to `journey export` command.
+-   \#341: Added initial smoke tests to validate basic functionality
+
+### Changed
+
+-   \#363: Frodo now performs dependency resolution and reports unresolved dependencies on single journey imports.
+-   \#364: Frodo now uses a spinner and no longer a progress bar to indicate progress on single journey imports.
+-   Internal restructuring (#158, #159, #164, #165)
+-   Updated PIPELINE.md with latest papeline changes
+
+### Fixed
+
+-   \#359: Frodo now properly exports themes from forgeops deployments.
+-   \#362: Frodo now properly imports journeys with email templates.
+-   \#357: Frodo no longer throws an error and exits occasionally when running the `frodo log tail` command.
+-   \#355: Frodo now properly imports social IDPs into 7.1 environments when using the `frodo journey import` command.
+-   \#353: Frodo now properly imports social IDPs when using the `frodo journey import` command.
+-   \#351: Frodo now properly shows IDM messages using the `frodo logs tail` command.
+-   \#349: Frodo now properly exports journeys from classic deployments
+
 ## [0.9.2-12] - 2022-08-09
 
 ### Fixed
@@ -52,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
--   \#349: Frodo now properly exports journeys from classing deployments
+-   \#349: Frodo now properly exports journeys from classic deployments
 
 ## [0.9.2-5] - 2022-07-23
 
