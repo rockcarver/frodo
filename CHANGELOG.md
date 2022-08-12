@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.3-0] - 2022-08-12
+
 ### Added
 
-=   \#369: Added backwards compatibilty with node 16 and 14. Binaries are still built using the latest node version (18). Smoke tests run against all supported versions (18, 16, 14).
+=   #369: Added backwards compatibilty with node 16 and 14. Binaries are still built using the latest node version (18). Smoke tests run against all supported versions (18, 16, 14).
 
 ### Fixed
 
@@ -374,7 +376,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.2...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.3-0...HEAD
+
+[0.9.3-0]: https://github.com/rockcarver/frodo/compare/v0.9.2...v0.9.3-0
 
 [0.9.2]: https://github.com/rockcarver/frodo/compare/v0.9.2-12...v0.9.2
 
