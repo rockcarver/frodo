@@ -1315,10 +1315,10 @@ async function importAllTrees(treesMap, options) {
   }
   createProgressBar(resolvedJourneys.length, 'Importing');
   for (const tree of resolvedJourneys) {
-    updateProgressBar(`${tree}`);
     try {
       // eslint-disable-next-line no-await-in-loop
       await importTree(treesMap[tree], options);
+      updateProgressBar(`${tree}`);
     } catch (error) {
       printMessage(`\n${error.message}`, 'error');
     }

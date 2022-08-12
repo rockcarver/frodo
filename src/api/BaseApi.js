@@ -3,14 +3,20 @@ import axiosRetry from 'axios-retry';
 import * as https from 'https';
 import HttpsProxyAgent from 'https-proxy-agent';
 import url from 'url';
+import fs from 'fs';
 import storage from '../storage/SessionStorage.js';
 import { getTenantURL } from './utils/ApiUtils.js';
-import pkg from '../../package.json' assert { type: 'json' };
+// import pkg from '../../package.json' assert { type: 'json' };
+
+const pkg = JSON.parse(
+  fs.readFileSync(new URL('../../package.json', import.meta.url))
+);
 
 axiosRetry(axios, {
   retries: 3,
   shouldResetTimeout: true,
-  // retryCondition: (_error) => true // retry no matter what
+  // eslint-disable-next-line no-unused-vars
+  retryCondition: (_error) => true, // retry no matter what
 });
 
 const timeout = 30000;

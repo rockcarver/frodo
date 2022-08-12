@@ -1,5 +1,10 @@
 /* eslint-disable no-return-assign */
-import pkg from '../../package.json' assert { type: 'json' };
+import fs from 'fs';
+// import pkg from '../../package.json' assert { type: 'json' };
+
+const pkg = JSON.parse(
+  fs.readFileSync(new URL('../../package.json', import.meta.url))
+);
 
 const _sessionStorage = {};
 

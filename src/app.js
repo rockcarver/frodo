@@ -1,8 +1,9 @@
 #!/usr/bin/env -S node --no-warnings --enable-source-maps
 
+import fs from 'fs';
 import { Command } from 'commander';
 import { initConnectionProfiles } from './ops/ConnectionProfileOps.js';
-import pkg from '../package.json' assert { type: 'json' };
+// import pkg from '../package.json' assert { type: 'json' };
 import { printMessage } from './ops/utils/Console.js';
 
 // commands
@@ -20,6 +21,10 @@ import realm from './cli/realm/realm.js';
 import saml from './cli/saml/saml.js';
 import script from './cli/script/script.js';
 import theme from './cli/theme/theme.js';
+
+const pkg = JSON.parse(
+  fs.readFileSync(new URL('../package.json', import.meta.url))
+);
 
 const program = new Command(pkg.name).version(
   `v${pkg.version} [${process.version}]`,
