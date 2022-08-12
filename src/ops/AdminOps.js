@@ -1,3 +1,4 @@
+import fs from 'fs';
 import _ from 'lodash';
 import {
   getOAuth2Clients,
@@ -10,11 +11,24 @@ import { getRealmManagedOrganization } from './OrganizationOps.js';
 import { getOAuth2Provider } from '../api/OAuth2ProviderApi.js';
 import { putSecret } from '../api/SecretsApi.js';
 import { clientCredentialsGrant } from '../api/OAuth2OIDCApi.js';
-import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
-// eslint-disable-next-line no-unused-vars
-import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
-import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
+// import OAUTH2_CLIENT from './templates/OAuth2ClientTemplate.json' assert { type: 'json' };
+// import ORG_MODEL_USER_ATTRIBUTES from './templates/OrgModelUserAttributesTemplate.json' assert { type: 'json' };
+// import GENERIC_EXTENSION_ATTRIBUTES from './templates/cloud/GenericExtensionAttributesTemplate.json' assert { type: 'json' };
 import { printMessage } from './utils/Console.js';
+
+const OAUTH2_CLIENT = JSON.parse(
+  fs.readFileSync(
+    new URL('./templates/OAuth2ClientTemplate.json', import.meta.url)
+  )
+);
+const GENERIC_EXTENSION_ATTRIBUTES = JSON.parse(
+  fs.readFileSync(
+    new URL(
+      './templates/cloud/GenericExtensionAttributesTemplate.json',
+      import.meta.url
+    )
+  )
+);
 
 const protectedClients = ['ui', 'idm-provisioning'];
 const protectedSubjects = ['amadmin', 'autoid-resource-server'];

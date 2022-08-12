@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+=   \#369: Added backwards compatibilty with node 16 and 14. Binaries are still built using the latest node version (18). Smoke tests run against all supported versions (18, 16, 14).
+
 ### Fixed
 
--   \#368: Progress bar no longer overrides verbose output on journey import
+-   \#368: Progress bar no longer overrides verbose output on journey import.
 
 ## [0.9.2] - 2022-08-11
 
@@ -17,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   \#205: Added `--no-deps` option to `journey export`/`import` commands. This allows users to omit all external dependencies from a journey export and/or import. One use case where this comes in handy is when using frodo as a CI/CD tool to extract and deploy individual configuration artifacts and it is desirable to not mingle multiple types of configuration in a single file but keep each type of configuration in its own file for version and change control.
 -   Added `--verbose` option to `journey export` command.
--   \#341: Added initial smoke tests to validate basic functionality
+-   \#341: Added initial smoke tests to validate basic functionality.
 
 ### Changed
 
