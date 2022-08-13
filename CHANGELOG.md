@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.3-4] - 2022-08-13
+
 ### Added
 
 -   \#317: Binary archive names now include the release version.
@@ -386,7 +388,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Fixed problem with adding connection profiles
 -   Miscellaneous bug fixes
 
-[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.3-3...HEAD
+[Unreleased]: https://github.com/rockcarver/frodo/compare/v0.9.3-4...HEAD
+
+[0.9.3-4]: https://github.com/rockcarver/frodo/compare/v0.9.3-3...v0.9.3-4
 
 [0.9.3-3]: https://github.com/rockcarver/frodo/compare/v0.9.3-2...v0.9.3-3
 
