@@ -170,6 +170,7 @@ jobs:
     outputs:
       newTag: ${{ steps.version-bump.outputs.newTag }}
       newVersion: ${{ steps.version-from-tag.outputs.version }}
+      preRelease: ${{ contains(steps.version-bump.outputs.newTag, '-') }}
 
   release-notes:
     needs: bump-version
@@ -237,7 +238,7 @@ jobs:
           name: ${{ needs.bump-version.outputs.newVersion }}
           tag_name: ${{ needs.bump-version.outputs.newTag }}
           body: ${{ needs.release-notes.outputs.notes }}
-          prerelease: ${{ contains(needs.bump-version.outputs.newTag, '-') }}
+          prerelease: ${{ needs.bump-version.outputs.preRelease }}
           generate_release_notes: ${{ contains(needs.bump-version.outputs.newTag, '-') }}
           files: |
             CHANGELOG.md
@@ -248,6 +249,26 @@ jobs:
     outputs:
       newTag: ${{ needs.bump-version.outputs.newTag }}
       newVersion: ${{ needs.bump-version.outputs.newVersion }}
+
+  npm-release:
+    needs: [bump-version, release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Pre-Release
+        if: ${{ needs.bump-version.outputs.preRelease }}
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          tag: "next"
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+      - name: Release
+        if: ${{ !needs.bump-version.outputs.preRelease }}
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
 
   macos-binary-release:
     needs: [bump-version, release]
