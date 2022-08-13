@@ -316,7 +316,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-macos-x64 --out-path bin/macos -o frodo .
+        run: pkg -C Gzip -t node18-macos-x64 -o bin/macos/frodo .
       #
       # Fail early on failing tests.
       #
@@ -384,7 +384,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-linux-x64 --out-path bin/linux -o frodo .
+        run: pkg -C Gzip -t node18-linux-x64 -o bin/linux/frodo .
 
       #
       # Fail early on failing tests.
@@ -439,7 +439,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-win-x64 --out-path bin/win -o frodo .
+        run: pkg -C Gzip -t node18-win-x64 -o bin/win/frodo .
 
       #
       # Fail early on failing tests.
