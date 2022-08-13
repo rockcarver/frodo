@@ -274,7 +274,7 @@ jobs:
       - name: Remove Pre-Release Tag
         if: ${{ ! fromJSON(needs.bump-version.outputs.preRelease) }}
         run: |
-          npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_ACCESS_TOKEN }}
+          export INPUT_TOKEN=${{ secrets.NPM_ACCESS_TOKEN }}
           npm whoami
           npm dist-tag rm @rockcarver/frodo-cli next
 
