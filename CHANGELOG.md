@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.3-5] - 2022-08-13
-
-## [0.9.3-4] - 2022-08-13
-
 ### Added
 
+-   \#376: Frodo is now being published as an npm package.
 -   \#317: Binary archive names now include the release version.
+
+## [0.9.3-5] - 2022-08-13 [YANKED]
+
+## [0.9.3-4] - 2022-08-13 [YANKED]
 
 ## [0.9.3-3] - 2022-08-13 [YANKED]
 
