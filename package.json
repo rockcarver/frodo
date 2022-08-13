@@ -19,10 +19,8 @@
     "node": ">=14"
   },
   "repository": {
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/rockcarver/frodo.git"
-    }
+    "type": "git",
+    "url": "https://github.com/rockcarver/frodo.git"
   },
   "bugs": {
     "url": "https://github.com/rockcarver/frodo/issues"
