@@ -271,6 +271,11 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
+      - name: Remove Pre-Release Tag
+        if: ${{ ! fromJSON(needs.bump-version.outputs.preRelease) }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        run: npm dist-tag rm @rockcarver/frodo-cli next
 
   macos-binary-release:
     needs: [bump-version, release]
