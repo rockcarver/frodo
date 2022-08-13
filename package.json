@@ -1,8 +1,32 @@
 {
-  "name": "rockcarver-frodo-cli",
+  "name": "@rockcarver/frodo-cli",
   "version": "0.9.3-4",
   "type": "module",
-  "description": "ForgeROckDO - the one ForgeRock CLI to rule them all",
+  "description": "This is the ForgeROck DO (FRODO) command line interface, a CLI to manage the ForgeRock Identity Cloud tenants, ForgeOps deployments, and classic deployments.",
+  "keywords": [
+    "forgerock",
+    "cli",
+    "am",
+    "idm",
+    "forgeops",
+    "identity cloud",
+    "export",
+    "import",
+    "ci/cd",
+    "devops"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "repository": {
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/rockcarver/frodo.git"
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/rockcarver/frodo/issues"
+  },
   "main": "src/app.js",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
