@@ -273,9 +273,10 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
       - name: Remove Pre-Release Tag
         if: ${{ ! fromJSON(needs.bump-version.outputs.preRelease) }}
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
-        run: npm dist-tag rm @rockcarver/frodo-cli next
+        run: |
+          npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_ACCESS_TOKEN }}
+          npm whoami
+          npm dist-tag rm @rockcarver/frodo-cli next
 
   macos-binary-release:
     needs: [bump-version, release]
