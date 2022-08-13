@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.10.2-0] - 2022-08-13
-
 ### Added
 
 -   \#376: Frodo is now being published as an npm package: @rockcarver/frodo-cli.
