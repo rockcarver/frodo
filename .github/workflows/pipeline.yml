@@ -316,7 +316,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-macos-x64 --out-path bin/macos .
+        run: pkg -C Gzip -t node18-macos-x64 --out-path bin/macos -o frodo .
       #
       # Fail early on failing tests.
       #
@@ -338,14 +338,14 @@ jobs:
       #
 
       - name: Package for Distribution
-        run: ditto -V -c -k --keepParent "dist/bin/macos/frodo" "dist/frodo-macos.zip"
+        run: ditto -V -c -k --keepParent "dist/bin/macos/frodo" "dist/frodo-macos-${{ needs.release.outputs.newVersion }}.zip"
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ needs.release.outputs.newVersion }}
           tag_name: ${{ needs.release.outputs.newTag }}
-          files: dist/frodo-macos.zip
+          files: dist/frodo-macos-${{ needs.release.outputs.newVersion }}.zip
 
   linux-binary-release:
     needs: [bump-version, release]
@@ -384,7 +384,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-linux-x64 --out-path bin/linux .
+        run: pkg -C Gzip -t node18-linux-x64 --out-path bin/linux -o frodo .
 
       #
       # Fail early on failing tests.
@@ -393,14 +393,14 @@ jobs:
         run: 'dist/bin/linux/frodo -v'
 
       - name: Archive distribution binary
-        run: zip -r -Z bzip2 dist/frodo-linux.zip . -i dist/bin/linux/frodo
+        run: zip -r -Z bzip2 dist/frodo-linux-${{ needs.release.outputs.newVersion }}.zip . -i dist/bin/linux/frodo
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ needs.release.outputs.newVersion }}
           tag_name: ${{ needs.release.outputs.newTag }}
-          files: dist/frodo-linux.zip
+          files: dist/frodo-linux-${{ needs.release.outputs.newVersion }}.zip
 
   windows-binary-release:
     needs: [bump-version, release]
@@ -439,7 +439,7 @@ jobs:
 
       - name: Build distribution binary
         working-directory: ./dist
-        run: pkg -C Gzip -t node18-win-x64 --out-path bin/win .
+        run: pkg -C Gzip -t node18-win-x64 --out-path bin/win -o frodo .
 
       #
       # Fail early on failing tests.
@@ -448,11 +448,11 @@ jobs:
         run: 'dist/bin/win/frodo.exe -v'
 
       - name: Archive distribution binary
-        run: 7z a -tzip dist/frodo-win.zip dist/bin/win/frodo.exe
+        run: 7z a -tzip dist/frodo-win-${{ needs.release.outputs.newVersion }}.zip dist/bin/win/frodo.exe
 
       - name: Release distribution binaries
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ needs.release.outputs.newVersion }}
           tag_name: ${{ needs.release.outputs.newTag }}
-          files: dist/frodo-win.zip
+          files: dist/frodo-win-${{ needs.release.outputs.newVersion }}.zip
