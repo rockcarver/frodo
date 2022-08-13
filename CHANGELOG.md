@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.10.0] - 2022-08-13
-
 ### Added
 
 -   \#376: Frodo is now being published as an npm package: @rockcarver/frodo-cli.
@@ -18,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 -   \#368: Progress bar no longer overrides verbose output on journey import.
+
+## [0.10.0] - 2022-08-13 [YANKED]
 
 ## [0.9.3-7] - 2022-08-13 [YANKED]
 

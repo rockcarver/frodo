@@ -261,13 +261,13 @@ jobs:
         with:
           node-version: 14
       - name: Pre-Release
-        if: ${{ needs.bump-version.outputs.preRelease }}
+        if: ${{ fromJSON(needs.bump-version.outputs.preRelease) }}
         uses: JS-DevTools/npm-publish@v1
         with:
           tag: "next"
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
       - name: Release
-        if: ${{ !needs.bump-version.outputs.preRelease }}
+        if: ${{ ! fromJSON(needs.bump-version.outputs.preRelease) }}
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
