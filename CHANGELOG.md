@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.3-7] - 2022-08-13
-
 ### Added
 
--   \#376: Frodo is now being published as an npm package.
+-   \#376: Frodo is now being published as an npm package: @rockcarver/frodo-cli.
 -   \#317: Binary archive names now include the release version.
+-   \#369: Added backwards compatibilty with node 16 and 14. Binaries are still built using the latest node version (18). Smoke tests run against all supported versions (18, 16, 14).
+
+### Fixed
+
+-   \#368: Progress bar no longer overrides verbose output on journey import.
+
+## [0.9.3-7] - 2022-08-13 [YANKED]
 
 ## [0.9.3-6] - 2022-08-13 [YANKED]
 
@@ -26,15 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.3-1] - 2022-08-13 [YANKED]
 
-## [0.9.3-0] - 2022-08-12
-
-### Added
-
--   \#369: Added backwards compatibilty with node 16 and 14. Binaries are still built using the latest node version (18). Smoke tests run against all supported versions (18, 16, 14).
-
-### Fixed
-
--   \#368: Progress bar no longer overrides verbose output on journey import.
+## [0.9.3-0] - 2022-08-12 [YANKED]
 
 ## [0.9.2] - 2022-08-11
 

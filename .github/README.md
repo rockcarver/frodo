@@ -10,25 +10,25 @@ Frodo is the successor to field tools like [amtree.sh](https://github.com/vscheu
 1. Download the platform specific binary archive from the [release page](https://github.com/rockcarver/frodo/releases) and unzip it to a directory.
 2. Open a terminal and change to the above directory.
 3. Run `frodo conn add` (example below) to setup `frodo` for your ForgeRock environment. If all parameters are correct, `frodo` creates a new [connection profile](#connection-profiles). If you are offline and don't want to validate the data you enter, you can use the --no-validate paramter and frodo stores the [connection profile](#connection-profiles) without validating it.
-```console
-$ frodo conn add https://openam-tenant-name.forgeblocks.com/am john.doe@company.com '5uP3r-53cr3t!'
-ForgeRock Identity Cloud detected.
-Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
-Saving creds in /Users/john.doe/.frodo/.frodorc...
-```
-**NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](../docs/BINARIES.md) if this happens.**
+    ```console
+    $ frodo conn add https://openam-tenant-name.forgeblocks.com/am john.doe@company.com '5uP3r-53cr3t!'
+    ForgeRock Identity Cloud detected.
+    Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
+    Saving creds in /Users/john.doe/.frodo/.frodorc...
+    ```
+    **NOTE: MacOS and Windows may not let you run `frodo` right after you download (and unzip) and execute it for the very first time. Please refer to [this page](../docs/BINARIES.md) if this happens.**
 
 4. Test your connection profile using a simple convenience feature in frodo:
-```console
-$ frodo info tenant-name
-Printing versions and tokens...
-ForgeRock Identity Cloud detected.
-Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
-Cookie name: 6ac6499e9da2071
-Session token: g9CMhj7k9Asq...
-Bearer token: eyJ0eXAiOiJKV...
-```
-Note how the command does not specify the complete tenant URL nor username nor password. I only uses a unique substring that matches the tenant URL and frodo looks up and uses the right [connection profile](#connection-profiles).
+    ```console
+    $ frodo info tenant-name
+    Printing versions and tokens...
+    ForgeRock Identity Cloud detected.
+    Connected to ForgeRock Access Management 7.2.0-2022-6-SNAPSHOT Build ee394dde039e790642653a516d498c16759876c1 (2022-July-07 19:49)
+    Cookie name: 6ac6499e9da2071
+    Session token: g9CMhj7k9Asq...
+    Bearer token: eyJ0eXAiOiJKV...
+    ```
+    Note how the command does not specify the complete tenant URL nor username nor password. I only uses a unique substring that matches the tenant URL and frodo looks up and uses the right [connection profile](#connection-profiles).
 
 5. Now you can use other frodo commands, like `journey`, `logs`, `applications` etc. as desired. **For detailed usage, refer to [this](#usage)**
 
@@ -113,7 +113,7 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
 
 ## Limitations
 
-`frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to an imported tree or alternatively, export the source tree to a file, edit the file to add the missing fields before importing. Any hard dependencies _other than_ scripts and email templates, needed for a journey/tree, must also exist prior to import, for example inner-trees and custom nodes.
+`frodo` can't export passwords (including API secrets, etc), so these need to be manually added back to imported configuration or alternatively, edit the export file to add the missing fields before importing.
 
 ## Installing
 
@@ -125,15 +125,31 @@ For those who want to contribute or are just curious about the build process.
 
 - Make sure you have Node.js v18 (the version used by developers) or newer and npm.
 - Clone this repo
-```console
-git clone https://github.com/rockcarver/frodo.git
-```
+  ```console
+  git clone https://github.com/rockcarver/frodo.git
+  ```
 - Install via NPM
-```console
-cd frodo
-npm install
-npm i -g
-```
+  ```console
+  cd frodo
+  npm install
+  npm i -g
+  ```
+
+### NPM package
+If you are a node developer and want to use frodo as a cli tool or as a library for your own applications, you can install the npm package:
+
+- To install the latest version as a cli tool:
+  ```console
+  npm i -g @rockcarver/frodo-cli
+  ```
+- To install the latest version as a dependency for you own application:
+  ```console
+  npm i --save @rockcarver/frodo-cli
+  ```
+- To install the latest pre-release:
+  ```console
+  npm i @rockcarver/frodo-cli@next
+  ```
 
 ## Usage
 
