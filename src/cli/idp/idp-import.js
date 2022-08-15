@@ -1,6 +1,6 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, IdmOps } from '@rockcarver/frodo-lib';
+import { AuthenticateOps, IdpOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
 
 const { getTokens } = AuthenticateOps;
@@ -9,7 +9,7 @@ const {
   importFirstProvider,
   importProvidersFromFile,
   importProvidersFromFiles,
-} = IdmOps;
+} = IdpOps;
 
 const program = new Command('frodo idp import');
 
