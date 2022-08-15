@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { revokeOAuth2ClientAdminPrivileges } from '../../ops/AdminOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { revokeOAuth2ClientAdminPrivileges } = AdminOps;
 
 const program = new Command(
   'frodo admin revoke-oauth2-client-admin-privileges'
@@ -32,13 +33,13 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Revoking admin privileges from oauth2 client "${
             options.target
           }" in realm "${storage.session.getRealm()}"...`
         );
         await revokeOAuth2ClientAdminPrivileges(options.target);
-        printMessage('Done.');
+        console.log('Done.');
       }
     }
     // end command logic inside action handler

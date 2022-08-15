@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { listNonOAuth2AdminStaticUserMappings } from '../../ops/AdminOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { listNonOAuth2AdminStaticUserMappings } = AdminOps;
 
 const program = new Command('frodo admin list-static-user-mappings');
 
@@ -35,7 +36,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           'Listing all non-oauth2 client subjects of static user mappings...'
         );
         const subjects = await listNonOAuth2AdminStaticUserMappings(
@@ -43,7 +44,7 @@ program
         );
         subjects.sort((a, b) => a.localeCompare(b));
         subjects.forEach((item) => {
-          printMessage(`${item}`);
+          console.log(`${item}`);
         });
       }
     }

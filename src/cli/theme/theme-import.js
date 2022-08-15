@@ -1,15 +1,16 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, ThemeOps } from '@rockcarver/frodo-lib';
+const { getTokens } = AuthenticateOps;
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
+
+const {
   importFirstThemeFromFile,
   importThemeById,
   importThemeByName,
   importThemesFromFile,
   importThemesFromFiles,
-} from '../../ops/ThemeOps.js';
+} = ThemeOps;
 
 const program = new Command('frodo theme import');
 
@@ -65,7 +66,7 @@ program
       if (await getTokens()) {
         // import by name
         if (options.file && options.themeName) {
-          printMessage(
+          console.log(
             `Importing theme with name "${
               options.themeName
             }" into realm "${storage.session.getRealm()}"...`
@@ -74,7 +75,7 @@ program
         }
         // import by id
         else if (options.file && options.themeId) {
-          printMessage(
+          console.log(
             `Importing theme with id "${
               options.themeId
             }" into realm "${storage.session.getRealm()}"...`
@@ -83,21 +84,21 @@ program
         }
         // --all -a
         else if (options.all && options.file) {
-          printMessage(
+          console.log(
             `Importing all themes from a single file (${options.file})...`
           );
           importThemesFromFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
-          printMessage(
+          console.log(
             'Importing all themes from separate files in current directory...'
           );
           importThemesFromFiles();
         }
         // import single theme from file
         else if (options.file) {
-          printMessage(
+          console.log(
             `Importing first theme from file "${
               options.file
             }" into realm "${storage.session.getRealm()}"...`
@@ -106,7 +107,7 @@ program
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

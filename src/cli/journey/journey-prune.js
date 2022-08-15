@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { prune } from '../../ops/JourneyOps.js';
+import { AuthenticateOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens, JourneyOps } = AuthenticateOps;
+const { prune } = JourneyOps;
 
 const program = new Command('frodo journey prune');
 
@@ -29,7 +30,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Pruning orphaned configuration artifacts in realm "${storage.session.getRealm()}"...`
         );
         prune();

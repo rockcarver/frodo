@@ -1,13 +1,14 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, CirclesOfTrustOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
+
+const { getTokens } = AuthenticateOps;
+const {
   exportCircleOfTrust,
   exportCirclesOfTrustToFile,
   exportCirclesOfTrustToFiles,
-} from '../../ops/CirclesOfTrustOps.js';
+} = CirclesOfTrustOps;
 
 const program = new Command('frodo saml cot export');
 
@@ -57,7 +58,7 @@ program
       if (await getTokens()) {
         // export by id/name
         if (options.cotId) {
-          printMessage(
+          console.log(
             `Exporting circle of trust "${
               options.cotId
             }" from realm "${storage.session.getRealm()}"...`
@@ -66,17 +67,17 @@ program
         }
         // --all -a
         else if (options.all) {
-          printMessage('Exporting all circles of trust to a single file...');
+          console.log('Exporting all circles of trust to a single file...');
           exportCirclesOfTrustToFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate) {
-          printMessage('Exporting all circles of trust to separate files...');
+          console.log('Exporting all circles of trust to separate files...');
           exportCirclesOfTrustToFiles();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage(
+          console.log(
             'Unrecognized combination of options or no options...',
             'error'
           );

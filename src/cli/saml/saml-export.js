@@ -1,13 +1,11 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, SamlOps } from '@rockcarver/frodo-lib';
+const { getTokens } = AuthenticateOps;
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
-  exportProvider,
-  exportProvidersToFile,
-  exportProvidersToFiles,
-} from '../../ops/SamlOps.js';
+
+const { exportProvider, exportProvidersToFile, exportProvidersToFiles } =
+  SamlOps;
 
 const program = new Command('frodo saml export');
 
@@ -57,7 +55,7 @@ program
       if (await getTokens()) {
         // export by id/name
         if (options.entityId) {
-          printMessage(
+          console.log(
             `Exporting provider "${
               options.entityId
             }" from realm "${storage.session.getRealm()}"...`
@@ -66,17 +64,17 @@ program
         }
         // --all -a
         else if (options.all) {
-          printMessage('Exporting all providers to a single file...');
+          console.log('Exporting all providers to a single file...');
           exportProvidersToFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate) {
-          printMessage('Exporting all providers to separate files...');
+          console.log('Exporting all providers to separate files...');
           exportProvidersToFiles();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage(
+          console.log(
             'Unrecognized combination of options or no options...',
             'error'
           );

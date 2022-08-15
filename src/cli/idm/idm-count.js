@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { countManagedObjects } from '../../ops/IdmOps.js';
+import { AuthenticateOps, IdmOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens } = AuthenticateOps;
+const { countManagedObjects } = IdmOps;
 
 const program = new Command('frodo idm count');
 
@@ -32,7 +33,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(`Counting managed ${options.managedObject} objects...`);
+        console.log(`Counting managed ${options.managedObject} objects...`);
         countManagedObjects(options.managedObject);
       }
     }

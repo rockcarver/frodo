@@ -8,7 +8,7 @@ import {
   encodeBase64Url,
   decodeBase64Url,
 } from '../../api/utils/Base64.js';
-import { printMessage } from './Console.js';
+import { console.log } from './Console.js';
 
 export function getCurrentTimestamp() {
   const ts = new Date();
@@ -108,7 +108,7 @@ export function saveToFile(type, data, identifier, filename) {
   }
   fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
     if (err) {
-      return printMessage(`ERROR - can't save ${type} to file`, 'error');
+      return console.log(`ERROR - can't save ${type} to file`, 'error');
     }
     return '';
   });
@@ -124,7 +124,7 @@ export function saveJsonToFile(data, filename) {
   exportData.meta = getMetadata();
   fs.writeFile(filename, JSON.stringify(exportData, null, 2), (err) => {
     if (err) {
-      return printMessage(`ERROR - can't save ${filename}`, 'error');
+      return console.log(`ERROR - can't save ${filename}`, 'error');
     }
     return '';
   });
@@ -138,7 +138,7 @@ export function saveJsonToFile(data, filename) {
 export function saveTextToFile(data, filename) {
   fs.writeFile(filename, data, (err) => {
     if (err) {
-      printMessage(`ERROR - can't save ${filename}`, 'error');
+      console.log(`ERROR - can't save ${filename}`, 'error');
       return false;
     }
     return true;

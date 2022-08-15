@@ -1,13 +1,15 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import {
+import { AuthenticateOps, IdmOps } from '@rockcarver/frodo-lib';
+
+const { getTokens } = AuthenticateOps;
+const {
   exportAllConfigEntities,
   exportAllRawConfigEntities,
   exportConfigEntity,
-} from '../../ops/IdmOps.js';
+} = IdmOps;
+
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo idm export');
 
@@ -70,7 +72,7 @@ program
       if (await getTokens()) {
         // export by id/name
         if (options.idmName) {
-          printMessage(
+          console.log(
             `Exporting object "${
               options.idmName
             }" from realm "${storage.session.getRealm()}"...`
@@ -84,7 +86,7 @@ program
           options.entitiesFile &&
           options.envFile
         ) {
-          printMessage(
+          console.log(
             `Exporting IDM configuration objects specified in ${options.entitiesFile} into separate files in ${options.directory} using ${options.envFile} for variable replacement...`
           );
           exportAllConfigEntities(
@@ -95,14 +97,14 @@ program
         }
         // --all-separate -A without variable replacement
         else if (options.allSeparate && options.directory) {
-          printMessage(
+          console.log(
             `Exporting all IDM configuration objects into separate files in ${options.directory}...`
           );
           exportAllRawConfigEntities(options.directory);
         }
         // unrecognized combination of options or no options
         else {
-          printMessage(
+          console.log(
             'Unrecognized combination of options or no options...',
             'error'
           );

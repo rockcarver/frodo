@@ -84,7 +84,7 @@ function error(message) {
  * @param {boolean} [newline=true] Whether to add a new at the end of message
  *
  */
-export function printMessage(message, type = 'text', newline = true) {
+export function console.log(message, type = 'text', newline = true) {
   //   if (storage.session.getItem('scriptFriendly')) {
   switch (type) {
     case 'data':

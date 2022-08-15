@@ -1,12 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, VariablesOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
-  deleteVariableCmd,
-  deleteVariablesCmd,
-} from '../../ops/VariablesOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { deleteVariableCmd, deleteVariablesCmd } = VariablesOps;
 
 const program = new Command('frodo cmd sub2 delete');
 
@@ -53,17 +51,17 @@ program
       if (await getTokens()) {
         // delete by id
         if (options.variableId) {
-          printMessage('Deleting variable...');
+          console.log('Deleting variable...');
           deleteVariableCmd(options.variableId);
         }
         // --all -a
         else if (options.all) {
-          printMessage('Deleting all variables...');
+          console.log('Deleting all variables...');
           deleteVariablesCmd();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

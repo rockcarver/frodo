@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, SamlOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { describeProvider } from '../../ops/SamlOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { describeProvider } = SamlOps;
 
 const program = new Command('frodo saml describe');
 
@@ -28,7 +29,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Describing SAML entity provider ${
             options.entityId
           } in realm "${storage.session.getRealm()}"...`

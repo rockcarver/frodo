@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, StartupOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { applyUpdates, checkForUpdates } from '../../ops/StartupOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { applyUpdates, checkForUpdates } = StartupOps;
 
 const program = new Command('frodo esv apply');
 
@@ -50,12 +51,12 @@ program
       if (await getTokens()) {
         // check for updates only
         if (options.checkOnly) {
-          printMessage(`Checking for updates...`);
+          console.log(`Checking for updates...`);
           await checkForUpdates();
         }
         // apply updates
         else {
-          printMessage(`Applying updates...`);
+          console.log(`Applying updates...`);
           await applyUpdates(options.force, options.wait, options.yes);
         }
       }

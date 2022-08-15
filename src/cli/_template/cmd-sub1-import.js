@@ -1,7 +1,9 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
+
+const { getTokens } = AuthenticateOps;
 
 const program = new Command('frodo cmd sub1 import');
 

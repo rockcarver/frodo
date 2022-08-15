@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { showGenericExtensionAttributes } from '../../ops/AdminOps.js';
+
+const { showGenericExtensionAttributes } = AdminOps;
+const { getTokens } = AuthenticateOps;
 
 const program = new Command('frodo admin show-generic-extension-attributes');
 
@@ -39,14 +40,14 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Showing generic extension attributes in realm "${storage.session.getRealm()}"...`
         );
         await showGenericExtensionAttributes(
           options.includeCustomized,
           options.dryRun
         );
-        printMessage('Done.');
+        console.log('Done.');
       }
     }
     // end command logic inside action handler

@@ -1,13 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, ThemeOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
-  deleteThemeByNameCmd,
-  deleteThemeCmd,
-  deleteThemesCmd,
-} from '../../ops/ThemeOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { deleteThemeByNameCmd, deleteThemeCmd, deleteThemesCmd } = ThemeOps;
 
 const program = new Command('frodo theme delete');
 
@@ -51,7 +48,7 @@ program
       if (await getTokens()) {
         // delete by name
         if (options.themeName) {
-          printMessage(
+          console.log(
             `Deleting theme with name "${
               options.themeName
             }" from realm "${storage.session.getRealm()}"...`
@@ -60,7 +57,7 @@ program
         }
         // delete by id
         else if (options.themeId) {
-          printMessage(
+          console.log(
             `Deleting theme with id "${
               options.themeId
             }" from realm "${storage.session.getRealm()}"...`
@@ -69,14 +66,14 @@ program
         }
         // --all -a
         else if (options.all) {
-          printMessage(
+          console.log(
             `Deleting all themes from realm "${storage.session.getRealm()}"...`
           );
           deleteThemesCmd(options.file);
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

@@ -1,14 +1,15 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, CirclesOfTrustOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
+
+const { getTokens } = AuthenticateOps;
+const {
   importCircleOfTrust,
   importCirclesOfTrustFromFile,
   importCirclesOfTrustFromFiles,
   importFirstCircleOfTrust,
-} from '../../ops/CirclesOfTrustOps.js';
+} = CirclesOfTrustOps;
 
 const program = new Command('frodo saml cot import');
 
@@ -58,7 +59,7 @@ program
       if (await getTokens()) {
         // import by id
         if (options.file && options.cotId) {
-          printMessage(
+          console.log(
             `Importing circle of trust "${
               options.cotId
             }" into realm "${storage.session.getRealm()}"...`
@@ -67,21 +68,21 @@ program
         }
         // --all -a
         else if (options.all && options.file) {
-          printMessage(
+          console.log(
             `Importing all circles of trust from a single file (${options.file})...`
           );
           importCirclesOfTrustFromFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
-          printMessage(
+          console.log(
             'Importing all circles of trust from separate files (*.saml.json) in current directory...'
           );
           importCirclesOfTrustFromFiles();
         }
         // import first provider from file
         else if (options.file) {
-          printMessage(
+          console.log(
             `Importing first circle of trust from file "${
               options.file
             }" into realm "${storage.session.getRealm()}"...`
@@ -90,7 +91,7 @@ program
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { deleteJourney, deleteJourneys } from '../../ops/JourneyOps.js';
+import { AuthenticateOps, JourneyOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens } = AuthenticateOps;
+const { deleteJourney, deleteJourneys } = JourneyOps;
 
 const program = new Command('frodo journey delete');
 
@@ -53,7 +54,7 @@ program
       if (await getTokens()) {
         // delete by id
         if (options.journeyId) {
-          printMessage(
+          console.log(
             `Deleting journey ${
               options.journeyId
             } in realm "${storage.session.getRealm()}"...`
@@ -62,12 +63,12 @@ program
         }
         // --all -a
         else if (options.all) {
-          printMessage('Deleting all journeys...');
+          console.log('Deleting all journeys...');
           deleteJourneys(options);
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

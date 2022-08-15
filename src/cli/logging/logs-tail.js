@@ -1,14 +1,15 @@
 import { Command, Option } from 'commander';
 import {
-  getConnectionProfile,
-  saveConnectionProfile,
-} from '../../ops/ConnectionProfileOps.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+  AuthenticateOps,
+  ConnectionProfileOps,
+  LogOps,
+} from '@rockcarver/frodo-lib';
 import * as common from '../cmd_common.js';
-// import { createAPIKeyAndSecret, tailLogs } from '../../api/LogApi.js';
-import { provisionCreds, tailLogs, resolveLevel } from '../../ops/LogOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { provisionCreds, tailLogs, resolveLevel } = LogOps;
+const { getConnectionProfile, saveConnectionProfile } = ConnectionProfileOps;
+const { getTokens } = AuthenticateOps;
 
 const program = new Command('frodo journey tail');
 program
@@ -48,7 +49,7 @@ Following values are possible (values on the same line are equivalent): \
       if (conn.username == null && conn.password == null) {
         if (!storage.session.getUsername() && !storage.session.getPassword()) {
           credsFromParameters = false;
-          printMessage(
+          console.log(
             'User credentials not specified as parameters and no saved API key and secret found!',
             'warn'
           );
@@ -64,7 +65,7 @@ Following values are possible (values on the same line are equivalent): \
         storage.session.setLogApiSecret(creds.api_key_secret);
       }
     }
-    printMessage(
+    console.log(
       `Tailing ID Cloud logs from the following sources: ${
         command.opts().sources
       } and levels [${resolveLevel(command.opts().level)}]...`

@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { listOAuth2AdminClients } from '../../ops/AdminOps.js';
+
+const { listOAuth2AdminClients } = AdminOps;
+const { getTokens } = AuthenticateOps;
 
 const program = new Command(
   'frodo admin list-oauth2-clients-with-admin-privileges'
@@ -29,13 +30,13 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Listing oauth2 clients with admin privileges in realm "${storage.session.getRealm()}"...`
         );
         const adminClients = await listOAuth2AdminClients();
         adminClients.sort((a, b) => a.localeCompare(b));
         adminClients.forEach((item) => {
-          printMessage(`${item}`);
+          console.log(`${item}`);
         });
       }
     }

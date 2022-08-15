@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps } from '@rockcarver/frodo-lib';
+const { getTokens } = AuthenticateOps;
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
 
 export default function setup() {
   const info = new Command('info');
@@ -23,12 +23,12 @@ export default function setup() {
       storage.session.setAllowInsecureConnection(options.insecure);
       storage.session.setItem('scriptFriendly', options.scriptFriendly);
       if (!options.scriptFriendly) {
-        printMessage('Printing versions and tokens...');
+        console.log('Printing versions and tokens...');
         if (await getTokens()) {
-          printMessage(`Cookie name: ${storage.session.getCookieName()}`);
-          printMessage(`Session token: ${storage.session.getCookieValue()}`);
+          console.log(`Cookie name: ${storage.session.getCookieName()}`);
+          console.log(`Session token: ${storage.session.getCookieValue()}`);
           if (storage.session.getBearerToken()) {
-            printMessage(`Bearer token: ${storage.session.getBearerToken()}`);
+            console.log(`Bearer token: ${storage.session.getBearerToken()}`);
           }
         } else {
           process.exitCode = 1;
@@ -41,7 +41,7 @@ export default function setup() {
         if (storage.session.getBearerToken()) {
           output.bearerToken = storage.session.getBearerToken();
         }
-        printMessage(JSON.stringify(output, null, 2), 'data');
+        console.log(JSON.stringify(output, null, 2), 'data');
       } else {
         process.exitCode = 1;
       }

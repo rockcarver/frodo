@@ -1,14 +1,15 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, EmailTemplateOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
+
+const { getTokens } = AuthenticateOps;
+const {
   importEmailTemplateFromFile,
   importEmailTemplatesFromFile,
   importEmailTemplatesFromFiles,
   importFirstEmailTemplateFromFile,
-} from '../../ops/EmailTemplateOps.js';
+} = EmailTemplateOps;
 
 const program = new Command('frodo email template import');
 
@@ -53,33 +54,33 @@ program
       if (await getTokens()) {
         // import by id
         if (options.file && options.templateId) {
-          printMessage(`Importing email template "${options.templateId}"...`);
+          console.log(`Importing email template "${options.templateId}"...`);
           importEmailTemplateFromFile(options.templateId, options.file);
         }
         // --all -a
         else if (options.all && options.file) {
-          printMessage(
+          console.log(
             `Importing all email templates from a single file (${options.file})...`
           );
           importEmailTemplatesFromFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
-          printMessage(
+          console.log(
             'Importing all email templates from separate files (*.template.email.json) in current directory...'
           );
           importEmailTemplatesFromFiles();
         }
         // import first template from file
         else if (options.file) {
-          printMessage(
+          console.log(
             `Importing first email template from file "${options.file}"...`
           );
           importFirstEmailTemplateFromFile(options.file);
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

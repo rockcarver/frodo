@@ -1,14 +1,15 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, ThemeOps } from '@rockcarver/frodo-lib';
+const { getTokens } = AuthenticateOps;
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
+
+const {
   exportThemeById,
   exportThemeByName,
   exportThemesToFile,
   exportThemesToFiles,
-} from '../../ops/ThemeOps.js';
+} = ThemeOps;
 
 const program = new Command('frodo theme export');
 
@@ -64,7 +65,7 @@ program
       if (await getTokens()) {
         // export by name
         if (options.themeName) {
-          printMessage(
+          console.log(
             `Exporting theme "${
               options.themeName
             }" from realm "${storage.session.getRealm()}"...`
@@ -73,7 +74,7 @@ program
         }
         // export by id
         else if (options.themeId) {
-          printMessage(
+          console.log(
             `Exporting theme "${
               options.themeId
             }" from realm "${storage.session.getRealm()}"...`
@@ -82,17 +83,17 @@ program
         }
         // --all -a
         else if (options.all) {
-          printMessage('Exporting all themes to a single file...');
+          console.log('Exporting all themes to a single file...');
           exportThemesToFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate) {
-          printMessage('Exporting all themes to separate files...');
+          console.log('Exporting all themes to separate files...');
           exportThemesToFiles();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage(
+          console.log(
             'Unrecognized combination of options or no options...',
             'error'
           );

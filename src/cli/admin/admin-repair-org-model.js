@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { repairOrgModel } from '../../ops/AdminOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { repairOrgModel } = AdminOps;
 
 const program = new Command('frodo admin repair-org-model');
 
@@ -34,11 +35,11 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Repairing org model in realm "${storage.session.getRealm()}"...`
         );
         await repairOrgModel(options.extendPermissions, options.dryRun);
-        printMessage('Done.');
+        console.log('Done.');
       }
     }
     // end command logic inside action handler

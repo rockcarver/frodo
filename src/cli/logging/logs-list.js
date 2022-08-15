@@ -1,13 +1,15 @@
-import { Command } from 'commander';
 import {
-  getConnectionProfile,
-  saveConnectionProfile,
-} from '../../ops/ConnectionProfileOps.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+  AuthenticateOps,
+  ConnectionProfileOps,
+  LogOps,
+} from '@rockcarver/frodo-lib';
+import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { provisionCreds, getLogSources } from '../../ops/LogOps.js';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { provisionCreds, getLogSources } = LogOps;
+const { getConnectionProfile, saveConnectionProfile } = ConnectionProfileOps;
+const { getTokens } = AuthenticateOps;
 
 const program = new Command('frodo journey list');
 program
@@ -23,7 +25,7 @@ program
     storage.session.setUsername(user);
     storage.session.setPassword(password);
     storage.session.setAllowInsecureConnection(options.insecure);
-    printMessage('Listing available ID Cloud log sources...');
+    console.log('Listing available ID Cloud log sources...');
     const conn = await getConnectionProfile();
     storage.session.setTenant(conn.tenant);
     if (conn.key != null && conn.secret != null) {
@@ -34,7 +36,7 @@ program
       if (conn.username == null && conn.password == null) {
         if (!storage.session.getUsername() && !storage.session.getPassword()) {
           credsFromParameters = false;
-          printMessage(
+          console.log(
             'User credentials not specified as parameters and no saved API key and secret found!',
             'warn'
           );
@@ -53,19 +55,19 @@ program
 
     const sources = await getLogSources();
     if (sources.length === 0) {
-      printMessage(
+      console.log(
         "Can't get sources, possible cause - wrong API key or secret",
         'error'
       );
     } else {
       if (credsFromParameters) await saveConnectionProfile(); // save new values if they were specified on CLI
-      printMessage('Available log sources:');
+      console.log('Available log sources:');
       sources.forEach((source) => {
-        printMessage(`${source}`, 'info');
+        console.log(`${source}`, 'info');
       });
-      printMessage('You can use any combination of comma separated sources.');
-      printMessage('For example:');
-      printMessage(`$ frodo logs tail -c am-core,idm-core ${host}`, 'info');
+      console.log('You can use any combination of comma separated sources.');
+      console.log('For example:');
+      console.log(`$ frodo logs tail -c am-core,idm-core ${host}`, 'info');
     }
   });
 

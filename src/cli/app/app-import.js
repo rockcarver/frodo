@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, OAuth2ClientOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { importOAuth2ClientsFromFile } from '../../ops/OAuth2ClientOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { importOAuth2ClientsFromFile } = OAuth2ClientOps;
 
 const program = new Command('frodo app import');
 
@@ -46,7 +47,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(`Importing OAuth2 application(s) ...`);
+        console.log(`Importing OAuth2 application(s) ...`);
         importOAuth2ClientsFromFile(options.file);
       }
     }

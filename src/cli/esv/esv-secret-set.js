@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, SecretsOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { setDescriptionOfSecret } from '../../ops/SecretsOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { setDescriptionOfSecret } = SecretsOps;
 
 const program = new Command('frodo esv secret set');
 
@@ -35,7 +36,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage('Setting secret description...');
+        console.log('Setting secret description...');
         setDescriptionOfSecret(options.secretId, options.description);
       }
     }

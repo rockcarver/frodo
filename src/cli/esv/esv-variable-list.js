@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, VariablesOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { listVariables } from '../../ops/VariablesOps.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens } = AuthenticateOps;
+const { listVariables } = VariablesOps;
 
 const program = new Command('frodo esv variable list');
 
@@ -30,7 +31,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage('Listing variables...');
+        console.log('Listing variables...');
         listVariables(options.long);
       }
     }

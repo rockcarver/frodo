@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, SecretsOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { deleteSecretCmd, deleteSecretsCmd } from '../../ops/SecretsOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { deleteSecretCmd, deleteSecretsCmd } = SecretsOps;
 
 const program = new Command('frodo esv secret delete');
 
@@ -44,17 +45,17 @@ program
       if (await getTokens()) {
         // delete by id
         if (options.secretId) {
-          printMessage('Deleting secret...');
+          console.log('Deleting secret...');
           deleteSecretCmd(options.secretId);
         }
         // --all -a
         else if (options.all) {
-          printMessage('Deleting all secrets...');
+          console.log('Deleting all secrets...');
           deleteSecretsCmd();
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

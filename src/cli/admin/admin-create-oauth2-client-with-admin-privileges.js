@@ -2,13 +2,12 @@ import { Command, Option } from 'commander';
 import { v4 as uuidv4 } from 'uuid';
 import Table from 'cli-table3';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import {
-  createLongLivedToken,
-  createOAuth2ClientWithAdminPrivileges,
-} from '../../ops/AdminOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { createLongLivedToken, createOAuth2ClientWithAdminPrivileges } =
+  AdminOps;
 
 const program = new Command(
   'frodo admin create-oauth2-client-with-admin-privileges'
@@ -60,7 +59,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Creating oauth2 client with admin privileges in realm "${storage.session.getRealm()}"...`
         );
         let clientId = uuidv4();
@@ -74,7 +73,7 @@ program
         try {
           await createOAuth2ClientWithAdminPrivileges(clientId, clientSecret);
         } catch (error) {
-          printMessage(error, 'error');
+          console.log(error, 'error');
         }
         const table = new Table({
           chars: {
@@ -110,12 +109,12 @@ program
             // table.push(['Token Lifetime'.brightCyan, response.expires_in]);
             table.push(['Expires'.brightCyan, response.expires_on]);
           } catch (error) {
-            printMessage(error, 'error');
+            console.log(error, 'error');
           }
         }
         table.push(['Client ID'.brightCyan, clientId]);
         table.push(['Client Secret'.brightCyan, clientSecret]);
-        printMessage(table.toString());
+        console.log(table.toString());
       }
     }
     // end command logic inside action handler

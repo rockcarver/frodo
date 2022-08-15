@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
 import storage from '../../storage/SessionStorage.js';
-import { saveConnectionProfile } from '../../ops/ConnectionProfileOps.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { printMessage } from '../../ops/utils/Console.js';
+import { AuthenticateOps, ConnectionProfileOps } from '@rockcarver/frodo-lib';
+
+const { getTokens } = AuthenticateOps;
+const { saveConnectionProfile } = ConnectionProfileOps;
 
 const program = new Command('frodo conn add');
 

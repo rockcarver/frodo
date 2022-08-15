@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, CirclesOfTrustOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { listCirclesOfTrust } from '../../ops/CirclesOfTrustOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { listCirclesOfTrust } = CirclesOfTrustOps;
 
 const program = new Command('frodo saml cot list');
 
@@ -30,7 +31,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Listing SAML circles of trust in realm "${storage.session.getRealm()}"...`
         );
         listCirclesOfTrust(options.long);

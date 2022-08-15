@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { listJourneys } from '../../ops/JourneyOps.js';
+import { AuthenticateOps, JourneyOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens } = AuthenticateOps;
+const { listJourneys } = JourneyOps;
 
 const program = new Command('frodo journey list');
 
@@ -31,7 +32,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Listing journeys in realm "${storage.session.getRealm()}"...`
         );
         listJourneys(options.long, options.analyze);

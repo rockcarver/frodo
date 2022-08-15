@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, RealmOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { createKeyValueTable, printMessage } from '../../ops/utils/Console.js';
-import { addCustomDomain } from '../../ops/RealmOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { addCustomDomain } = RealmOps;
 
 const program = new Command('frodo realm add-custom-domain');
 
@@ -33,7 +34,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Adding custom DNS domain ${
             options.domain
           } to realm ${storage.session.getRealm()}...`

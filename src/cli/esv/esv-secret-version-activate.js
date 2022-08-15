@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, SecretsOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { activateVersionOfSecret } from '../../ops/SecretsOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { activateVersionOfSecret } = SecretsOps;
 
 const program = new Command('frodo esv secret version activate');
 
@@ -37,12 +38,12 @@ program
       if (await getTokens()) {
         // activate by id
         if (options.secretId && options.version) {
-          printMessage(`Activating version of secret...`);
+          console.log(`Activating version of secret...`);
           activateVersionOfSecret(options.secretId, options.version);
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

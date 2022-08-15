@@ -1,14 +1,14 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import {
+import { AuthenticateOps, JourneyOps } from '@rockcarver/frodo-lib';
+const { getTokens } = AuthenticateOps;
+const {
   importJourneyFromFile,
   importJourneysFromFile,
   importJourneysFromFiles,
   importFirstJourneyFromFile,
-} from '../../ops/JourneyOps.js';
+} = JourneyOps;
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
 
 const program = new Command('frodo command sub');
 
@@ -76,7 +76,7 @@ program
       if (await getTokens()) {
         // import
         if (options.journeyId) {
-          printMessage(`Importing journey ${options.journeyId}...`);
+          console.log(`Importing journey ${options.journeyId}...`);
           importJourneyFromFile(options.journeyId, options.file, {
             reUuid: options.reUuid,
             deps: options.deps,
@@ -85,7 +85,7 @@ program
         }
         // --all -a
         else if (options.all && options.file) {
-          printMessage(
+          console.log(
             `Importing all journeys from a single file (${options.file})...`
           );
           importJourneysFromFile(options.file, {
@@ -96,7 +96,7 @@ program
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
-          printMessage(
+          console.log(
             'Importing all journeys from separate files in current directory...'
           );
           importJourneysFromFiles({
@@ -107,7 +107,7 @@ program
         }
         // import first journey in file
         else if (options.file) {
-          printMessage('Importing first journey in file...');
+          console.log('Importing first journey in file...');
           importFirstJourneyFromFile(options.file, {
             reUuid: options.reUuid,
             deps: options.deps,
@@ -116,7 +116,7 @@ program
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }

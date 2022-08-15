@@ -1,9 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, removeCustomDomain } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { removeCustomDomain } from '../../ops/RealmOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { removeCustomDomain } = RealmOps;
 
 const program = new Command('frodo realm remove-custom-domain');
 
@@ -33,7 +34,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Removing custom DNS domain ${
             options.domain
           } from realm ${storage.session.getRealm()}...`

@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { listAllConfigEntities } from '../../ops/IdmOps.js';
+import { AuthenticateOps, IdmOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { listAllConfigEntities } = IdmOps;
 
 const program = new Command('frodo idm list');
 
@@ -30,7 +31,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage('Listing all IDM configuration objects...');
+        console.log('Listing all IDM configuration objects...');
         listAllConfigEntities();
       }
     }

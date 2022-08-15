@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
+import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
-import { removeStaticUserMapping } from '../../ops/AdminOps.js';
+
+const { getTokens } = AuthenticateOps;
+const { removeStaticUserMapping } = AdminOps;
 
 const program = new Command('frodo admin remove-static-user-mapping');
 
@@ -27,9 +28,9 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage("Removing a subject's static user mapping...");
+        console.log("Removing a subject's static user mapping...");
         await removeStaticUserMapping(options.subject);
-        printMessage('Done.');
+        console.log('Done.');
       }
     }
     // end command logic inside action handler

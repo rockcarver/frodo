@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import { listProviders } from '../../ops/IdpOps.js';
+import { AuthenticateOps, IdpOps } from '@rockcarver/frodo-lib';
 import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+
+const { getTokens } = AuthenticateOps;
+const { listProviders } = IdpOps;
 
 const program = new Command('frodo idp list');
 
@@ -30,7 +31,7 @@ program
       storage.session.setDeploymentType(options.type);
       storage.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
-        printMessage(
+        console.log(
           `Listing providers in realm "${storage.session.getRealm()}"...`
         );
         listProviders();

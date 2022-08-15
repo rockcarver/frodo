@@ -1,14 +1,15 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { getTokens } from '../../ops/AuthenticateOps.js';
-import {
+import { AuthenticateOps, IdmOps } from '@rockcarver/frodo-lib';
+import storage from '../../storage/SessionStorage.js';
+
+const { getTokens } = AuthenticateOps;
+const {
   importProviderById,
   importFirstProvider,
   importProvidersFromFile,
   importProvidersFromFiles,
-} from '../../ops/IdpOps.js';
-import storage from '../../storage/SessionStorage.js';
-import { printMessage } from '../../ops/utils/Console.js';
+} = IdmOps;
 
 const program = new Command('frodo idp import');
 
@@ -58,7 +59,7 @@ program
       if (await getTokens()) {
         // import by id
         if (options.file && options.idpId) {
-          printMessage(
+          console.log(
             `Importing provider "${
               options.idpId
             }" into realm "${storage.session.getRealm()}"...`
@@ -67,21 +68,21 @@ program
         }
         // --all -a
         else if (options.all && options.file) {
-          printMessage(
+          console.log(
             `Importing all providers from a single file (${options.file})...`
           );
           importProvidersFromFile(options.file);
         }
         // --all-separate -A
         else if (options.allSeparate && !options.file) {
-          printMessage(
+          console.log(
             'Importing all providers from separate files in current directory...'
           );
           importProvidersFromFiles();
         }
         // import first provider from file
         else if (options.file) {
-          printMessage(
+          console.log(
             `Importing first provider from file "${
               options.file
             }" into realm "${storage.session.getRealm()}"...`
@@ -90,7 +91,7 @@ program
         }
         // unrecognized combination of options or no options
         else {
-          printMessage('Unrecognized combination of options or no options...');
+          console.log('Unrecognized combination of options or no options...');
           program.help();
         }
       }
