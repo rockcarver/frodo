@@ -2,7 +2,6 @@ import fs from 'fs';
 import _ from 'lodash';
 import {
   createTable,
-  console.log,
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
