@@ -52,7 +52,7 @@ const program = new Command(pkg.name).version(
 
     program.showHelpAfterError();
     program.enablePositionalOptions();
-    program.parse();
+    await program.parseAsync();
   } catch (e) {
     printMessage(`ERROR: exception running frodo - ${e}`, 'error');
   }

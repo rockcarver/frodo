@@ -53,7 +53,7 @@ export async function getScriptByName(name) {
  * @param {String} id script uuid/name
  * @returns {Promise} a promise that resolves to an object containing a script object
  */
-export async function getScript(id) {
+export function getScript(id) {
   const urlString = util.format(
     scriptURLTemplate,
     storage.session.getTenant(),
