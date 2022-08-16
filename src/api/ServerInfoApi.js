@@ -21,7 +21,7 @@ const getServerVersionApiConfig = () => ({
 export async function getServerInfo() {
   const urlString = util.format(
     serverInfoUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     '*'
   );
   return generateAmApi(getServerInfoApiConfig()).get(urlString, {});
@@ -34,7 +34,7 @@ export async function getServerInfo() {
 export async function getServerVersionInfo() {
   const urlString = util.format(
     serverInfoUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     'version'
   );
   return generateAmApi(getServerVersionApiConfig()).get(urlString, {});

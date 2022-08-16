@@ -38,19 +38,19 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      state.session.setTenant(host);
-      state.session.setRealm(realm);
-      state.session.setUsername(user);
-      state.session.setPassword(password);
-      state.session.setDeploymentType(options.type);
-      state.session.setAllowInsecureConnection(options.insecure);
+      state.default.session.setTenant(host);
+      state.default.session.setRealm(realm);
+      state.default.session.setUsername(user);
+      state.default.session.setPassword(password);
+      state.default.session.setDeploymentType(options.type);
+      state.default.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // delete by name
         if (options.themeName) {
           console.log(
             `Deleting theme with name "${
               options.themeName
-            }" from realm "${state.session.getRealm()}"...`
+            }" from realm "${state.default.session.getRealm()}"...`
           );
           deleteThemeByNameCmd(options.themeName, options.file);
         }
@@ -59,14 +59,14 @@ program
           console.log(
             `Deleting theme with id "${
               options.themeId
-            }" from realm "${state.session.getRealm()}"...`
+            }" from realm "${state.default.session.getRealm()}"...`
           );
           deleteThemeCmd(options.themeId, options.file);
         }
         // --all -a
         else if (options.all) {
           console.log(
-            `Deleting all themes from realm "${state.session.getRealm()}"...`
+            `Deleting all themes from realm "${state.default.session.getRealm()}"...`
           );
           deleteThemesCmd(options.file);
         }

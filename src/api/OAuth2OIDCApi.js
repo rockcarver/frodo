@@ -21,7 +21,7 @@ const getApiConfig = () => ({
 export async function authorize(data, config = {}) {
   const authorizeURL = util.format(
     authorizeUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     ''
   );
   return generateOauth2Api(getApiConfig()).post(authorizeURL, data, config);
@@ -36,7 +36,7 @@ export async function authorize(data, config = {}) {
 export async function accessToken(data, config = {}) {
   const accessTokenURL = util.format(
     accessTokenUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     ''
   );
   return generateOauth2Api(getApiConfig()).post(accessTokenURL, data, config);
@@ -52,7 +52,7 @@ export async function accessToken(data, config = {}) {
 export async function clientCredentialsGrant(clientId, clientSecret, scope) {
   const urlString = util.format(
     accessTokenUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath()
   );
   const requestOverride = {

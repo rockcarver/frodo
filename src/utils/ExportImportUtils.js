@@ -17,11 +17,11 @@ export function getCurrentTimestamp() {
 
 function getMetadata() {
   const metadata = {
-    origin: state.session.getTenant(),
-    exportedBy: state.session.getUsername(),
+    origin: state.default.session.getTenant(),
+    exportedBy: state.default.session.getUsername(),
     exportDate: getCurrentTimestamp(),
     exportTool: FRODO_METADATA_ID,
-    exportToolVersion: state.session.getFrodoVersion(),
+    exportToolVersion: state.default.session.getFrodoVersion(),
   };
   return metadata;
 }
@@ -41,7 +41,7 @@ export function titleCase(input) {
 }
 
 export function getRealmString() {
-  const realm = state.session.getRealm();
+  const realm = state.default.session.getRealm();
   return realm
     .split('/')
     .reduce((result, item) => `${result}${titleCase(item)}`, '');

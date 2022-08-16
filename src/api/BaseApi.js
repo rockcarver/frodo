@@ -30,7 +30,7 @@ let httpsAgent;
 function getHttpsAgent() {
   if (httpsAgent) return httpsAgent;
   const options = {
-    rejectUnauthorized: !state.session.getAllowInsecureConnection(),
+    rejectUnauthorized: !state.default.session.getAllowInsecureConnection(),
   };
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
   if (httpsProxy) {
@@ -40,7 +40,8 @@ function getHttpsAgent() {
     options.host = parsed.hostname;
     options.port = parsed.port;
     options.protocol = parsed.protocol;
-    options.rejectUnauthorized = !state.session.getAllowInsecureConnection();
+    options.rejectUnauthorized =
+      !state.default.session.getAllowInsecureConnection();
     httpsAgent = new HttpsProxyAgent(options);
     return httpsAgent;
   }
@@ -66,7 +67,7 @@ export function generateAmApi(resource, requestOverride = {}) {
     'User-Agent': userAgent,
     'Content-Type': 'application/json',
     'Accept-API-Version': resource.apiVersion,
-    Cookie: `${state.session.raw.cookieName}=${state.session.raw.cookieValue}`,
+    Cookie: `${state.default.session.raw.cookieName}=${state.default.session.raw.cookieValue}`,
   };
   if (requestOverride.headers) {
     headers = {
@@ -76,7 +77,7 @@ export function generateAmApi(resource, requestOverride = {}) {
   }
 
   const requestDetails = {
-    baseURL: `${state.session.getTenant()}/json${resource.path}`,
+    baseURL: `${state.default.session.getTenant()}/json${resource.path}`,
     timeout,
     ...requestOverride,
     headers,
@@ -101,7 +102,7 @@ export function generateOauth2Api(resource, requestOverride = {}) {
   let headers = {
     'User-Agent': userAgent,
     'Accept-API-Version': resource.apiVersion,
-    Cookie: `${state.session.raw.cookieName}=${state.session.raw.cookieValue}`,
+    Cookie: `${state.default.session.raw.cookieName}=${state.default.session.raw.cookieValue}`,
   };
   if (requestOverride.headers) {
     headers = {
@@ -111,7 +112,7 @@ export function generateOauth2Api(resource, requestOverride = {}) {
   }
 
   const requestDetails = {
-    baseURL: `${state.session.getTenant()}/json${resource.path}`,
+    baseURL: `${state.default.session.getTenant()}/json${resource.path}`,
     timeout,
     ...requestOverride,
     headers,
@@ -133,7 +134,7 @@ export function generateOauth2Api(resource, requestOverride = {}) {
  */
 export function generateIdmApi(requestOverride = {}) {
   const requestDetails = {
-    baseURL: getTenantURL(state.session.getTenant()),
+    baseURL: getTenantURL(state.default.session.getTenant()),
     timeout,
     headers: {
       'User-Agent': userAgent,
@@ -144,8 +145,8 @@ export function generateIdmApi(requestOverride = {}) {
     proxy: getProxy(),
   };
 
-  if (state.session.getBearerToken()) {
-    requestDetails.headers.Authorization = `Bearer ${state.session.getBearerToken()}`;
+  if (state.default.session.getBearerToken()) {
+    requestDetails.headers.Authorization = `Bearer ${state.default.session.getBearerToken()}`;
   }
 
   const request = axios.create(requestDetails);
@@ -166,7 +167,7 @@ export function generateLogKeysApi(requestOverride = {}) {
     'Content-Type': 'application/json',
   };
   const requestDetails = {
-    baseURL: getTenantURL(state.session.getTenant()),
+    baseURL: getTenantURL(state.default.session.getTenant()),
     timeout,
     headers,
     ...requestOverride,
@@ -174,8 +175,8 @@ export function generateLogKeysApi(requestOverride = {}) {
     proxy: getProxy(),
   };
 
-  if (state.session.getBearerToken()) {
-    requestDetails.headers.Authorization = `Bearer ${state.session.getBearerToken()}`;
+  if (state.default.session.getBearerToken()) {
+    requestDetails.headers.Authorization = `Bearer ${state.default.session.getBearerToken()}`;
   }
 
   const request = axios.create(requestDetails);
@@ -193,11 +194,11 @@ export function generateLogKeysApi(requestOverride = {}) {
 export function generateLogApi(requestOverride = {}) {
   const headers = {
     'User-Agent': userAgent,
-    'X-API-Key': state.session.getLogApiKey(),
-    'X-API-Secret': state.session.getLogApiSecret(),
+    'X-API-Key': state.default.session.getLogApiKey(),
+    'X-API-Secret': state.default.session.getLogApiSecret(),
   };
   const requestDetails = {
-    baseURL: getTenantURL(state.session.getTenant()),
+    baseURL: getTenantURL(state.default.session.getTenant()),
     timeout,
     headers,
     ...requestOverride,
@@ -224,7 +225,7 @@ export function generateESVApi(resource, requestOverride = {}) {
     'Accept-API-Version': resource.apiVersion,
   };
   const requestDetails = {
-    baseURL: getTenantURL(state.session.getTenant()),
+    baseURL: getTenantURL(state.default.session.getTenant()),
     timeout,
     headers,
     ...requestOverride,
@@ -232,8 +233,8 @@ export function generateESVApi(resource, requestOverride = {}) {
     proxy: getProxy(),
   };
 
-  if (state.session.getBearerToken()) {
-    requestDetails.headers.Authorization = `Bearer ${state.session.getBearerToken()}`;
+  if (state.default.session.getBearerToken()) {
+    requestDetails.headers.Authorization = `Bearer ${state.default.session.getBearerToken()}`;
   }
 
   const request = axios.create(requestDetails);

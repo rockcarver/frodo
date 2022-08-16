@@ -19,7 +19,7 @@ const getApiConfig = () => ({
 export async function getStatus() {
   const urlString = util.format(
     startupURLTemplate,
-    getTenantURL(state.session.getTenant())
+    getTenantURL(state.default.session.getTenant())
   );
   return generateESVApi(getApiConfig()).get(urlString, {
     withCredentials: true,
@@ -35,7 +35,7 @@ export async function initiateRestart() {
   if (restartStatus === 'ready') {
     const urlString = util.format(
       startupInitiateRestartURLTemplate,
-      getTenantURL(state.session.getTenant())
+      getTenantURL(state.default.session.getTenant())
     );
     return generateESVApi(getApiConfig()).post(urlString, null, {
       withCredentials: true,

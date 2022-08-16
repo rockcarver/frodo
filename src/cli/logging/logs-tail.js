@@ -35,19 +35,22 @@ Following values are possible (values on the same line are equivalent): \
   )
   .action(async (host, user, password, options, command) => {
     let credsFromParameters = true;
-    state.session.setTenant(host);
-    state.session.setUsername(user);
-    state.session.setPassword(password);
-    state.session.setAllowInsecureConnection(options.insecure);
+    state.default.session.setTenant(host);
+    state.default.session.setUsername(user);
+    state.default.session.setPassword(password);
+    state.default.session.setAllowInsecureConnection(options.insecure);
     const conn = await getConnectionProfile();
-    state.session.setTenant(conn.tenant);
+    state.default.session.setTenant(conn.tenant);
     if (conn.key != null && conn.secret != null) {
       credsFromParameters = false;
-      state.session.setLogApiKey(conn.key);
-      state.session.setLogApiSecret(conn.secret);
+      state.default.session.setLogApiKey(conn.key);
+      state.default.session.setLogApiSecret(conn.secret);
     } else {
       if (conn.username == null && conn.password == null) {
-        if (!state.session.getUsername() && !state.session.getPassword()) {
+        if (
+          !state.default.session.getUsername() &&
+          !state.default.session.getPassword()
+        ) {
           credsFromParameters = false;
           console.log(
             'User credentials not specified as parameters and no saved API key and secret found!',
@@ -56,13 +59,13 @@ Following values are possible (values on the same line are equivalent): \
           return;
         }
       } else {
-        state.session.setUsername(conn.username);
-        state.session.setPassword(conn.password);
+        state.default.session.setUsername(conn.username);
+        state.default.session.setPassword(conn.password);
       }
       if (await getTokens()) {
         const creds = await provisionCreds();
-        state.session.setLogApiKey(creds.api_key_id);
-        state.session.setLogApiSecret(creds.api_key_secret);
+        state.default.session.setLogApiKey(creds.api_key_id);
+        state.default.session.setLogApiSecret(creds.api_key_secret);
       }
     }
     console.log(

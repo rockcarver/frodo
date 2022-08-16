@@ -26,7 +26,7 @@ const getApiConfig = () => {
 export async function getCirclesOfTrust() {
   const urlString = util.format(
     queryAllCirclesOfTrustURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath()
   );
   return generateAmApi(getApiConfig()).get(urlString, {
@@ -42,7 +42,7 @@ export async function getCirclesOfTrust() {
 export async function getCircleOfTrust(cotId) {
   const urlString = util.format(
     circleOfTrustByIdURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath(),
     cotId
   );
@@ -60,8 +60,8 @@ export async function createCircleOfTrust(cotData) {
   const postData = _.cloneDeep(cotData);
   const urlString = util.format(
     createCircleOfTrustURLTemplate,
-    state.session.getTenant(),
-    getCurrentRealmPath(state.session.getRealm())
+    state.default.session.getTenant(),
+    getCurrentRealmPath(state.default.session.getRealm())
   );
   return generateAmApi(getApiConfig()).post(urlString, postData, {
     withCredentials: true,
@@ -77,7 +77,7 @@ export async function createCircleOfTrust(cotData) {
 export async function updateCircleOfTrust(cotId, cotData) {
   const urlString = util.format(
     circleOfTrustByIdURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath(),
     cotId
   );

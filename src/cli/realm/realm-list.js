@@ -23,12 +23,12 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      state.session.setTenant(host);
-      state.session.setRealm(realm);
-      state.session.setUsername(user);
-      state.session.setPassword(password);
-      state.session.setDeploymentType(options.type);
-      state.session.setAllowInsecureConnection(options.insecure);
+      state.default.session.setTenant(host);
+      state.default.session.setRealm(realm);
+      state.default.session.setUsername(user);
+      state.default.session.setPassword(password);
+      state.default.session.setDeploymentType(options.type);
+      state.default.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         console.log('Listing all realms...');
         await listRealms(options.long);

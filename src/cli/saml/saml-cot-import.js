@@ -53,19 +53,19 @@ program
   .action(
     // implement program logic inside action handler
     async (host, realm, user, password, options) => {
-      state.session.setTenant(host);
-      state.session.setRealm(realm);
-      state.session.setUsername(user);
-      state.session.setPassword(password);
-      state.session.setDeploymentType(options.type);
-      state.session.setAllowInsecureConnection(options.insecure);
+      state.default.session.setTenant(host);
+      state.default.session.setRealm(realm);
+      state.default.session.setUsername(user);
+      state.default.session.setPassword(password);
+      state.default.session.setDeploymentType(options.type);
+      state.default.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by id
         if (options.file && options.cotId) {
           console.log(
             `Importing circle of trust "${
               options.cotId
-            }" into realm "${state.session.getRealm()}"...`
+            }" into realm "${state.default.session.getRealm()}"...`
           );
           importCircleOfTrust(options.cotId, options.file);
         }
@@ -88,7 +88,7 @@ program
           console.log(
             `Importing first circle of trust from file "${
               options.file
-            }" into realm "${state.session.getRealm()}"...`
+            }" into realm "${state.default.session.getRealm()}"...`
           );
           importFirstCircleOfTrust(options.file);
         }

@@ -15,30 +15,34 @@ export default function setup() {
     .addOption(common.scriptFriendlyOption)
     .description('Print versions and tokens.')
     .action(async (host, user, password, options) => {
-      state.session.setTenant(host);
-      state.session.setUsername(user);
-      state.session.setPassword(password);
-      state.session.setDeploymentType(options.type);
-      state.session.setAllowInsecureConnection(options.insecure);
-      state.session.setItem('scriptFriendly', options.scriptFriendly);
+      state.default.session.setTenant(host);
+      state.default.session.setUsername(user);
+      state.default.session.setPassword(password);
+      state.default.session.setDeploymentType(options.type);
+      state.default.session.setAllowInsecureConnection(options.insecure);
+      state.default.session.setItem('scriptFriendly', options.scriptFriendly);
       if (!options.scriptFriendly) {
         console.log('Printing versions and tokens...');
         if (await getTokens()) {
-          console.log(`Cookie name: ${state.session.getCookieName()}`);
-          console.log(`Session token: ${state.session.getCookieValue()}`);
-          if (state.session.getBearerToken()) {
-            console.log(`Bearer token: ${state.session.getBearerToken()}`);
+          console.log(`Cookie name: ${state.default.session.getCookieName()}`);
+          console.log(
+            `Session token: ${state.default.session.getCookieValue()}`
+          );
+          if (state.default.session.getBearerToken()) {
+            console.log(
+              `Bearer token: ${state.default.session.getBearerToken()}`
+            );
           }
         } else {
           process.exitCode = 1;
         }
       } else if (await getTokens()) {
         const output = {
-          cookieName: state.session.getCookieName(),
-          sessionToken: state.session.getCookieValue(),
+          cookieName: state.default.session.getCookieName(),
+          sessionToken: state.default.session.getCookieValue(),
         };
-        if (state.session.getBearerToken()) {
-          output.bearerToken = state.session.getBearerToken();
+        if (state.default.session.getBearerToken()) {
+          output.bearerToken = state.default.session.getBearerToken();
         }
         console.log(JSON.stringify(output, null, 2), 'data');
       } else {

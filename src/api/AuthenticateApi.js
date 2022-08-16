@@ -26,7 +26,7 @@ export function getRealmUrl(realm) {
 export async function step(data = {}, config = {}) {
   const urlString = util.format(
     authenticateUrlTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getRealmUrl('/')
   );
   return generateAmApi(getApiConfig()).post(urlString, data, config);

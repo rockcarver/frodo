@@ -29,13 +29,13 @@ program
   .action(
     // implement command logic inside action handler
     async (host, user, password, key, secret, options) => {
-      state.session.setTenant(host);
-      state.session.setUsername(user);
-      state.session.setPassword(password);
-      state.session.setLogApiKey(key);
-      state.session.setLogApiSecret(secret);
-      state.session.setDeploymentType(options.type);
-      state.session.setAllowInsecureConnection(options.insecure);
+      state.default.session.setTenant(host);
+      state.default.session.setUsername(user);
+      state.default.session.setPassword(password);
+      state.default.session.setLogApiKey(key);
+      state.default.session.setLogApiSecret(secret);
+      state.default.session.setDeploymentType(options.type);
+      state.default.session.setAllowInsecureConnection(options.insecure);
       if ((options.validate && (await getTokens())) || !options.validate) {
         saveConnectionProfile();
       } else {

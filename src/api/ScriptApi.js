@@ -23,7 +23,7 @@ const getApiConfig = () => {
 export async function getScripts() {
   const urlString = util.format(
     scriptListURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath()
   );
   return generateAmApi(getApiConfig()).get(urlString, {
@@ -39,7 +39,7 @@ export async function getScripts() {
 export async function getScriptByName(name) {
   const urlString = util.format(
     scriptQueryURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath(),
     name
   );
@@ -56,7 +56,7 @@ export async function getScriptByName(name) {
 export async function getScript(id) {
   const urlString = util.format(
     scriptURLTemplate,
-    state.session.getTenant(),
+    state.default.session.getTenant(),
     getCurrentRealmPath(),
     id
   );
@@ -74,8 +74,8 @@ export async function getScript(id) {
 export async function putScript(id, data) {
   const urlString = util.format(
     scriptURLTemplate,
-    state.session.getTenant(),
-    getCurrentRealmPath(state.session.getRealm()),
+    state.default.session.getTenant(),
+    getCurrentRealmPath(state.default.session.getRealm()),
     id
   );
   return generateAmApi(getApiConfig()).put(urlString, data, {
