@@ -3,7 +3,7 @@ import { createSpinner } from 'nanospinner';
 import Table from 'cli-table3';
 // eslint-disable-next-line no-unused-vars
 import * as colors from '@colors/colors';
-import storage from '../../storage/SessionStorage.js';
+
 
 /**
  * Output a data message
@@ -84,8 +84,8 @@ function error(message) {
  * @param {boolean} [newline=true] Whether to add a new at the end of message
  *
  */
-export function printMessage(message, type = 'text', newline = true) {
-  //   if (storage.session.getItem('scriptFriendly')) {
+export function console.log(message, type = 'text', newline = true) {
+  //   if (state.default.session.getItem('scriptFriendly')) {
   switch (type) {
     case 'data':
       if (newline) {
@@ -157,12 +157,12 @@ export function createProgressBar(
       noTTYOutput: true,
     };
   }
-  let pBar = storage.session.getItem('progressBar');
+  let pBar = state.default.session.getItem('progressBar');
   if (!pBar) pBar = new SingleBar(opt, Presets.legacy); // create only when needed
   pBar.start(total, 0, {
     data: message,
   });
-  storage.session.setItem('progressBar', pBar);
+  state.default.session.setItem('progressBar', pBar);
 }
 
 /**
@@ -171,7 +171,7 @@ export function createProgressBar(
  *
  */
 export function updateProgressBar(message = null) {
-  const pBar = storage.session.getItem('progressBar');
+  const pBar = state.default.session.getItem('progressBar');
   if (message)
     pBar.increment({
       data: message,
@@ -184,7 +184,7 @@ export function updateProgressBar(message = null) {
  * @param {*} message optional message to update the progress bar
  */
 export function stopProgressBar(message = null) {
-  const pBar = storage.session.getItem('progressBar');
+  const pBar = state.default.session.getItem('progressBar');
   if (message)
     pBar.update({
       data: message,
@@ -198,7 +198,7 @@ export function stopProgressBar(message = null) {
  */
 export function showSpinner(message) {
   const spinner = createSpinner(message).start();
-  storage.session.setItem('Spinner', spinner);
+  state.default.session.setItem('Spinner', spinner);
 }
 
 /**
@@ -206,7 +206,7 @@ export function showSpinner(message) {
  * @param {String} message optional message to update the spinner
  */
 export function stopSpinner(message = null) {
-  const spinner = storage.session.getItem('Spinner');
+  const spinner = state.default.session.getItem('Spinner');
   if (spinner) {
     let options = {};
     if (message) options = { text: message };
@@ -219,7 +219,7 @@ export function stopSpinner(message = null) {
  * @param {String} message optional message to update the spinner
  */
 export function succeedSpinner(message = null) {
-  const spinner = storage.session.getItem('Spinner');
+  const spinner = state.default.session.getItem('Spinner');
   if (spinner) {
     let options = {};
     if (message) options = { text: message };
@@ -232,7 +232,7 @@ export function succeedSpinner(message = null) {
  * @param {String} message optional message to update the spinner
  */
 export function warnSpinner(message = null) {
-  const spinner = storage.session.getItem('Spinner');
+  const spinner = state.default.session.getItem('Spinner');
   if (spinner) {
     let options = {};
     if (message) options = { text: message };
@@ -245,7 +245,7 @@ export function warnSpinner(message = null) {
  * @param {String} message optional message to update the spinner
  */
 export function failSpinner(message = null) {
-  const spinner = storage.session.getItem('Spinner');
+  const spinner = state.default.session.getItem('Spinner');
   if (spinner) {
     let options = {};
     if (message) options = { text: message };
@@ -258,7 +258,7 @@ export function failSpinner(message = null) {
  * @param {String} message optional message to update the spinner
  */
 export function spinSpinner(message = null) {
-  const spinner = storage.session.getItem('Spinner');
+  const spinner = state.default.session.getItem('Spinner');
   if (spinner) {
     let options = {};
     if (message) options = { text: message };

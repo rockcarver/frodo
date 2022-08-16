@@ -2,11 +2,10 @@ import fs from 'fs';
 import _ from 'lodash';
 import {
   createTable,
-  printMessage,
   createProgressBar,
   updateProgressBar,
   stopProgressBar,
-} from './utils/Console.js';
+} from '../utils/Console.js';
 import {
   getCirclesOfTrust,
   getCircleOfTrust,
@@ -17,7 +16,7 @@ import {
   getTypedFilename,
   saveJsonToFile,
   validateImport,
-} from './utils/ExportImportUtils.js';
+} from '../utils/ExportImportUtils.js';
 
 // use a function vs a template variable to avoid problems in loops
 function getFileDataTemplate() {
@@ -42,18 +41,18 @@ export async function listCirclesOfTrust(long = false) {
   try {
     const response = await getCirclesOfTrust();
     if (response.status < 200 || response.status > 399) {
-      printMessage(response, 'data');
-      printMessage(`getCirclesOfTrust: ${response.status}`, 'error');
+      console.log(response, 'data');
+      console.log(`getCirclesOfTrust: ${response.status}`, 'error');
     }
     cotList = response.data.result;
   } catch (error) {
-    printMessage(`getCirclesOfTrust ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
+    console.log(`getCirclesOfTrust ERROR: ${error}`, 'error');
+    console.log(error, 'data');
   }
   cotList.sort((a, b) => a._id.localeCompare(b._id));
   if (!long) {
     cotList.forEach((cot) => {
-      printMessage(`${cot._id}`, 'data');
+      console.log(`${cot._id}`, 'data');
     });
   } else {
     const table = createTable([
@@ -72,7 +71,7 @@ export async function listCirclesOfTrust(long = false) {
           .join('\n'),
       ]);
     });
-    printMessage(table.toString());
+    console.log(table.toString());
   }
 }
 
@@ -112,7 +111,7 @@ export async function exportCircleOfTrust(cotId, file = null) {
     })
     .catch((err) => {
       stopProgressBar(`${err}`);
-      printMessage(err, 'error');
+      console.log(err, 'error');
     });
 }
 
@@ -133,8 +132,8 @@ export async function exportCirclesOfTrustToFile(file = null) {
   try {
     const response = await getCirclesOfTrust();
     if (response.status < 200 || response.status > 399) {
-      printMessage(response, 'data');
-      printMessage(`getCirclesOfTrust: ${response.status}`, 'error');
+      console.log(response, 'data');
+      console.log(`getCirclesOfTrust: ${response.status}`, 'error');
     }
     allCotData = _.cloneDeep(response.data.result);
     createProgressBar(allCotData.length, 'Exporting circles of trust');
@@ -150,8 +149,8 @@ export async function exportCirclesOfTrustToFile(file = null) {
       `${allCotData.length} circle(s) of trust exported to ${fileName}.`
     );
   } catch (error) {
-    printMessage(`getCirclesOfTrust ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
+    console.log(`getCirclesOfTrust ERROR: ${error}`, 'error');
+    console.log(error, 'data');
   }
 }
 
@@ -163,8 +162,8 @@ export async function exportCirclesOfTrustToFiles() {
   try {
     const response = await getCirclesOfTrust();
     if (response.status < 200 || response.status > 399) {
-      printMessage(response, 'data');
-      printMessage(`getCirclesOfTrust: ${response.status}`, 'error');
+      console.log(response, 'data');
+      console.log(`getCirclesOfTrust: ${response.status}`, 'error');
     }
     allCotData = _.cloneDeep(response.data.result);
     createProgressBar(allCotData.length, 'Exporting circles of trust');
@@ -180,8 +179,8 @@ export async function exportCirclesOfTrustToFiles() {
     }
     stopProgressBar(`${allCotData.length} providers exported.`);
   } catch (error) {
-    printMessage(`getCirclesOfTrust ERROR: ${error}`, 'error');
-    printMessage(error, 'data');
+    console.log(`getCirclesOfTrust ERROR: ${error}`, 'error');
+    console.log(error, 'data');
   }
 }
 
@@ -216,8 +215,8 @@ export async function importCircleOfTrust(cotId, file) {
           })
           .catch((createProviderErr) => {
             stopProgressBar(`Error importing ${cotId}.`);
-            printMessage(`Error importing ${cotId}`, 'error');
-            printMessage(createProviderErr.response.data, 'error');
+            console.log(`Error importing ${cotId}`, 'error');
+            console.log(createProviderErr.response.data, 'error');
           });
       } else {
         stopProgressBar(
@@ -225,7 +224,7 @@ export async function importCircleOfTrust(cotId, file) {
         );
       }
     } else {
-      printMessage('Import validation failed...', 'error');
+      console.log('Import validation failed...', 'error');
     }
   });
 }
@@ -252,14 +251,14 @@ export async function importFirstCircleOfTrust(file) {
             })
             .catch((createCircleOfTrustErr) => {
               stopProgressBar(`Error importing ${cotId}.`);
-              printMessage(`Error importing ${cotId}`, 'error');
-              printMessage(createCircleOfTrustErr.response.data, 'error');
+              console.log(`Error importing ${cotId}`, 'error');
+              console.log(createCircleOfTrustErr.response.data, 'error');
             });
           break;
         }
       }
     } else {
-      printMessage('Import validation failed...', 'error');
+      console.log('Import validation failed...', 'error');
     }
   });
 }
@@ -287,14 +286,14 @@ export async function importCirclesOfTrustFromFile(file) {
             await createCircleOfTrust(cotData);
             updateProgressBar(`Imported ${cotId}`);
           } catch (createCircleOfTrustErr) {
-            printMessage(`\nError importing ${cotId}`, 'error');
-            printMessage(createCircleOfTrustErr.response.data, 'error');
+            console.log(`\nError importing ${cotId}`, 'error');
+            console.log(createCircleOfTrustErr.response.data, 'error');
           }
         }
       }
       stopProgressBar(`Circles of trust imported.`);
     } else {
-      printMessage('Import validation failed...', 'error');
+      console.log('Import validation failed...', 'error');
     }
   });
 }
@@ -327,8 +326,8 @@ export async function importCirclesOfTrustFromFiles() {
             // updateProgressBar(`Imported ${cotId}`);
           } catch (createCircleOfTrustErr) {
             errors += 1;
-            printMessage(`\nError importing ${cotId}`, 'error');
-            printMessage(createCircleOfTrustErr.response.data, 'error');
+            console.log(`\nError importing ${cotId}`, 'error');
+            console.log(createCircleOfTrustErr.response.data, 'error');
           }
         }
       }
@@ -339,7 +338,7 @@ export async function importCirclesOfTrustFromFiles() {
         } circle(s) of trust from ${file}`
       );
     } else {
-      printMessage(`Validation of ${file} failed!`, 'error');
+      console.log(`Validation of ${file} failed!`, 'error');
     }
   }
   stopProgressBar(
