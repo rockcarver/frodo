@@ -76,7 +76,7 @@ program
         // export
         if (options.journeyId) {
           printMessage('Exporting journey...');
-          exportJourneyToFile(options.journeyId, options.file, {
+          await exportJourneyToFile(options.journeyId, options.file, {
             useStringArrays: options.useStringArrays,
             deps: options.deps,
             verbose: options.verbose,
@@ -85,7 +85,7 @@ program
         // --all -a
         else if (options.all) {
           printMessage('Exporting all journeys to a single file...');
-          exportJourneysToFile(options.file, {
+          await exportJourneysToFile(options.file, {
             useStringArrays: options.useStringArrays,
             deps: options.deps,
             verbose: options.verbose,
@@ -94,7 +94,7 @@ program
         // --all-separate -A
         else if (options.allSeparate) {
           printMessage('Exporting all journeys to separate files...');
-          exportJourneysToFiles({
+          await exportJourneysToFiles({
             useStringArrays: options.useStringArrays,
             deps: options.deps,
             verbose: options.verbose,

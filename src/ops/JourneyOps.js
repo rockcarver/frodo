@@ -79,6 +79,8 @@ const scriptedNodes = [
 
 const emailTemplateNodes = ['EmailSuspendNode', 'EmailTemplateNode'];
 
+const emptyScript = '[Empty]';
+
 // use a function vs a template variable to avoid problems in loops
 function getSingleTreeFileDataTemplate() {
   return {
@@ -192,9 +194,7 @@ async function getSaml2NodeDependencies(
  * @param {Object} options options object
  */
 async function exportTree(treeObject, exportData, options) {
-  const { useStringArrays } = options;
-  const { deps } = options;
-  const { verbose } = options;
+  const { useStringArrays, deps, verbose } = options;
 
   if (verbose) printMessage(`\n- ${treeObject._id}\n`, 'info', false);
 
@@ -244,7 +244,11 @@ async function exportTree(treeObject, exportData, options) {
     exportData.nodes[nodeObject._id] = nodeObject;
 
     // handle script node types
-    if (deps && scriptedNodes.includes(nodeType)) {
+    if (
+      deps &&
+      scriptedNodes.includes(nodeType) &&
+      nodeObject.script !== emptyScript
+    ) {
       scriptPromises.push(getScript(nodeObject.script));
     }
 
@@ -510,11 +514,9 @@ async function exportTree(treeObject, exportData, options) {
           'info',
           true
         );
-      if (useStringArrays) {
-        scriptObject.script = convertBase64TextToArray(scriptObject.script);
-      } else {
-        scriptObject.script = JSON.stringify(decode(scriptObject.script));
-      }
+      scriptObject.script = useStringArrays
+        ? convertBase64TextToArray(scriptObject.script)
+        : JSON.stringify(decode(scriptObject.script));
       exportData.scripts[scriptObject._id] = scriptObject;
     }
   });
@@ -557,7 +559,7 @@ export async function exportJourneyToFile(journeyId, file, options) {
     fileName = getTypedFilename(journeyId, 'journey');
   }
   if (!verbose) showSpinner(`${journeyId}`);
-  getTree(journeyId)
+  await getTree(journeyId)
     .then(async (response) => {
       const treeData = response.data;
       const fileData = getSingleTreeFileDataTemplate();
