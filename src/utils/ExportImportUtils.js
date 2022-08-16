@@ -1,6 +1,6 @@
 import fs from 'fs';
 import slugify from 'slugify';
-import storage from '../../storage/SessionStorage.js';
+
 import { FRODO_METADATA_ID } from '../../storage/StaticStorage.js';
 import {
   encode,
@@ -17,11 +17,11 @@ export function getCurrentTimestamp() {
 
 function getMetadata() {
   const metadata = {
-    origin: storage.session.getTenant(),
-    exportedBy: storage.session.getUsername(),
+    origin: state.session.getTenant(),
+    exportedBy: state.session.getUsername(),
     exportDate: getCurrentTimestamp(),
     exportTool: FRODO_METADATA_ID,
-    exportToolVersion: storage.session.getFrodoVersion(),
+    exportToolVersion: state.session.getFrodoVersion(),
   };
   return metadata;
 }
@@ -41,7 +41,7 @@ export function titleCase(input) {
 }
 
 export function getRealmString() {
-  const realm = storage.session.getRealm();
+  const realm = state.session.getRealm();
   return realm
     .split('/')
     .reduce((result, item) => `${result}${titleCase(item)}`, '');

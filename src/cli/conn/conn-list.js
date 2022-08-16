@@ -1,9 +1,9 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps } from '@rockcarver/frodo-lib';
+import { AuthenticateOps, state } from '@rockcarver/frodo-lib';
 const { getTokens } = AuthenticateOps;
-import storage from '../../storage/SessionStorage.js';
-import { ConnectionProfileOps } from '@rockcarver/frodo-lib';
+
+import { ConnectionProfileOps, state } from '@rockcarver/frodo-lib';
 
 const { listConnectionProfiles } = ConnectionProfileOps;
 

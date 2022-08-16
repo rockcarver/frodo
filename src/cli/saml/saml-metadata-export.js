@@ -4,9 +4,9 @@ import {
   AuthenticateOps,
   CirclesOfTrustOps,
   SamlOps,
+  state,
 } from '@rockcarver/frodo-lib';
 const { getTokens } = AuthenticateOps;
-import storage from '../../storage/SessionStorage.js';
 
 const {
   exportCircleOfTrust,
@@ -48,19 +48,19 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // export by id/name
         if (options.entityId) {
           console.log(
             `Exporting metadata for provider "${
               options.entityId
-            }" from realm "${storage.session.getRealm()}"...`
+            }" from realm "${state.session.getRealm()}"...`
           );
           exportMetadata(options.entityId, options.file);
         }

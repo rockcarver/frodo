@@ -3,9 +3,9 @@ import {
   AuthenticateOps,
   ConnectionProfileOps,
   LogOps,
+  state,
 } from '@rockcarver/frodo-lib';
 import * as common from '../cmd_common.js';
-import storage from '../../storage/SessionStorage.js';
 
 const { provisionCreds, tailLogs, resolveLevel } = LogOps;
 const { getConnectionProfile, saveConnectionProfile } = ConnectionProfileOps;
@@ -35,19 +35,19 @@ Following values are possible (values on the same line are equivalent): \
   )
   .action(async (host, user, password, options, command) => {
     let credsFromParameters = true;
-    storage.session.setTenant(host);
-    storage.session.setUsername(user);
-    storage.session.setPassword(password);
-    storage.session.setAllowInsecureConnection(options.insecure);
+    state.session.setTenant(host);
+    state.session.setUsername(user);
+    state.session.setPassword(password);
+    state.session.setAllowInsecureConnection(options.insecure);
     const conn = await getConnectionProfile();
-    storage.session.setTenant(conn.tenant);
+    state.session.setTenant(conn.tenant);
     if (conn.key != null && conn.secret != null) {
       credsFromParameters = false;
-      storage.session.setLogApiKey(conn.key);
-      storage.session.setLogApiSecret(conn.secret);
+      state.session.setLogApiKey(conn.key);
+      state.session.setLogApiSecret(conn.secret);
     } else {
       if (conn.username == null && conn.password == null) {
-        if (!storage.session.getUsername() && !storage.session.getPassword()) {
+        if (!state.session.getUsername() && !state.session.getPassword()) {
           credsFromParameters = false;
           console.log(
             'User credentials not specified as parameters and no saved API key and secret found!',
@@ -56,13 +56,13 @@ Following values are possible (values on the same line are equivalent): \
           return;
         }
       } else {
-        storage.session.setUsername(conn.username);
-        storage.session.setPassword(conn.password);
+        state.session.setUsername(conn.username);
+        state.session.setPassword(conn.password);
       }
       if (await getTokens()) {
         const creds = await provisionCreds();
-        storage.session.setLogApiKey(creds.api_key_id);
-        storage.session.setLogApiSecret(creds.api_key_secret);
+        state.session.setLogApiKey(creds.api_key_id);
+        state.session.setLogApiSecret(creds.api_key_secret);
       }
     }
     console.log(

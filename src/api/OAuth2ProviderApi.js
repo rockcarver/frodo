@@ -23,7 +23,7 @@ const getApiConfig = () => {
 export async function getOAuth2Provider() {
   const urlString = util.format(
     oauthProviderServiceURLTemplate,
-    storage.session.getTenant(),
+    state.session.getTenant(),
     getCurrentRealmPath()
   );
   return generateAmApi(getApiConfig()).get(urlString, {

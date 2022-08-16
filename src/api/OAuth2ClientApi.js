@@ -22,7 +22,7 @@ const getApiConfig = () => {
 export async function getOAuth2Clients() {
   const urlString = util.format(
     oauth2ClientListURLTemplate,
-    storage.session.getTenant(),
+    state.session.getTenant(),
     getCurrentRealmPath()
   );
   return generateAmApi(getApiConfig()).get(urlString, {
@@ -38,7 +38,7 @@ export async function getOAuth2Clients() {
 export async function getOAuth2Client(id) {
   const urlString = util.format(
     oauth2ClientURLTemplate,
-    storage.session.getTenant(),
+    state.session.getTenant(),
     getCurrentRealmPath(),
     id
   );
@@ -59,8 +59,8 @@ export async function putOAuth2Client(id, data) {
   delete client._rev;
   const urlString = util.format(
     oauth2ClientURLTemplate,
-    storage.session.getTenant(),
-    getCurrentRealmPath(storage.session.getRealm()),
+    state.session.getTenant(),
+    getCurrentRealmPath(state.session.getRealm()),
     id
   );
   return generateAmApi(getApiConfig()).put(urlString, client, {

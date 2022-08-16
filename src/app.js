@@ -1,6 +1,6 @@
 #!/usr/bin/env -S node --no-warnings --enable-source-maps
 
-import { ConnectionProfileOps } from '@rockcarver/frodo-lib';
+import { ConnectionProfileOps, state } from '@rockcarver/frodo-lib';
 import fs from 'fs';
 import { Command } from 'commander';
 // import pkg from '../package.json' assert { type: 'json' };

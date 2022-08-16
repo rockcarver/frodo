@@ -26,7 +26,7 @@ const getApiConfig = () => {
 export async function getRealms() {
   const urlString = util.format(
     realmsListURLTemplate,
-    storage.session.getTenant()
+    state.session.getTenant()
   );
   return generateAmApi(getApiConfig()).get(urlString, {
     withCredentials: true,
@@ -41,7 +41,7 @@ export async function getRealms() {
 export async function getRealm(id) {
   const urlString = util.format(
     realmURLTemplate,
-    storage.session.getTenant(),
+    state.session.getTenant(),
     id
   );
   return generateAmApi(getApiConfig()).get(urlString, {
@@ -74,7 +74,7 @@ export async function getRealmByName(name) {
 export async function putRealm(id, data) {
   const urlString = util.format(
     realmURLTemplate,
-    storage.session.getTenant(),
+    state.session.getTenant(),
     id
   );
   return generateAmApi(getApiConfig()).put(urlString, data, {
@@ -90,7 +90,7 @@ export async function putRealm(id, data) {
 export async function deleteRealm(id) {
   const urlString = util.format(
     realmURLTemplate,
-    getTenantURL(storage.session.getTenant()),
+    getTenantURL(state.session.getTenant()),
     id
   );
   return generateAmApi(getApiConfig()).delete(urlString, {

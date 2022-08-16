@@ -1,7 +1,6 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, AdminOps } from '@rockcarver/frodo-lib';
-import storage from '../../storage/SessionStorage.js';
+import { AuthenticateOps, AdminOps, state } from '@rockcarver/frodo-lib';
 
 const { getTokens } = AuthenticateOps;
 const { grantOAuth2ClientAdminPrivileges } = AdminOps;
@@ -24,17 +23,17 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         console.log(
           `Granting oauth2 client "${
             options.target
-          }" in realm "${storage.session.getRealm()}" admin privileges...`
+          }" in realm "${state.session.getRealm()}" admin privileges...`
         );
         await grantOAuth2ClientAdminPrivileges(options.target);
         console.log('Done.');

@@ -1,7 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, CirclesOfTrustOps } from '@rockcarver/frodo-lib';
-import storage from '../../storage/SessionStorage.js';
+import {
+  AuthenticateOps,
+  CirclesOfTrustOps,
+  state,
+} from '@rockcarver/frodo-lib';
 
 const { getTokens } = AuthenticateOps;
 const {
@@ -50,19 +53,19 @@ program
   .action(
     // implement program logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by id
         if (options.file && options.cotId) {
           console.log(
             `Importing circle of trust "${
               options.cotId
-            }" into realm "${storage.session.getRealm()}"...`
+            }" into realm "${state.session.getRealm()}"...`
           );
           importCircleOfTrust(options.cotId, options.file);
         }
@@ -85,7 +88,7 @@ program
           console.log(
             `Importing first circle of trust from file "${
               options.file
-            }" into realm "${storage.session.getRealm()}"...`
+            }" into realm "${state.session.getRealm()}"...`
           );
           importFirstCircleOfTrust(options.file);
         }

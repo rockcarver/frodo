@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import * as common from '../cmd_common.js';
-import { ConnectionProfileOps } from '@rockcarver/frodo-lib';
+import { ConnectionProfileOps, state } from '@rockcarver/frodo-lib';
 
 const { deleteConnectionProfile } = ConnectionProfileOps;
 

@@ -1,7 +1,10 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, CirclesOfTrustOps } from '@rockcarver/frodo-lib';
-import storage from '../../storage/SessionStorage.js';
+import {
+  AuthenticateOps,
+  CirclesOfTrustOps,
+  state,
+} from '@rockcarver/frodo-lib';
 
 const { getTokens } = AuthenticateOps;
 const { listCirclesOfTrust } = CirclesOfTrustOps;
@@ -24,15 +27,15 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         console.log(
-          `Listing SAML circles of trust in realm "${storage.session.getRealm()}"...`
+          `Listing SAML circles of trust in realm "${state.session.getRealm()}"...`
         );
         listCirclesOfTrust(options.long);
       }

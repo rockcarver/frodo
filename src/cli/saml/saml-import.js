@@ -1,8 +1,7 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, SamlOps } from '@rockcarver/frodo-lib';
+import { AuthenticateOps, SamlOps, state } from '@rockcarver/frodo-lib';
 const { getTokens } = AuthenticateOps;
-import storage from '../../storage/SessionStorage.js';
 
 const {
   importProvider,
@@ -50,19 +49,19 @@ program
   .action(
     // implement program logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import by id
         if (options.file && options.entityId) {
           console.log(
             `Importing provider "${
               options.entityId
-            }" into realm "${storage.session.getRealm()}"...`
+            }" into realm "${state.session.getRealm()}"...`
           );
           importProvider(options.entityId, options.file);
         }
@@ -85,7 +84,7 @@ program
           console.log(
             `Importing first provider from file "${
               options.file
-            }" into realm "${storage.session.getRealm()}"...`
+            }" into realm "${state.session.getRealm()}"...`
           );
           importFirstProvider(options.file);
         }

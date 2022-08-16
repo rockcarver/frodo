@@ -20,7 +20,7 @@ export async function getOAuth2Provider() {
   try {
     const urlString = util.format(
       oauthProviderServiceURLTemplate,
-      storage.session.getTenant(),
+      state.session.getTenant(),
       getCurrentRealmPath()
     );
     const response = await generateAmApi(getApiConfig()).get(urlString, {

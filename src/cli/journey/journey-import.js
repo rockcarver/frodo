@@ -1,6 +1,6 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import { AuthenticateOps, JourneyOps } from '@rockcarver/frodo-lib';
+import { AuthenticateOps, JourneyOps, state } from '@rockcarver/frodo-lib';
 const { getTokens } = AuthenticateOps;
 const {
   importJourneyFromFile,
@@ -8,7 +8,6 @@ const {
   importJourneysFromFiles,
   importFirstJourneyFromFile,
 } = JourneyOps;
-import storage from '../../storage/SessionStorage.js';
 
 const program = new Command('frodo command sub');
 
@@ -67,12 +66,12 @@ program
   .action(
     // implement command logic inside action handler
     async (host, realm, user, password, options) => {
-      storage.session.setTenant(host);
-      storage.session.setRealm(realm);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setRealm(realm);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if (await getTokens()) {
         // import
         if (options.journeyId) {

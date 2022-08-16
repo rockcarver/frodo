@@ -1,7 +1,11 @@
 import { Command, Option } from 'commander';
 import * as common from '../cmd_common.js';
-import storage from '../../storage/SessionStorage.js';
-import { AuthenticateOps, ConnectionProfileOps } from '@rockcarver/frodo-lib';
+
+import {
+  AuthenticateOps,
+  ConnectionProfileOps,
+  state,
+} from '@rockcarver/frodo-lib';
 
 const { getTokens } = AuthenticateOps;
 const { saveConnectionProfile } = ConnectionProfileOps;
@@ -25,13 +29,13 @@ program
   .action(
     // implement command logic inside action handler
     async (host, user, password, key, secret, options) => {
-      storage.session.setTenant(host);
-      storage.session.setUsername(user);
-      storage.session.setPassword(password);
-      storage.session.setLogApiKey(key);
-      storage.session.setLogApiSecret(secret);
-      storage.session.setDeploymentType(options.type);
-      storage.session.setAllowInsecureConnection(options.insecure);
+      state.session.setTenant(host);
+      state.session.setUsername(user);
+      state.session.setPassword(password);
+      state.session.setLogApiKey(key);
+      state.session.setLogApiSecret(secret);
+      state.session.setDeploymentType(options.type);
+      state.session.setAllowInsecureConnection(options.insecure);
       if ((options.validate && (await getTokens())) || !options.validate) {
         saveConnectionProfile();
       } else {
