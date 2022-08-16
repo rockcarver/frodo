@@ -35,7 +35,7 @@ function getFileDataTemplate() {
 
 /**
  * List entity providers
- * @param {String} long Long list format with details
+ * @param {string} long Long list format with details
  */
 export async function listCirclesOfTrust(long = false) {
   let cotList = [];
@@ -88,8 +88,8 @@ async function exportDependencies(cotData, fileData) {
 
 /**
  * Export a single circle of trust to file
- * @param {String} cotId circle of trust id/name
- * @param {String} file Optional filename
+ * @param {string} cotId circle of trust id/name
+ * @param {string} file Optional filename
  */
 export async function exportCircleOfTrust(cotId, file = null) {
   let fileName = file;
@@ -118,7 +118,7 @@ export async function exportCircleOfTrust(cotId, file = null) {
 
 /**
  * Export all circles of trust to one file
- * @param {String} file Optional filename
+ * @param {string} file Optional filename
  */
 export async function exportCirclesOfTrustToFile(file = null) {
   let fileName = file;
@@ -197,8 +197,8 @@ async function importDependencies(cotData, fileData) {
 
 /**
  * Import a SAML circle of trust by id/name from file
- * @param {String} cotId Circle of trust id/name
- * @param {String} file Import file name
+ * @param {string} cotId Circle of trust id/name
+ * @param {string} file Import file name
  */
 export async function importCircleOfTrust(cotId, file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -232,7 +232,7 @@ export async function importCircleOfTrust(cotId, file) {
 
 /**
  * Import first SAML circle of trust from file
- * @param {String} file Import file name
+ * @param {string} file Import file name
  */
 export async function importFirstCircleOfTrust(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -266,7 +266,7 @@ export async function importFirstCircleOfTrust(file) {
 
 /**
  * Import all SAML circles of trust from file
- * @param {String} file Import file name
+ * @param {string} file Import file name
  */
 export async function importCirclesOfTrustFromFile(file) {
   fs.readFile(file, 'utf8', async (err, data) => {

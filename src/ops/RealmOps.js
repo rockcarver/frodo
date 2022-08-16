@@ -41,7 +41,7 @@ export async function listRealms(long = false) {
 
 /**
  * Describe realm
- * @param {String} realm realm name
+ * @param {string} realm realm name
  */
 export async function describe(realm) {
   try {
@@ -63,8 +63,8 @@ export async function describe(realm) {
 
 /**
  * Add custom DNS domain name (realm DNS alias)
- * @param {String} realm realm name
- * @param {String} domain domain name
+ * @param {string} realm realm name
+ * @param {string} domain domain name
  */
 export async function addCustomDomain(realm, domain) {
   try {
@@ -103,8 +103,8 @@ export async function addCustomDomain(realm, domain) {
 
 /**
  * Remove custom DNS domain name (realm DNS alias)
- * @param {String} realm realm name
- * @param {String} domain domain name
+ * @param {string} realm realm name
+ * @param {string} domain domain name
  */
 export async function removeCustomDomain(realm, domain) {
   try {

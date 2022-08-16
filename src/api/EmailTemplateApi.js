@@ -19,7 +19,7 @@ export async function getEmailTemplates() {
 
 /**
  * Get email template
- * @param {String} id id/name of the email template without the type prefix
+ * @param {string} id id/name of the email template without the type prefix
  * @returns {Promise} a promise that resolves to an object containing the email template object
  */
 export async function getEmailTemplate(id) {
@@ -28,7 +28,7 @@ export async function getEmailTemplate(id) {
 
 /**
  * Put email template
- * @param {String} id id/name of the email template without the type prefix
+ * @param {string} id id/name of the email template without the type prefix
  * @param {Object} data email template object
  * @returns {Promise} a promise that resolves to an object containing the email template object
  */

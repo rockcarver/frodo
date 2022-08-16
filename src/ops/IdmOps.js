@@ -33,8 +33,8 @@ export async function listAllConfigEntities() {
 
 /**
  * Export an IDM configuration object.
- * @param {String} id the desired configuration object
- * @param {String} file optional export file
+ * @param {string} id the desired configuration object
+ * @param {string} file optional export file
  */
 export async function exportConfigEntity(id, file) {
   let fileName = file;
@@ -52,7 +52,7 @@ export async function exportConfigEntity(id, file) {
 
 /**
  * Export all IDM configuration objects into separate JSON files in a directory specified by <directory>
- * @param {String} directory export directory
+ * @param {string} directory export directory
  */
 export async function exportAllRawConfigEntities(directory) {
   let configEntities = [];
@@ -118,9 +118,9 @@ export async function exportAllRawConfigEntities(directory) {
 
 /**
  * Export all IDM configuration objects
- * @param {String} directory export directory
- * @param {String} entitiesFile JSON file that specifies the config entities to export/import
- * @param {String} envFile File that defines environment specific variables for replacement during configuration export/import
+ * @param {string} directory export directory
+ * @param {string} entitiesFile JSON file that specifies the config entities to export/import
+ * @param {string} envFile File that defines environment specific variables for replacement during configuration export/import
  */
 export async function exportAllConfigEntities(
   directory,
@@ -198,7 +198,7 @@ export async function exportAllConfigEntities(
 
 /**
  * Count number of managed objects of a given type
- * @param {String} type managed object type, e.g. alpha_user
+ * @param {string} type managed object type, e.g. alpha_user
  */
 export async function countManagedObjects(type) {
   let count = 0;

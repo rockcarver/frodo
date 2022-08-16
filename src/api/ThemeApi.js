@@ -26,7 +26,7 @@ export async function getThemes() {
 
 /**
  * Get theme by id
- * @param {String} id theme id
+ * @param {string} id theme id
  * @returns {Promise} a promise that resolves to an array of themes
  */
 export async function getTheme(id) {
@@ -36,7 +36,7 @@ export async function getTheme(id) {
 
 /**
  * Get theme by name
- * @param {String} name theme name
+ * @param {string} name theme name
  * @returns {Promise} a promise that resolves to an array of themes
  */
 export async function getThemeByName(name) {
@@ -46,7 +46,7 @@ export async function getThemeByName(name) {
 
 /**
  * Put theme by id
- * @param {String} id theme id
+ * @param {string} id theme id
  * @param {Object} data theme object
  * @returns {Promise} a promise that resolves to an object containing a themes object
  */
@@ -73,7 +73,7 @@ export async function putTheme(id, data) {
 
 /**
  * Put theme by name
- * @param {String} name theme name
+ * @param {string} name theme name
  * @param {Object} data theme object
  * @returns {Promise} a promise that resolves to an object containing a themes object
  */
@@ -142,7 +142,7 @@ export async function putThemes(data) {
 
 /**
  * Delete theme by id
- * @param {String} id theme id
+ * @param {string} id theme id
  * @returns {Promise} a promise that resolves to an object containing a themes object
  */
 export async function deleteTheme(id) {
@@ -157,7 +157,7 @@ export async function deleteTheme(id) {
 
 /**
  * Delete theme by name
- * @param {String} name theme name
+ * @param {string} name theme name
  * @returns {Promise} a promise that resolves to an object containing a themes object
  */
 export async function deleteThemeByName(name) {

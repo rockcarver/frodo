@@ -58,8 +58,8 @@ export async function listScripts(long = false) {
 
 /**
  * Export script to file
- * @param {String} name script name
- * @param {String} file file name
+ * @param {string} name script name
+ * @param {string} file file name
  */
 export async function exportScriptByName(name, file) {
   let fileName = getTypedFilename(name, 'script');
@@ -80,7 +80,7 @@ export async function exportScriptByName(name, file) {
 
 /**
  * Export all scripts to single file
- * @param {String} file file name
+ * @param {string} file file name
  */
 export async function exportScriptsToFile(file) {
   let fileName = getTypedFilename(
@@ -131,9 +131,9 @@ export async function exportScriptsToFiles() {
 
 /**
  * Import script
- * @param {String} id script uuid
+ * @param {string} id script uuid
  * @param {Object} data script object
- * @returns {Object} a status object
+ * @returns {Promise<Object>} a status object
  */
 export async function createOrUpdateScript(id, data) {
   try {

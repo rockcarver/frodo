@@ -138,7 +138,7 @@ export function printMessage(message, type = 'text', newline = true) {
  * [========================================] 100% | 49/49 | Analyzing journey - transactional_auth
  *
  * @param {Number} total The total number of entries to track progress for
- * @param {String} message optional progress bar message
+ * @param {string} message optional progress bar message
  * @param {Object} options progress bar configuration options
  *
  */
@@ -194,7 +194,7 @@ export function stopProgressBar(message = null) {
 
 /**
  * Create the spinner
- * @param {String} message optional spinner message
+ * @param {string} message optional spinner message
  */
 export function showSpinner(message) {
   const spinner = createSpinner(message).start();
@@ -203,7 +203,7 @@ export function showSpinner(message) {
 
 /**
  * Stop the spinner
- * @param {String} message optional message to update the spinner
+ * @param {string} message optional message to update the spinner
  */
 export function stopSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
@@ -216,7 +216,7 @@ export function stopSpinner(message = null) {
 
 /**
  * Succeed the spinner. Stop and render success checkmark with optional message.
- * @param {String} message optional message to update the spinner
+ * @param {string} message optional message to update the spinner
  */
 export function succeedSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
@@ -229,7 +229,7 @@ export function succeedSpinner(message = null) {
 
 /**
  * Warn the spinner
- * @param {String} message optional message to update the spinner
+ * @param {string} message optional message to update the spinner
  */
 export function warnSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
@@ -242,7 +242,7 @@ export function warnSpinner(message = null) {
 
 /**
  * Fail the spinner
- * @param {String} message optional message to update the spinner
+ * @param {string} message optional message to update the spinner
  */
 export function failSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');
@@ -255,7 +255,7 @@ export function failSpinner(message = null) {
 
 /**
  * Spin the spinner
- * @param {String} message optional message to update the spinner
+ * @param {string} message optional message to update the spinner
  */
 export function spinSpinner(message = null) {
   const spinner = storage.session.getItem('Spinner');

@@ -68,10 +68,10 @@ export async function listSecrets(long) {
 
 /**
  * Create secret
- * @param {String} id secret id
- * @param {String} value secret value
- * @param {String} description secret description
- * @param {String} encoding secret encoding
+ * @param {string} id secret id
+ * @param {string} value secret value
+ * @param {string} description secret description
+ * @param {string} encoding secret encoding
  * @param {boolean} useInPlaceholders use secret in placeholders
  */
 export async function createSecret(
@@ -94,8 +94,8 @@ export async function createSecret(
 
 /**
  * Set description of secret
- * @param {String} secretId secret id
- * @param {String} description secret description
+ * @param {string} secretId secret id
+ * @param {string} description secret description
  */
 export async function setDescriptionOfSecret(secretId, description) {
   showSpinner(`Setting description of secret ${secretId}...`);
@@ -111,7 +111,7 @@ export async function setDescriptionOfSecret(secretId, description) {
 
 /**
  * Delete a secret
- * @param {String} secretId secret id
+ * @param {string} secretId secret id
  */
 export async function deleteSecretCmd(secretId) {
   showSpinner(`Deleting secret ${secretId}...`);
@@ -155,7 +155,7 @@ export async function deleteSecretsCmd() {
 
 /**
  * List all the versions of the secret
- * @param {String} secretId secret id
+ * @param {string} secretId secret id
  */
 export async function listSecretVersionsCmd(secretId) {
   let versions = [];
@@ -190,7 +190,7 @@ export async function listSecretVersionsCmd(secretId) {
 
 /**
  * Describe a secret
- * @param {String} secretId Secret id
+ * @param {string} secretId Secret id
  */
 export async function describeSecret(secretId) {
   const secret = (await getSecret(secretId)).data;
@@ -221,8 +221,8 @@ export async function describeSecret(secretId) {
 
 /**
  * Create new version of secret
- * @param {String} secretId secret id
- * @param {String} value secret value
+ * @param {string} secretId secret id
+ * @param {string} value secret value
  */
 export async function createNewVersionOfSecretCmd(secretId, value) {
   showSpinner(`Creating new version of secret ${secretId}...`);
@@ -238,7 +238,7 @@ export async function createNewVersionOfSecretCmd(secretId, value) {
 
 /**
  * Activate a version of a secret
- * @param {String} secretId secret id
+ * @param {string} secretId secret id
  * @param {Number} version version of secret
  */
 export async function activateVersionOfSecret(secretId, version) {
@@ -255,7 +255,7 @@ export async function activateVersionOfSecret(secretId, version) {
 
 /**
  * Deactivate a version of a secret
- * @param {String} secretId secret id
+ * @param {string} secretId secret id
  * @param {Number} version version of secret
  */
 export async function deactivateVersionOfSecret(secretId, version) {
@@ -272,7 +272,7 @@ export async function deactivateVersionOfSecret(secretId, version) {
 
 /**
  * Delete version of secret
- * @param {String} secretId secret id
+ * @param {string} secretId secret id
  * @param {Number} version version of secret
  */
 export async function deleteVersionOfSecretCmd(secretId, version) {

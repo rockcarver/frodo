@@ -546,8 +546,8 @@ async function exportTree(treeObject, exportData, options) {
 
 /**
  * Export journey by id/name to file
- * @param {String} journeyId journey id/name
- * @param {String} file optional export file name
+ * @param {string} journeyId journey id/name
+ * @param {string} file optional export file name
  * @param {Object} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output, deps:boolean: include dependencies
  */
 export async function exportJourneyToFile(journeyId, file, options) {
@@ -580,7 +580,7 @@ export async function exportJourneyToFile(journeyId, file, options) {
 
 /**
  * Export all journeys to file
- * @param {String} file optional export file name
+ * @param {string} file optional export file name
  */
 export async function exportJourneysToFile(file, options) {
   let fileName = file;
@@ -629,7 +629,7 @@ export async function exportJourneysToFiles(options) {
 
 /**
  * Get data for journey by id/name
- * @param {String} journeyId journey id/name
+ * @param {string} journeyId journey id/name
  * @returns {Object} object containing all journey data
  */
 export async function getJourneyData(journeyId) {
@@ -1150,8 +1150,8 @@ async function resolveDependencies(
 
 /**
  * Import a journey from file
- * @param {String} journeyId journey id/name
- * @param {String} file import file name
+ * @param {string} journeyId journey id/name
+ * @param {string} file import file name
  * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importJourneyFromFile(journeyId, file, options) {
@@ -1213,7 +1213,7 @@ export async function importJourneyFromFile(journeyId, file, options) {
 
 /**
  * Import first journey from file
- * @param {String} file import file name
+ * @param {string} file import file name
  * @param {boolean} options reUuid:boolean: re-uuid all node objects, verbose:boolean: verbose output
  */
 export async function importFirstJourneyFromFile(file, options) {
@@ -1712,7 +1712,7 @@ const OOTB_NODE_TYPES_6 = [
 /**
  * Analyze if a journey contains any custom nodes considering the detected or the overridden version.
  * @param {Object} journey Journey/tree configuration object
- * @returns {boolean} True if the journey/tree contains any custom nodes, false otherwise.
+ * @returns {Promise<boolean>} True if the journey/tree contains any custom nodes, false otherwise.
  */
 async function isCustom(journey) {
   let ootbNodeTypes = [];
@@ -1840,7 +1840,7 @@ export async function listJourneys(long = false, analyze = false) {
 
 /**
  * Delete a journey
- * @param {String} journeyId journey id/name
+ * @param {string} journeyId journey id/name
  * @param {Object} options deep=true also delete all the nodes and inner nodes, verbose=true print verbose info
  */
 export async function deleteJourney(journeyId, options, spinner = true) {

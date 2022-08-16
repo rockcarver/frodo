@@ -80,8 +80,8 @@ export async function getNodesByType(type) {
 
 /**
  * Get node by uuid and type
- * @param {String} id node uuid
- * @param {String} nodeType node type
+ * @param {string} id node uuid
+ * @param {string} nodeType node type
  * @returns {Promise} a promise that resolves to an object containing a node object
  */
 export async function getNode(id, nodeType) {
@@ -99,8 +99,8 @@ export async function getNode(id, nodeType) {
 
 /**
  * Put node by uuid and type
- * @param {String} id node uuid
- * @param {String} nodeType node type
+ * @param {string} id node uuid
+ * @param {string} nodeType node type
  * @param {Object} data node object
  * @returns {Promise} a promise that resolves to an object containing a node object
  */
@@ -122,8 +122,8 @@ export async function putNode(id, nodeType, nodeData) {
 
 /**
  * Delete node by uuid and type
- * @param {String} id node uuid
- * @param {String} nodeType node type
+ * @param {string} id node uuid
+ * @param {string} nodeType node type
  * @returns {Promise} a promise that resolves to an object containing a node object
  */
 export async function deleteNode(id, nodeType) {
@@ -156,7 +156,7 @@ export async function getTrees() {
 
 /**
  * Get tree by id/name
- * @param {String} id tree id/name
+ * @param {string} id tree id/name
  * @returns {Promise} a promise that resolves to an object containing a tree object
  */
 export async function getTree(id) {
@@ -173,7 +173,7 @@ export async function getTree(id) {
 
 /**
  * Put tree by id/name
- * @param {String} id tree id/name
+ * @param {string} id tree id/name
  * @param {Object} data tree object
  * @returns {Promise} a promise that resolves to an object containing a tree object
  */
@@ -191,7 +191,7 @@ export async function putTree(id, data) {
 
 /**
  * Delete tree by id/name
- * @param {String} id tree id/name
+ * @param {string} id tree id/name
  * @returns {Promise} a promise that resolves to an object containing a tree object
  */
 export async function deleteTree(id) {

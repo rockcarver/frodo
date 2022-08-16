@@ -73,8 +73,8 @@ export async function listOAuth2Clients(long = false) {
 
 /**
  * Export OAuth2 client to file
- * @param {String} id client id
- * @param {String} file file name
+ * @param {string} id client id
+ * @param {string} file file name
  */
 export async function exportOAuth2ClientToFile(id, file) {
   let fileName = getTypedFilename(id, 'oauth2.app');
@@ -89,7 +89,7 @@ export async function exportOAuth2ClientToFile(id, file) {
 
 /**
  * Export all OAuth2 clients to file
- * @param {String} file file name
+ * @param {string} file file name
  */
 export async function exportOAuth2ClientsToFile(file) {
   let fileName = getTypedFilename(
@@ -124,7 +124,7 @@ export async function exportOAuth2ClientsToFiles() {
 
 /**
  * Import OAuth2 clients from file
- * @param {String} file file name
+ * @param {string} file file name
  */
 export async function importOAuth2ClientsFromFile(file) {
   fs.readFile(file, 'utf8', (err, data) => {

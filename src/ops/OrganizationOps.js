@@ -4,7 +4,7 @@ import { printMessage } from './utils/Console.js';
 
 /**
  * Get organization managed object type
- * @returns {String} organization managed object type in this realm
+ * @returns {string} organization managed object type in this realm
  */
 export function getRealmManagedOrganization() {
   let realmManagedOrg = 'organization';

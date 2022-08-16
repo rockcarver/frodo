@@ -14,7 +14,7 @@ const getApiConfig = () => ({
 
 /**
  * Perform the authorization step of the authorization code grant flow
- * @param {String} data body form data
+ * @param {string} data body form data
  * @param {Object} config axios request config object
  * @returns {Promise} a promise resolving to an object containing the authorization server response object
  */
@@ -44,9 +44,9 @@ export async function accessToken(data, config = {}) {
 
 /**
  * Perform client credentials grant flow
- * @param {String} clientId client id
- * @param {String} clientSecret client secret
- * @param {String} scope space-delimited scope list
+ * @param {string} clientId client id
+ * @param {string} clientSecret client secret
+ * @param {string} scope space-delimited scope list
  * @returns {Promise} a promise resolving to an object containing the authorization server response object
  */
 export async function clientCredentialsGrant(clientId, clientSecret, scope) {

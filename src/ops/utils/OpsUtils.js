@@ -13,8 +13,8 @@ export function replaceAll(str, find, replace) {
 
 /**
  * Get new name when names collide
- * @param {String} name to apply policy to
- * @returns {String} new name according to policy
+ * @param {string} name to apply policy to
+ * @returns {string} new name according to policy
  */
 export function applyNameCollisionPolicy(name) {
   const capturingRegex = /(.* - imported) \(([0-9]+)\)/;
@@ -30,7 +30,7 @@ export function applyNameCollisionPolicy(name) {
 
 /**
  * Get the name of the managed user object for the current realm
- * @returns {String} the name of the managed user object for the current realm
+ * @returns {string} the name of the managed user object for the current realm
  */
 export function getRealmManagedUser() {
   let realmManagedUser = 'user';

@@ -117,7 +117,7 @@ export function saveToFile(type, data, identifier, filename) {
 /**
  * Save JSON object to file
  * @param {Object} data data object
- * @param {String} filename file name
+ * @param {string} filename file name
  */
 export function saveJsonToFile(data, filename) {
   const exportData = data;
@@ -132,8 +132,8 @@ export function saveJsonToFile(data, filename) {
 
 /**
  * Save text data to file
- * @param {String} data text data
- * @param {String} filename file name
+ * @param {string} data text data
+ * @param {string} filename file name
  */
 export function saveTextToFile(data, filename) {
   fs.writeFile(filename, data, (err) => {

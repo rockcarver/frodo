@@ -33,7 +33,7 @@ export async function getVariables() {
 
 /**
  * Get variable by id/name
- * @param {String} id variable id/name
+ * @param {string} id variable id/name
  * @returns {Promise} a promise that resolves to an object containing a variable object
  */
 export async function getVariable(id) {
@@ -49,9 +49,9 @@ export async function getVariable(id) {
 
 /**
  * Put variable by id/name
- * @param {String} id variable id/name
- * @param {String} value variable value
- * @param {String} description variable description
+ * @param {string} id variable id/name
+ * @param {string} value variable value
+ * @param {string} description variable description
  * @returns {Promise} a promise that resolves to an object containing a variable object
  */
 export async function putVariable(id, value, description) {
@@ -89,7 +89,7 @@ export async function setVariableDescription(id, description) {
 
 /**
  * Delete variable by id/name
- * @param {String} id variable id/name
+ * @param {string} id variable id/name
  * @returns {Promise} a promise that resolves to an object containing a variable object
  */
 export async function deleteVariable(id) {

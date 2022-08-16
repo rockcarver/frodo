@@ -23,7 +23,7 @@ export async function getAllConfigEntities() {
 
 /**
  * Get IDM config entities by type
- * @param {String} type the desired type of config entity
+ * @param {string} type the desired type of config entity
  * @returns {Promise} a promise that resolves to an object containing all IDM config entities of the desired type
  */
 export async function getConfigEntitiesByType(type) {
@@ -37,7 +37,7 @@ export async function getConfigEntitiesByType(type) {
 
 /**
  * Get an IDM config entity
- * @param {String} id the desired config entity
+ * @param {string} id the desired config entity
  * @returns {Promise} a promise that resolves to an object containing an IDM config entity
  */
 export async function getConfigEntity(id) {
@@ -51,8 +51,8 @@ export async function getConfigEntity(id) {
 
 /**
  * Put IDM config entity
- * @param {String} id config entity id
- * @param {String} data config entity object
+ * @param {string} id config entity id
+ * @param {string} data config entity object
  * @returns {Promise} a promise that resolves to an object containing an IDM config entity
  */
 export async function putConfigEntity(id, data) {
@@ -66,9 +66,9 @@ export async function putConfigEntity(id, data) {
 
 /**
  * Query managed objects
- * @param {String} type managed object type
+ * @param {string} type managed object type
  * @param {[String]} fields fields to retrieve
- * @param {String} pageCookie paged results cookie
+ * @param {string} pageCookie paged results cookie
  * @returns {Promise} a promise that resolves to an object containing managed objects of the desired type
  */
 export async function queryAllManagedObjectsByType(type, fields, pageCookie) {

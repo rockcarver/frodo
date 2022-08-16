@@ -35,7 +35,7 @@ export async function getRealms() {
 
 /**
  * Get realm by id
- * @param {String} id realm id
+ * @param {string} id realm id
  * @returns {Promise} a promise that resolves to an object containing a realm object
  */
 export async function getRealm(id) {
@@ -51,7 +51,7 @@ export async function getRealm(id) {
 
 /**
  * Get realm by name
- * @param {String} name realm name
+ * @param {string} name realm name
  * @returns {Promise} a promise that resolves to a realm object
  */
 export async function getRealmByName(name) {
@@ -67,7 +67,7 @@ export async function getRealmByName(name) {
 
 /**
  * Put realm
- * @param {String} id realm id
+ * @param {string} id realm id
  * @param {Object} data realm config object
  * @returns {Promise} a promise that resolves to an object containing a realm object
  */
@@ -84,7 +84,7 @@ export async function putRealm(id, data) {
 
 /**
  * Delete realm
- * @param {String} id realm id
+ * @param {string} id realm id
  * @returns {Promise} a promise that resolves to an object containing a realm object
  */
 export async function deleteRealm(id) {

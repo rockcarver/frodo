@@ -23,7 +23,7 @@ let adminClientId = 'idmAdminClient';
 
 /**
  * Helper function to get cookie name
- * @returns {String} cookie name
+ * @returns {Promise<string>} cookie name
  */
 async function getCookieName() {
   try {
@@ -81,7 +81,7 @@ function checkAndHandle2FA(payload) {
 
 /**
  * Helper function to set the default realm by deployment type
- * @param {String} deploymentType deployment type
+ * @param {string} deploymentType deployment type
  */
 function determineDefaultRealm(deploymentType) {
   if (storage.session.getRealm() === global.DEFAULT_REALM_KEY) {
@@ -91,7 +91,7 @@ function determineDefaultRealm(deploymentType) {
 
 /**
  * Helper function to determine the deployment type
- * @returns {String} deployment type
+ * @returns {Promise<string>} deployment type
  */
 async function determineDeploymentType() {
   const fidcClientId = 'idmAdminClient';
@@ -144,9 +144,9 @@ async function determineDeploymentType() {
 /**
  * Helper function to extract the semantic version string from a version info object
  * @param {Object} versionInfo version info object
- * @returns {String} semantic version
+ * @returns {string} semantic version
  */
-async function getSemanticVersion(versionInfo) {
+function getSemanticVersion(versionInfo) {
   if ('version' in versionInfo) {
     const versionString = versionInfo.version;
     const rx = /([\d]\.[\d]\.[\d](\.[\d])*)/g;
@@ -158,7 +158,7 @@ async function getSemanticVersion(versionInfo) {
 
 /**
  * Helper function to authenticate and obtain and store session cookie
- * @returns {String} empty string or null
+ * @returns {Promise<string>} empty string or null
  */
 async function authenticate() {
   storage.session.setCookieName(await getCookieName());
@@ -171,12 +171,11 @@ async function authenticate() {
     };
     const response1 = (await step({}, config)).data;
     const skip2FA = checkAndHandle2FA(response1);
-    let response2 = {};
-    if (skip2FA.need2fa) {
-      response2 = (await step(skip2FA.payload)).data;
-    } else {
-      response2 = skip2FA.payload;
-    }
+
+    const response2 = skip2FA.need2fa
+      ? (await step(skip2FA.payload)).data
+      : skip2FA.payload;
+
     if ('tokenId' in response2) {
       storage.session.setCookieValue(response2.tokenId);
       if (!storage.session.getDeploymentType()) {
@@ -210,10 +209,10 @@ async function authenticate() {
 
 /**
  * Helper function to obtain an oauth2 authorization code
- * @param {String} redirectURL oauth2 redirect uri
- * @param {String} codeChallenge PKCE code challenge
- * @param {String} codeChallengeMethod PKCE code challenge method
- * @returns {String} oauth2 authorization code or null
+ * @param {string} redirectURL oauth2 redirect uri
+ * @param {string} codeChallenge PKCE code challenge
+ * @param {string} codeChallengeMethod PKCE code challenge method
+ * @returns {Promise<string>} oauth2 authorization code or null
  */
 async function getAuthCode(redirectURL, codeChallenge, codeChallengeMethod) {
   try {
@@ -248,7 +247,7 @@ async function getAuthCode(redirectURL, codeChallenge, codeChallengeMethod) {
 
 /**
  * Helper function to obtain oauth2 access token
- * @returns {String} empty string or null
+ * @returns {Promise<string>} empty string or null
  */
 async function getAccessToken() {
   try {
@@ -301,7 +300,7 @@ async function getAccessToken() {
 /**
  * Get tokens
  * @param {boolean} save true to save a connection profile upon successful authentication, false otherwise
- * @returns {boolean} true if tokens were successfully obtained, false otherwise
+ * @returns {Promise<boolean>} true if tokens were successfully obtained, false otherwise
  */
 export async function getTokens(save = false) {
   let credsFromParameters = true;

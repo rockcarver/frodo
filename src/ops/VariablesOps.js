@@ -63,9 +63,9 @@ export async function listVariables(long) {
 
 /**
  * Create variable
- * @param {String} variableId variable id
- * @param {String} value variable value
- * @param {String} description variable description
+ * @param {string} variableId variable id
+ * @param {string} value variable value
+ * @param {string} description variable description
  */
 export async function createVariable(variableId, value, description) {
   showSpinner(`Creating variable ${variableId}...`);
@@ -81,9 +81,9 @@ export async function createVariable(variableId, value, description) {
 
 /**
  * Update variable
- * @param {String} variableId variable id
- * @param {String} value variable value
- * @param {String} description variable description
+ * @param {string} variableId variable id
+ * @param {string} value variable value
+ * @param {string} description variable description
  */
 export async function updateVariable(variableId, value, description) {
   showSpinner(`Updating variable ${variableId}...`);
@@ -99,8 +99,8 @@ export async function updateVariable(variableId, value, description) {
 
 /**
  * Set description of variable
- * @param {String} variableId variable id
- * @param {String} description variable description
+ * @param {string} variableId variable id
+ * @param {string} description variable description
  */
 export async function setDescriptionOfVariable(variableId, description) {
   showSpinner(`Setting description of variable ${variableId}...`);
@@ -116,7 +116,7 @@ export async function setDescriptionOfVariable(variableId, description) {
 
 /**
  * Delete a variable
- * @param {String} variableId variable id
+ * @param {string} variableId variable id
  */
 export async function deleteVariableCmd(variableId) {
   showSpinner(`Deleting variable ${variableId}...`);
@@ -160,7 +160,7 @@ export async function deleteVariablesCmd() {
 
 /**
  * Describe a variable
- * @param {String} variableId variable id
+ * @param {string} variableId variable id
  */
 export async function describeVariable(variableId) {
   const variable = (await getVariable(variableId)).data;

@@ -9,7 +9,7 @@ const managedObjectQueryAllURLTemplate = `${managedObjectURLTemplate}?_queryFilt
 
 /**
  * Get managed object
- * @param {String} id managed object id
+ * @param {string} id managed object id
  * @returns {Promise} a promise that resolves to an object containing a managed object
  */
 export async function getManagedObject(type, id, fields) {
@@ -26,8 +26,8 @@ export async function getManagedObject(type, id, fields) {
 
 /**
  * Put managed object
- * @param {String} id managed object id
- * @param {String} data managed object
+ * @param {string} id managed object id
+ * @param {string} data managed object
  * @returns {Promise} a promise that resolves to an object containing a managed object
  */
 export async function putManagedObject(type, id, data) {
@@ -42,9 +42,9 @@ export async function putManagedObject(type, id, data) {
 
 /**
  * Query managed objects
- * @param {String} type managed object type
- * @param {String} fields fields to retrieve
- * @param {String} pageCookie paged results cookie
+ * @param {string} type managed object type
+ * @param {string} fields fields to retrieve
+ * @param {string} pageCookie paged results cookie
  * @returns {Promise} a promise that resolves to an object containing managed objects of the desired type
  */
 export async function queryAllManagedObjectsByType(type, fields, pageCookie) {

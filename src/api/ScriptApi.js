@@ -33,7 +33,7 @@ export async function getScripts() {
 
 /**
  * Get script by name
- * @param {String} name script name
+ * @param {string} name script name
  * @returns {Promise} a promise that resolves to an object containing a script object
  */
 export async function getScriptByName(name) {
@@ -50,7 +50,7 @@ export async function getScriptByName(name) {
 
 /**
  * Get script by id
- * @param {String} id script uuid/name
+ * @param {string} id script uuid/name
  * @returns {Promise} a promise that resolves to an object containing a script object
  */
 export async function getScript(id) {
@@ -67,7 +67,7 @@ export async function getScript(id) {
 
 /**
  * Put script
- * @param {String} id script uuid
+ * @param {string} id script uuid
  * @param {Object} data script object
  * @returns {Promise} a promise that resolves to an object containing a script object
  */

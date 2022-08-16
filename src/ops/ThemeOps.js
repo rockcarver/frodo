@@ -60,8 +60,8 @@ export async function listThemes(long = false) {
 
 /**
  * Export theme by name to file
- * @param {String} name theme name
- * @param {String} file optional export file name
+ * @param {string} name theme name
+ * @param {string} file optional export file name
  */
 export async function exportThemeByName(name, file) {
   let fileName = getTypedFilename(name, 'theme');
@@ -82,8 +82,8 @@ export async function exportThemeByName(name, file) {
 
 /**
  * Export theme by uuid to file
- * @param {String} id theme uuid
- * @param {String} file optional export file name
+ * @param {string} id theme uuid
+ * @param {string} file optional export file name
  */
 export async function exportThemeById(id, file) {
   let fileName = getTypedFilename(id, 'theme');
@@ -104,7 +104,7 @@ export async function exportThemeById(id, file) {
 
 /**
  * Export all themes to file
- * @param {String} file optional export file name
+ * @param {string} file optional export file name
  */
 export async function exportThemesToFile(file) {
   let fileName = getTypedFilename(`all${getRealmString()}Themes`, 'theme');
@@ -136,8 +136,8 @@ export async function exportThemesToFiles() {
 
 /**
  * Import theme by name from file
- * @param {String} name theme name
- * @param {String} file import file name
+ * @param {string} name theme name
+ * @param {string} file import file name
  */
 export async function importThemeByName(name, file) {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -179,8 +179,8 @@ export async function importThemeByName(name, file) {
 
 /**
  * Import theme by uuid from file
- * @param {String} id theme uuid
- * @param {String} file import file name
+ * @param {string} id theme uuid
+ * @param {string} file import file name
  */
 export async function importThemeById(id, file) {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -222,7 +222,7 @@ export async function importThemeById(id, file) {
 
 /**
  * Import all themes from single file
- * @param {String} file import file name
+ * @param {string} file import file name
  */
 export async function importThemesFromFile(file) {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -302,7 +302,7 @@ export async function importThemesFromFiles() {
 
 /**
  * Import first theme from file
- * @param {String} file import file name
+ * @param {string} file import file name
  */
 export async function importFirstThemeFromFile(file) {
   fs.readFile(file, 'utf8', (err, data) => {
@@ -339,7 +339,7 @@ export async function importFirstThemeFromFile(file) {
 
 /**
  * Delete theme by id
- * @param {String} id theme id
+ * @param {string} id theme id
  */
 export async function deleteThemeCmd(id) {
   showSpinner(`Deleting ${id}...`);
@@ -353,7 +353,7 @@ export async function deleteThemeCmd(id) {
 
 /**
  * Delete theme by name
- * @param {String} name theme name
+ * @param {string} name theme name
  */
 export async function deleteThemeByNameCmd(name) {
   showSpinner(`Deleting ${name}...`);

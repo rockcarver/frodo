@@ -5,7 +5,7 @@ const realmPathTemplate = '/realms/%s';
 
 /**
  * Get current realm path
- * @returns {String} a CREST-compliant realm path, e.g. /realms/root/realms/alpha
+ * @returns {string} a CREST-compliant realm path, e.g. /realms/root/realms/alpha
  */
 export function getCurrentRealmPath() {
   let realm = storage.session.getRealm();
@@ -21,7 +21,7 @@ export function getCurrentRealmPath() {
 
 /**
  * Get current realm name
- * @returns {String} name of the current realm. /alpha -> alpha
+ * @returns {string} name of the current realm. /alpha -> alpha
  */
 export function getCurrentRealmName() {
   const realm = storage.session.getRealm();
@@ -35,8 +35,8 @@ export function getCurrentRealmName() {
 
 /**
  * Get current realm name
- * @param {String} realm realm
- * @returns {String} name of the realm. /alpha -> alpha
+ * @param {string} realm realm
+ * @returns {string} name of the realm. /alpha -> alpha
  */
 export function getRealmName(realm) {
   const components = realm.split('/');
@@ -49,8 +49,8 @@ export function getRealmName(realm) {
 
 /**
  * Get tenant base URL
- * @param {String} tenant tenant URL with path and query params
- * @returns {String} tenant base URL without path and query params
+ * @param {string} tenant tenant URL with path and query params
+ * @returns {string} tenant base URL without path and query params
  */
 export function getTenantURL(tenant) {
   const parsedUrl = new URL(tenant);
@@ -60,7 +60,7 @@ export function getTenantURL(tenant) {
 /**
  * Deep delete keys and their values from an input object. If a key in object contains substring, the key an its value is deleted.
  * @param {Object} object input object that needs keys removed
- * @param {String} substring substring to search for in key
+ * @param {string} substring substring to search for in key
  * @returns the modified object without the matching keys and their values
  */
 export function deleteDeepByKey(object, substring) {

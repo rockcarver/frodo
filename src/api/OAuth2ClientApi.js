@@ -32,7 +32,7 @@ export async function getOAuth2Clients() {
 
 /**
  * Get OAuth2 Client
- * @param {String} id client id
+ * @param {string} id client id
  * @returns {Promise} a promise that resolves to an object containing an oauth2client object
  */
 export async function getOAuth2Client(id) {
@@ -49,7 +49,7 @@ export async function getOAuth2Client(id) {
 
 /**
  * Put OAuth2 Client
- * @param {String} id client id
+ * @param {string} id client id
  * @param {Object} data oauth2client object
  * @returns {Promise} a promise that resolves to an object containing an oauth2client object
  */

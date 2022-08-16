@@ -48,7 +48,7 @@ export async function listProviders() {
 
 /**
  * Get social identity provider by id
- * @param {String} id social identity provider id/name
+ * @param {string} id social identity provider id/name
  * @returns {Promise} a promise that resolves a social identity provider object
  */
 export async function getSocialIdentityProviderById(id) {
@@ -69,8 +69,8 @@ export async function getSocialIdentityProviderById(id) {
 
 /**
  * Export provider by id
- * @param {String} id provider id/name
- * @param {String} file optional export file name
+ * @param {string} id provider id/name
+ * @param {string} file optional export file name
  */
 export async function exportProvider(id, file = null) {
   let fileName = file;
@@ -98,7 +98,7 @@ export async function exportProvider(id, file = null) {
 
 /**
  * Export all providers
- * @param {String} file optional export file name
+ * @param {string} file optional export file name
  */
 export async function exportProvidersToFile(file) {
   let fileName = file;
@@ -147,8 +147,8 @@ export async function exportProvidersToFiles() {
 
 /**
  * Import provider by id/name
- * @param {String} id provider id/name
- * @param {String} file import file name
+ * @param {string} id provider id/name
+ * @param {string} file import file name
  */
 export async function importProviderById(id, file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -204,7 +204,7 @@ export async function importProviderById(id, file) {
 
 /**
  * Import first provider from file
- * @param {String} file import file name
+ * @param {string} file import file name
  */
 export async function importFirstProvider(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -255,7 +255,7 @@ export async function importFirstProvider(file) {
 
 /**
  * Import all providers from file
- * @param {String} file import file name
+ * @param {string} file import file name
  */
 export async function importProvidersFromFile(file) {
   fs.readFile(file, 'utf8', async (err, data) => {

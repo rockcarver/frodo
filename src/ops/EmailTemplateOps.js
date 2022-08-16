@@ -91,8 +91,8 @@ export async function listEmailTemplates(long = false) {
 
 /**
  * Export a single email template to file
- * @param {String} templateId email template id
- * @param {String} file optional filename
+ * @param {string} templateId email template id
+ * @param {string} file optional filename
  */
 export async function exportEmailTemplateToFile(templateId, file) {
   let fileName = file;
@@ -119,7 +119,7 @@ export async function exportEmailTemplateToFile(templateId, file) {
 
 /**
  * Export all email templates to file
- * @param {String} file optional filename
+ * @param {string} file optional filename
  */
 export async function exportEmailTemplatesToFile(file) {
   let fileName = file;
@@ -173,8 +173,8 @@ export async function exportEmailTemplatesToFiles() {
 
 /**
  * Import email template by id from file
- * @param {String} templateId email template id
- * @param {String} file optional filename
+ * @param {string} templateId email template id
+ * @param {string} file optional filename
  */
 export async function importEmailTemplateFromFile(templateId, file) {
   // eslint-disable-next-line no-param-reassign
@@ -211,7 +211,7 @@ export async function importEmailTemplateFromFile(templateId, file) {
 
 /**
  * Import all email templates from file
- * @param {String} file optional filename
+ * @param {string} file optional filename
  */
 export async function importEmailTemplatesFromFile(file) {
   fs.readFile(file, 'utf8', async (err, data) => {
@@ -293,7 +293,7 @@ export async function importEmailTemplatesFromFiles() {
 
 /**
  * Import first email template from file
- * @param {String} file optional filename
+ * @param {string} file optional filename
  */
 export async function importFirstEmailTemplateFromFile(file) {
   fs.readFile(file, 'utf8', (err, data) => {
