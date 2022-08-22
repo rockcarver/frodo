@@ -1,9 +1,13 @@
 <!-- README.md for GitHub; the one for NPM is ../README.md. -->
 # Frodo - ForgeROck DO
 
-Welcome to the Frodo (ForgeROck DO) project. Frodo at its core is a JavaScript library and an accompanying command line interface (CLI) to manage ForgeRock platform deployments. Frodo supports Identity Cloud tenants, ForgeOps deployments, and classic deployments.
+Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and an accompanying command line interface (CLI) to manage ForgeRock platform deployments. Frodo supports Identity Cloud tenants, ForgeOps deployments, and classic deployments.
 
-<table width="100%">
+<style>
+  table { border-collapse: collapse; }
+  tr { border-top: 1px solid #000; border-bottom: 1px solid #000; }
+</style>
+<table width="100%" style="border-collapse: collapse;">
   <tr>
   	<th width="15%"></th>
   	<th width="42%">Frodo CLI</th>
