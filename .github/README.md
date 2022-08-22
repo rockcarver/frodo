@@ -1,17 +1,14 @@
 <!-- README.md for GitHub; the one for NPM is ../README.md. -->
+
 # Frodo - ForgeROck DO
 
 Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and an accompanying command line interface (CLI) to manage ForgeRock platform deployments. Frodo supports Identity Cloud tenants, ForgeOps deployments, and classic deployments.
 
-<style>
-  table { border-collapse: collapse; }
-  tr { border-top: 1px solid #000; border-bottom: 1px solid #000; }
-</style>
 <table width="100%" style="border-collapse: collapse;">
   <tr>
   	<th width="15%"></th>
-  	<th width="42%">Frodo CLI</th>
-  	<th width="43%">Frodo Library</th>
+  	<th width="42%"><h2>Frodo CLI</h2></th>
+  	<th width="43%"><h2>Frodo Library</h2></th>
   </tr>
   <tr valign="top">
     <td></td>
@@ -48,74 +45,50 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
     </td>
   </tr>
   <tr valign="top">
-    <td>Features & Issues</td>
+    <td>Issues</td>
   	<td><a href="https://github.com/rockcarver/frodo-cli/issues">Request cli features and report issues</a></td>
   	<td><a href="https://github.com/rockcarver/frodo-lib/issues">Request library features and report issues</a></td>
   </tr>
   <tr valign="top">
-    <td>Contributing</td>
-  	<td><a href="https://github.com/rockcarver/frodo-cli/blob/main/docs/CONTRIBUTE.md">Help us improve the Frodo CLI</a></td>
-  	<td><a href="https://github.com/rockcarver/frodo-lib/blob/main/docs/CONTRIBUTE.md">Join the effort to create the best library for ForgeRock platform management</a></td>
-  </tr>
-  <tr valign="top">
-    <td>Maintaining</td>
-  	<td><a href="https://github.com/rockcarver/frodo-cli/blob/main/docs/PIPELINE.md">Info for Frodo CLI maintainers</a></td>
-  	<td><a href="https://github.com/rockcarver/frodo-lib/blob/main/docs/PIPELINE.md">Info for Frodo Library maintainers</a></td>
-  </tr>
-</table>
+    <td>Features</td>
+  	<td colspan="2">
+      Frodo allows an administrator to easily connect to and manage any number of Identity Cloud tenants, ForgeOps deployment instances, or classic deployment instances from the command line. The following tasks are currently supported:
 
-## Features
-
-Frodo allows an administrator to easily connect to and manage any number of Identity Cloud tenants, ForgeOps deployment instances, or classic deployment instances from the command line. The following tasks are currently supported:
-
-- User mode
-
+- `User mode`
   Install and run pre-compiled single-file binaries - without any dependencies - for MacOS, Windows, and Linux.
 
-- Manage journeys/trees.
-
+- `Manage journeys/trees`
   Export, import and pruning of journeys. Frodo handles referenced scripts and email templates.
 
-- Manage applications.
-
+- `Manage applications`
   List, export, and import applications (OAuth2 clients).
 
-- Manage connection profiles.
-
+- `Manage connection profiles`
   Saving and reading credentials (for multiple ForgeRock deployments) from a configuration file.
 
-- Manage email templates.
-
+- `Manage email templates`
   List, export, and import email templates.
 
-- Manage IDM configuration.
-
+- `Manage IDM configuration`
   Export of IDM configuration. Import is coming.
 
-- Print versions and tokens.
-
+- `Print versions and tokens`
   Obtain ForgeRock session token and admin access_tokens for a ForgeRock Identity Cloud or platform (ForgeOps) deployment
 
-- View Identity Cloud logs.
-
+- `View Identity Cloud logs`
   List available log sources and tail them.
 
-- Manage realms.
-
+- `Manage realms`
   List realms and show realm details. Allow adding and removing of custom DNS names.
 
-- Manage scripts.
-
+- `Manage scripts`
   List, export, and import scripts.
 
-- Manage Identity Cloud environment specific variables and secrets.
-
+- `Manage Identity Cloud environment specific variables and secrets`
   List and view details of secrets and variables in Identity Cloud.
 
-- Platform admin tasks.
-
+- `Platform admin tasks`
   Common tasks administrators need to perform daily that are tedious and repetitive. Advanced tasks, which used to be involved and potentially dangerous if performed manually, now made easy and safe.
-
   - Create an oauth2 client with admin privileges.
   - Get an access token using client credentials grant type.
   - List oauth2 clients with admin privileges.
@@ -129,7 +102,18 @@ Frodo allows an administrator to easily connect to and manage any number of Iden
   - Show generic extension attributes.
   - Repair org model (beta).
 
-- Developer mode
-
+- `Developer mode`
   Install and run in developer mode (npm i -g)
-
+    </td>
+  </tr>
+  <tr valign="top">
+    <td>Contributing</td>
+  	<td><a href="https://github.com/rockcarver/frodo-cli/blob/main/docs/CONTRIBUTE.md">Help us improve the Frodo CLI</a></td>
+  	<td><a href="https://github.com/rockcarver/frodo-lib/blob/main/docs/CONTRIBUTE.md">Join the effort to create the best library for ForgeRock platform management</a></td>
+  </tr>
+  <tr valign="top">
+    <td>Maintaining</td>
+  	<td><a href="https://github.com/rockcarver/frodo-cli/blob/main/docs/PIPELINE.md">Info for Frodo CLI maintainers</a></td>
+  	<td><a href="https://github.com/rockcarver/frodo-lib/blob/main/docs/PIPELINE.md">Info for Frodo Library maintainers</a></td>
+  </tr>
+</table>
