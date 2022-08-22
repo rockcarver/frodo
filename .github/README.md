@@ -7,8 +7,8 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
 <table width="100%" style="border-collapse: collapse;">
   <tr>
   	<th width="15%"></th>
-  	<th width="42%"><h2>Frodo CLI</h2></th>
-  	<th width="43%"><h2>Frodo Library</h2></th>
+  	<th width="42%">Frodo CLI</th>
+  	<th width="43%">Frodo Library</th>
   </tr>
   <tr valign="top">
     <td></td>
@@ -45,12 +45,28 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
     </td>
   </tr>
   <tr valign="top">
+    <td>Install</td>
+  	<td>If you do not intend to develop or contribute to frodo, please refer to the <a href="https://github.com/vscheuber/frodo-cli#quick-start">Quick Start</a> guide to get up and running in minutes.</td>
+  	<td>
+      If you are a node developer and want to use frodo-lib as a library for your own applications, you can install the npm package:
+
+- To install (or update to) the latest release as a dependency for you own application:
+  ```console
+  npm i --save @rockcarver/frodo-lib
+  ```
+- To install (or update to) the latest pre-release:
+  ```console
+  npm i --save @rockcarver/frodo-lib@next
+  ```
+    </td>
+  </tr>
+  <tr valign="top">
     <td>Issues</td>
   	<td><a href="https://github.com/rockcarver/frodo-cli/issues">Request cli features and report issues</a></td>
   	<td><a href="https://github.com/rockcarver/frodo-lib/issues">Request library features and report issues</a></td>
   </tr>
   <tr valign="top">
-    <td>Features</td>
+    <td>Highlights</td>
   	<td colspan="2">
       Frodo allows an administrator to easily connect to and manage any number of Identity Cloud tenants, ForgeOps deployment instances, or classic deployment instances from the command line. The following tasks are currently supported:
 
