@@ -46,19 +46,8 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
   </tr>
   <tr valign="top">
     <td>Install</td>
-  	<td>If you do not intend to develop or contribute to frodo, please refer to the <a href="https://github.com/vscheuber/frodo-cli#quick-start">Quick Start</a> guide to get up and running in minutes.</td>
-  	<td>
-      If you are a node developer and want to use frodo-lib as a library for your own applications, you can install the npm package:
-
-- To install (or update to) the latest release as a dependency for you own application:
-  ```console
-  npm i --save @rockcarver/frodo-lib
-  ```
-- To install (or update to) the latest pre-release:
-  ```console
-  npm i --save @rockcarver/frodo-lib@next
-  ```
-    </td>
+  	<td>If you want to use the CLI but do not intend to develop or contribute to frodo, please refer to the <a href="https://github.com/vscheuber/frodo-cli#quick-start">Quick Start</a> guide to get up and running in minutes.</td>
+  	<td>If you are a node developer and want to use `frodo-lib` as a library for your own applications, follow <a href="https://github.com/rockcarver/frodo-lib#npm-package">these instructions</a>.</td>
   </tr>
   <tr valign="top">
     <td>Issues</td>
