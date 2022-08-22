@@ -5,8 +5,8 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
 <table width="100%" style="border-collapse: collapse;">
   <tr>
   	<th width="15%"></th>
-  	<th width="42%">Frodo CLI</th>
-  	<th width="43%">Frodo Library</th>
+  	<th width="42%" halign="left"><a href="https://github.com/rockcarver/frodo-cli">Frodo CLI</a></th>
+  	<th width="43%" halign="left"><a href="https://github.com/rockcarver/frodo-lib">Frodo Library</a></th>
   </tr>
   <tr valign="top">
     <td></td>
