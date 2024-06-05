@@ -1,6 +1,6 @@
 # Frodo - ForgeROck DO
 
-Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and an accompanying command line interface (CLI) to manage ForgeRock platform deployments. Frodo supports Identity Cloud tenants, ForgeOps deployments, and classic deployments.
+Welcome to the Frodo project. Frodo is a JavaScript library and an accompanying command line interface (CLI) to manage PingOne Advanced Identity Cloud environments and ForgeRock platform deployments, both ForgeOps and classic deployments.
 
 <table width="100%" style="border-collapse: collapse;">
   <tr>
@@ -10,7 +10,7 @@ Welcome to the Frodo (ForgeROck DO) project. Frodo is a JavaScript library and a
   </tr>
   <tr valign="top">
     <td></td>
-  	<td>Command Line Interface to manage ForgeRock platform deployments supporting Identity Cloud tenants, ForgeOps deployments, and classic deployments.<br><br>
+  	<td>A command line interface to manage ForgeRock platform deployments supporting PingOne Advanced Identity Cloud environments, ForgeOps deployments, and classic deployments. Frodo-cli is powered by frodo-lib, a hybrid (ESM and CJS) library to manage ForgeRock deployments.<br><br>
     <i>Frodo CLI is the right tool for you if you want to manage ForgeRock deployments from the command line: Export and import your trees/journeys, scripts, and other configuration but you are not planning on writing your own code except for maybe automating the process using shell scripting or CI/CD tooling.</i></td>
   	<td>JavaScript Library to manage ForgeRock Identity Cloud tenants, ForgeOps deployments, and classic deployments.<br>
     Frodo Library powers Frodo CLI, the command line tool to manage ForgeRock deployments.<br><br>
