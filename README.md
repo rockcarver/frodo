@@ -24,18 +24,18 @@ Welcome to the Frodo project. Frodo is a JavaScript library and an accompanying 
   <tr valign="top">
     <td>Releases</td>
   	<td>
-      Latest Architecture (v0.11.1 and newer)
+      Latest Architecture (v2.0.0 and newer)
       <ul>
         <li><a href="https://www.npmjs.com/package/@rockcarver/frodo-cli">NPM</a></li>
         <li><a href="https://github.com/rockcarver/frodo-cli/releases">GitHub (source and binaries)</a></li>
       </ul>
-      Legacy Architecture (v0.10.4 and older)
+      Legacy Architecture (v1.0.1 and older)
       <ul>
         <li><a href="https://github.com/rockcarver/frodo/releases">GitHub (source and binaries)</a></li>
       </ul>
     </td>
   	<td>
-      Latest Architecture (v0.11.1 and newer)
+      Latest Architecture (v2.0.0 and newer)
       <ul>
         <li><a href="https://www.npmjs.com/package/@rockcarver/frodo-lib">NPM</a></li>
         <li><a href="https://github.com/rockcarver/frodo-lib/releases">GitHub (source)</a></li>
