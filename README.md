@@ -1,4 +1,4 @@
-# Frodo - ForgeROck DO
+# Frodo
 
 Welcome to the Frodo project. Frodo is a JavaScript library and an accompanying command line interface (CLI) to manage PingOne Advanced Identity Cloud environments and ForgeRock platform deployments, both ForgeOps and classic deployments.
 
