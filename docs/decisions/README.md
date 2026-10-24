@@ -30,3 +30,9 @@ Copy `template.md` to `NNNN-short-title.md` (the next number), fill it in (aim f
 | 0007 | [The public API is only the frodo facade](0007-public-api-only-through-the-frodo-facade.md) | accepted | frodo-cli, frodo-lib |
 | 0008 | [Homebrew installs prebuilt release binaries](0008-homebrew-installs-prebuilt-release-binaries.md) | accepted | frodo-cli, homebrew-frodo-cli |
 | 0009 | [Let the callback handler return a promise](0009-let-the-callback-handler-return-a-promise.md) | proposed | frodo-cli, frodo-lib |
+| 0010 | [Both repositories use one toolchain: tsdown, ESLint 10 with Prettier, and TypeScript 5.9](0010-one-toolchain-tsdown-eslint-prettier-typescript-5-9.md) | accepted | frodo-cli, frodo-lib |
+| 0011 | [Dependency updates merge automatically only when they are patch or minor](0011-dependency-updates-merge-automatically-only-for-patch-and-minor.md) | accepted | frodo-cli, frodo-lib |
+| 0012 | [Merging into main is gated by a small, stable set of required checks](0012-merging-is-gated-by-a-stable-set-of-required-checks.md) | accepted | frodo-cli, frodo-lib |
+| 0013 | [Secrets are never exported in the clear, and stored credentials are encrypted](0013-secrets-are-never-exported-in-the-clear.md) | accepted | frodo-cli, frodo-lib |
+| 0014 | [The recording framework stays on Polly until Node 28 or a real breakage forces a change](0014-the-recording-framework-stays-on-polly-for-now.md) | accepted | frodo-cli, frodo-lib |
+| 0015 | [Published packages ship only an allowlist of files](0015-published-packages-ship-only-an-allowlist-of-files.md) | accepted | frodo-cli, frodo-lib |
