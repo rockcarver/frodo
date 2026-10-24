@@ -120,3 +120,8 @@ Welcome to the Frodo project. Frodo is a JavaScript library and an accompanying 
   	<td><a href="https://github.com/rockcarver/frodo-lib/blob/main/docs/PIPELINE.md">Info for Frodo Library maintainers</a></td>
   </tr>
 </table>
+
+
+## Design decisions
+
+Decisions that span Frodo CLI, Frodo Library and the Homebrew tap are recorded in [docs/decisions](docs/decisions/README.md).
