@@ -2,6 +2,8 @@
 
 A decision record explains one lasting decision: why we chose it, what it means and what we gave up. Records are plain Markdown in the repository, so every contributor and every coding agent, whatever tool it uses, reads the same thing.
 
+> **Moved.** Since 2026-10-24 the decisions that span repositories are kept in each repository they bind, as `core/` records: [frodo-cli](https://github.com/rockcarver/frodo-cli/tree/main/docs/decisions/core), [frodo-lib](https://github.com/rockcarver/frodo-lib/tree/main/decisions/core) and [homebrew-frodo-cli](https://github.com/rockcarver/homebrew-frodo-cli/tree/main/docs/decisions/core) (core 0018). The records in this folder are the historical originals and are no longer maintained. The copies in those repositories are the ones that bind.
+
 This folder holds the decisions that **span repositories** (frodo-cli, frodo-lib, the Homebrew tap and this repository). Decisions that concern a single repository live in that repository's own `docs/decisions/` (frodo-lib: `decisions/`). Each repository states the ones that bind it, one sentence each, in the section "Decisions that span repositories" of its own decisions README, because the Repo Concierge's gates read one repository only and never this one.
 
 ## Rules
