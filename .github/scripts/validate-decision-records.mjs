@@ -12,6 +12,7 @@ const SECTIONS = [
   'Context and problem statement',
   'Decision',
   'Consequences',
+  'Known deviations',
   'Alternatives considered',
 ];
 const REQUIRED_SECTIONS = SECTIONS.slice(0, 3);

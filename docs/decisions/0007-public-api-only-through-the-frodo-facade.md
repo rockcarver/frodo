@@ -21,6 +21,8 @@ repos:
 
 frodo-lib exported dozens of loose functions and constants from its package root next to the `frodo` facade. Two ways to reach one capability made the API hard to document, to evolve and to expose safely (for example through the MCP server).
 
+This follows from 0001 (the library is the brain, the CLI a thin wrapper): if every consumer reaches the library through one facade, that facade has to be the whole public surface.
+
 ## Decision
 
 - frodo-lib's package root exports only `frodo`, `state`, `FrodoError` and types. Every capability is a method on the `frodo` facade, registered in `src/lib/FrodoLib.ts`.

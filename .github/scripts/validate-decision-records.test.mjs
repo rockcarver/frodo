@@ -70,6 +70,8 @@ test('the body needs a title and the three sections in order, each with content'
   has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace('# Record 1', 'Record 1'); }), 'must start with a "# Title"');
   has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace('## Decision', '## Outcome'); }), 'unknown section');
   has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace(/## Consequences[\s\S]*/, ''); }), 'missing section "## Consequences"');
+  assert.deepEqual(check((f) => { f['0001-first-thing.md'] = RECORD(1) + '\n## Known deviations\n\nSee 0002.\n\n## Alternatives considered\n\nNone.\n'; }), []);
+  has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace('## Consequences', '## Known deviations\n\nEarly.\n\n## Consequences'); }), 'out of order');
   has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace('## Decision\n\nWhat.\n\n## Consequences\n\nSo what.\n', '## Consequences\n\nSo what.\n\n## Decision\n\nWhat.\n'); }), 'out of order');
   has(check((f) => { f['0001-first-thing.md'] = RECORD(1).replace('What.', ''); }), 'is empty');
 });
