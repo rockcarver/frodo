@@ -37,3 +37,4 @@ Copy `template.md` to `NNNN-short-title.md` (the next number), fill it in (aim f
 | 0014 | [The recording framework stays on Polly until Node 28 or a real breakage forces a change](0014-the-recording-framework-stays-on-polly-for-now.md) | accepted | frodo-cli, frodo-lib |
 | 0015 | [Published packages ship only an allowlist of files](0015-published-packages-ship-only-an-allowlist-of-files.md) | accepted | frodo-cli, frodo-lib |
 | 0016 | [Changes that are not code still run the checks that validate them](0016-changes-that-are-not-code-still-run-the-checks-that-validate-them.md) | accepted | frodo-cli, frodo-lib |
+| 0017 | [Security reports and fixes are handled privately by a maintainer](0017-security-reports-and-fixes-are-handled-privately-by-a-maintainer.md) | accepted | frodo-cli, frodo-lib, homebrew-frodo-cli, frodo |
