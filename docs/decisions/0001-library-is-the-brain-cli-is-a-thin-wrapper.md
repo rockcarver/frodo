@@ -33,4 +33,4 @@ Frodo is two repositories that must behave as one product. frodo-lib is the libr
 
 ## Known deviations
 
-The project does not follow this everywhere yet. Config-manager keeps substantial logic in the CLI, in a separate `configManagerOps` layer outside `src/ops`, and frodo-lib still holds some terminal-specific code (colour theme and terminal detection in `src/utils`). Deviations are recorded in later records that reference this one, not here, so this record stays stable.
+The project does not follow this everywhere yet. Config-manager keeps substantial logic in the CLI, in a separate `configManagerOps` layer outside `src/ops`. frodo-lib still holds terminal-specific code (colour theme and terminal detection in `src/utils`); it needs to be revisited and likely should not have gone into the library in the first place. Deviations are recorded in later records that reference this one, not here, so this record stays stable.
