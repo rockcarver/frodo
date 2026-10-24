@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Frodo CLI (command line): report an issue or ask for a feature
+    url: https://github.com/rockcarver/frodo-cli/issues/new/choose
+    about: This repository no longer takes issues. Frodo CLI issues go to frodo-cli.
+  - name: Frodo library: report an issue or ask for a feature
+    url: https://github.com/rockcarver/frodo-lib/issues/new/choose
+    about: This repository no longer takes issues. Library issues go to frodo-lib.
+  - name: Report a security problem privately
+    url: https://github.com/rockcarver/frodo-cli/security/policy
+    about: Do not open a public issue for a vulnerability. Follow the security policy of the repository that holds the code.
