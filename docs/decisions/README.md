@@ -2,7 +2,7 @@
 
 A decision record explains one lasting decision: why we chose it, what it means and what we gave up. Records are plain Markdown in the repository, so every contributor and every coding agent, whatever tool it uses, reads the same thing.
 
-This folder holds the decisions that **span repositories** (frodo-cli, frodo-lib, the Homebrew tap and this repository). Decisions that concern a single repository live in that repository's own `docs/decisions/` (frodo-lib: `decisions/`). Each repository's `AGENTS.md` lists the records here that bind it.
+This folder holds the decisions that **span repositories** (frodo-cli, frodo-lib, the Homebrew tap and this repository). Decisions that concern a single repository live in that repository's own `docs/decisions/` (frodo-lib: `decisions/`). Each repository states the ones that bind it, one sentence each, in the section "Decisions that span repositories" of its own decisions README, because the Repo Concierge's gates read one repository only and never this one.
 
 ## Rules
 
@@ -12,6 +12,7 @@ This folder holds the decisions that **span repositories** (frodo-cli, frodo-lib
 - A pull request that changes a decided behaviour adds or supersedes a record in the same pull request.
 - Records are public. No credentials, tenant names, security-incident details or personal information.
 - `repos:` lists the repositories a record binds. `applies-to:` lists path globs, where that helps.
+- A record that binds other repositories also adds one sentence and a link for it to the "Decisions that span repositories" table of each of them, in the same change set.
 
 ## Writing one
 

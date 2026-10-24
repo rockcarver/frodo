@@ -50,15 +50,15 @@ node --test .github/scripts/validate-decision-records.test.mjs
 
    CI runs both (workflow `Decision records`). The first checks the file name, contiguous numbers, the front matter, the sections and their order, the length, that no credential-looking text is present and that the index matches.
 
-6. **Update the repository's own `AGENTS.md`** here if the record binds this repository (the list under "Cross-repo decisions in this repository"), then open the pull request. A record that other repositories do not link is invisible to their agents.
+6. **Update the repository's own `AGENTS.md`** here (the list under "Cross-repo decisions in this repository"), then open the pull request. The gates read one repository only and never this one, so a record that the bound repositories do not state in their own files is invisible to their agents.
 
-7. **Link it from every bound repository**, in a small pull request each, after this one is merged (the link is to `main` and would not resolve before). Find the place in each repository's `AGENTS.md`:
+7. **State it in every bound repository**, in a small pull request each, after this one is merged (the link is to `main` and would not resolve before). Each repository has a "Decisions that span repositories" table in its decisions README (`docs/decisions/README.md`, in frodo-lib `decisions/README.md`) with one row per record: the record number as a link, the rule in one sentence, the status. Find the table in each repository:
 
 ```bash
-gh api -H 'Accept: application/vnd.github.raw+json' repos/rockcarver/frodo-cli/contents/AGENTS.md | grep -n 'rockcarver/frodo/'
+gh api -H 'Accept: application/vnd.github.raw+json' repos/rockcarver/frodo-cli/contents/docs/decisions/README.md | grep -n 'rockcarver/frodo/blob'
 ```
 
-   Add the record next to the existing ones with the same link form (`https://github.com/rockcarver/frodo/blob/main/docs/decisions/NNNN-short-title.md`). A `proposed` record is listed as "proposed, not yet binding". The Concierge gates read the records of the repository they run in, so for the other repositories the `AGENTS.md` link is how an agent finds a cross-repository decision.
+   Add a row with the same link form (`https://github.com/rockcarver/frodo/blob/main/docs/decisions/NNNN-short-title.md`); a `proposed` record is marked proposed. If the rule is one every change must know (day-to-day work, not a one-off), add one sentence for it to that repository's `AGENTS.md` too, within its line budget (60 lines). The Concierge gates read the records of the repository they run in, so the table row is how an agent finds a cross-repository decision.
 
 ## Changing a decision
 
