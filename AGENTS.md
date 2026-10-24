@@ -10,7 +10,7 @@ Each of those repositories has its own `AGENTS.md`; read it before changing anyt
 
 ## Rules
 
-- **The library is the brain, the CLI is a thin wrapper** (record 0001): business logic belongs in frodo-lib behind the `frodo` facade, the CLI adds terminal concerns only, and a new capability is built library first.
+- **The library is the brain, the CLI is a thin wrapper** (record 0001): business logic belongs in frodo-lib behind the `frodo` facade, the library stays free of terminal and other interface code, the CLI adapts it (interface-specific stacks such as the interactive mode are legitimate CLI code), and a new capability is built library first.
 - **Keep `README.md` short and accurate.** It says what the products are and where to get them. Do not copy documentation that lives in the other repositories.
 - **A decision that binds several repositories is a record here.** Copy `docs/decisions/template.md`, number it, add it to the index in `docs/decisions/README.md` and list the repositories it binds under `repos:`. Check it with `node .github/scripts/validate-decision-records.mjs docs/decisions --repos`; CI runs the same check.
 - **Never commit credentials, keys or tokens**, and keep tenant names, security-incident details and personal information out of records: everything here is public.

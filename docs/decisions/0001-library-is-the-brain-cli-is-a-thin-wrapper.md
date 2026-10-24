@@ -14,22 +14,23 @@ repos:
 
 ## Context and problem statement
 
-Frodo is two repositories that must behave as one product. frodo-lib is the library; frodo-cli is the command line on top of it, and other consumers (scripts, the MCP server (`frodo mcp server`, whose capability registry lives in frodo-lib's `src/mcp/`), third-party tools) use the library directly. Logic that lives only in the CLI cannot be reused by them, drifts from the library, and has to be written twice. This record states the principle the project was built on; it is recorded retroactively.
+Frodo is two repositories that must behave as one product. frodo-lib is the library; frodo-cli is the command line on top of it; scripts, MCP clients and other tools use the library directly. Logic that lives only in the CLI cannot be reused by them, drifts from the library and has to be written twice. This is the principle the project was built on, recorded retroactively.
 
 ## Decision
 
 - **Business logic, API calls, data handling and configuration management belong in frodo-lib**, behind the `frodo` facade. Anything a script, an MCP server or another tool needs must be reachable through the facade.
-- **The CLI adds terminal concerns only**: argument parsing, prompts and interactive mode, output formatting, files, stdin and exit codes, and packaging (npm, native binary, Homebrew).
-- **The CLI's ops layer (`src/ops/`) is a thin wrapper** over the facade plus those terminal concerns. A command file stays thinner still: it parses, calls an ops function and sets the exit code.
-- **A new capability is built library first**: add it to frodo-lib and the facade, release it, then wrap it in the CLI. The CLI never reimplements, copies or works around a library function.
+- **frodo-lib is free of anything that ties it to one interface** (a terminal, a shell, a protocol front-end): no prompts, no console, stdin or stdout handling, no ANSI or terminal detection. Where it needs a person or a place to write, it takes a callback or handler from the caller.
+- **For most commands the CLI is a thin wrapper.** Its ops layer (`src/ops/`) only adapts the library's ops for the CLI: argument mapping, output, files, stdin and exit codes. A command file parses, calls an ops function and sets the exit code.
+- **Interface-specific stacks live in the CLI and are heavy there by design.** They are exceptions, not deviations: the interactive mode (prompts, pickers, frames, the input-resolution pass), the frodo shell, and the MCP server stack (how it divides with the library's `src/mcp` is left open for now).
+- **A new capability is built library first**: add it to frodo-lib and the facade, release it, then wrap it in the CLI. The CLI never reimplements or works around a library function.
 
 ## Consequences
 
-- A contributor adding a feature that needs data or tenant behaviour starts in frodo-lib (a facade method with tests there) and only then adds the command, its prompts and its output in frodo-cli. A feature needing both ships as a library change first.
-- A reviewer rejects a CLI change that adds API calls, data transformation or configuration logic which another consumer would also need, and asks for it to move into the library.
-- Terminal code stays in the CLI: frodo-lib has no prompt library and no `process.exit`. Where it needs input from a person (journey callbacks, for example) it takes a callback from the caller.
+- A contributor adding a feature that needs data or tenant behaviour starts in frodo-lib (a facade method with tests there), then adds the command, its prompts and its output in frodo-cli.
+- To tell an exception from a deviation, a reviewer asks of any substantial CLI code: would a script, an MCP client or another front-end need this? If yes, it is business logic and belongs in the library: reject it or ask for it to move. If it exists only because of how a terminal, a shell or a protocol front-end works (reading keys, drawing frames, parsing arguments, wiring a transport), it is an exception and stays.
+- A reviewer rejects code in frodo-lib that prompts, reads or writes a terminal, or detects terminal capabilities.
 - The library's public surface is only the facade (see 0007), so the CLI can rely on it as the one way in.
 
 ## Known deviations
 
-The CLI does not follow this everywhere yet: config-manager keeps substantial logic in the CLI, in a separate `configManagerOps` layer outside `src/ops`. Deviations are recorded in later records that reference this one, not here, so this record stays stable.
+The project does not follow this everywhere yet. Config-manager keeps substantial logic in the CLI, in a separate `configManagerOps` layer outside `src/ops`, and frodo-lib still holds some terminal-specific code (colour theme and terminal detection in `src/utils`). Deviations are recorded in later records that reference this one, not here, so this record stays stable.
