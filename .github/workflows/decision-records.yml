@@ -1,0 +1,32 @@
+name: Decision records
+
+# Validates the front matter, sections and index of docs/decisions. No dependencies.
+on:
+  pull_request:
+    paths:
+      - 'docs/decisions/**'
+      - '.github/scripts/validate-decision-records.*'
+      - '.github/workflows/decision-records.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/decisions/**'
+      - '.github/scripts/validate-decision-records.*'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate decision records
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Self-test the validator
+        run: node --test .github/scripts/validate-decision-records.test.mjs
+      - name: Validate the records
+        run: node .github/scripts/validate-decision-records.mjs docs/decisions --repos
