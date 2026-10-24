@@ -15,6 +15,10 @@ Each of those repositories has its own `AGENTS.md`; read it before changing anyt
 - **A decision that binds several repositories is a record here.** Copy `docs/decisions/template.md`, number it, add it to the index in `docs/decisions/README.md` and list the repositories it binds under `repos:`. Check it with `node .github/scripts/validate-decision-records.mjs docs/decisions --repos`; CI runs the same check.
 - **Never commit credentials, keys or tokens**, and keep tenant names, security-incident details and personal information out of records: everything here is public.
 
+## Procedures
+
+Recurring work is written down as agent skills in `.claude/skills/` (read by Claude Code and by the Copilot coding agent). For a decision that binds several repositories: [record-a-decision](.claude/skills/record-a-decision/SKILL.md).
+
 ## Decisions
 
 Accepted records in `docs/decisions/` are binding for humans and agents until a newer record supersedes them. If your task conflicts with one, stop and say so in the issue or pull request instead of working around it. Records are not edited after acceptance (typos aside): a changed decision is a new record that supersedes the old one, in the same pull request that changes the behaviour. The index is in [docs/decisions/README.md](docs/decisions/README.md).
